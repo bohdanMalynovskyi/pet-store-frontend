@@ -8,11 +8,11 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { IconButton, MobileNav } from '@material-tailwind/react';
 import { Bars3Icon, XMarkIcon, } from "@heroicons/react/24/outline";
-// import Cart from './CartBtn';
+import Cart from './CartBtn';
 import SearchDesktop from './SearchDesktop';
+import Favorite from './FavoriteBtn';
 import NavMobile from './NavMobile';
-import BtnFavorite from './BtnFavorite';
-import BtnCart from './BtnCart';
+
 
 
 const Header = ({ isHomePage }) => {
@@ -75,16 +75,14 @@ const Header = ({ isHomePage }) => {
           </div>
 
            {/* пошук на десктоп-версії */}
-
           <SearchDesktop />
 
            {/*  пошук мобверсія/ контакти / улюблене / кошик */}
           <div className='menu__right flex items-center gap-5'>
             <Search />
-            <Contacts />
-            <BtnFavorite/>
-            <BtnCart/>
-            {/* <Cart /> */}
+            <Contacts /> 
+            <Favorite/>
+            <Cart />
           </div>
 
         </div>
@@ -95,7 +93,7 @@ const Header = ({ isHomePage }) => {
       </div>
       {/* меню на моб */}
       <MobileNav open={openNav}>
-       <NavMobile/>
+      <NavMobile/>
       </MobileNav>
 
     </header>

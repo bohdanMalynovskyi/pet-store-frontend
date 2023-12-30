@@ -17,18 +17,17 @@ const Contacts = () => {
   };
 
   const dynamicClass = isMenuOpen ? 'w-full shadow-md px-3 pt-3 pt-[40px]' : '';
-  // const dynamicClass2 = isMenuOpen ? 'mt-5' : '';
   return (
-    <div className={` absolute items-center bg-[#fff] text-lg ${dynamicClass}`}>
+    <div className={` absolute hidden md:block items-center bg-[#fff] text-lg ${dynamicClass}`}>
       <div className=' flex items-center gap-1'>
-        <button className={`hover:drop-shadow-lg cursor-pointer hidden md:block text-lg hover:text-cyan `}
+        <button
+          className={`hover:drop-shadow-lg cursor-pointer  text-lg hover:text-cyan `}
           onClick={() => {
             toggleMenu();
           }}
           onKeyPress={handleKeyPress}
           tabIndex={0}
         >Контакти
-
         </button>
         <ChevronDownIcon
           strokeWidth={2.5}
@@ -36,7 +35,6 @@ const Contacts = () => {
             }`}
         />
       </div>
-
       {showContacts && (
         <div className=' flex flex-col'>
           <div className='flex gap-1 items-center mt-5 mb-[11px] '>

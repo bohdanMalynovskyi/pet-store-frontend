@@ -37,7 +37,7 @@ const BtnFavorite = () => {
     };
 
     return (
-        <div className='ml-[120px]'>
+        <div className='md:ml-[120px]'>
             <button
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
