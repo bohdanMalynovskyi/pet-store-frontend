@@ -8,10 +8,11 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { IconButton, MobileNav } from '@material-tailwind/react';
 import { Bars3Icon, XMarkIcon, } from "@heroicons/react/24/outline";
-import Favorite from './FavoriteBtn';
+// import Favorite from './FavoriteBtn';
 import Cart from './CartBtn';
 import SearchDesktop from './SearchDesktop';
 import NavMobile from './NavMobile';
+import BtnFavorite from './BtnFavorite';
 
 
 const Header = ({ isHomePage }) => {
@@ -81,7 +82,8 @@ const Header = ({ isHomePage }) => {
           <div className='menu__right flex items-center  gap-5'>
             <Search />
             <Contacts />
-            <Favorite />
+            {/* <Favorite /> */}
+            <BtnFavorite/>
             <Cart />
           </div>
 
@@ -95,7 +97,7 @@ const Header = ({ isHomePage }) => {
       <MobileNav open={openNav}>
        <NavMobile/>
       </MobileNav>
-      <p></p>
+
     </header>
   )
 }
