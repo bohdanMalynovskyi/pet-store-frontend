@@ -36,7 +36,7 @@ const Navbar = () => {
                 {nav__links.map((item, index) => (
                     <div key={index} className=' border-r-2 last:border-r-0'>
                         <NavLink
-                            className=' mx-5 font-bold block '
+                            className=' mx-5 font-bold block transition hover:text-cyan '
                             to={item.path}
                         >{item.display}
                         </NavLink>

@@ -15,6 +15,7 @@ import NavMobile from './NavMobile';
 
 
 
+
 const Header = ({ isHomePage }) => {
   const [isMobile, setIsMobile] = React.useState(false);
   const [openNav, setOpenNav] = React.useState(false);
@@ -89,6 +90,7 @@ const Header = ({ isHomePage }) => {
 
         <div>
           <Navbar />
+    
         </div>
       </div>
       {/* меню на моб */}
