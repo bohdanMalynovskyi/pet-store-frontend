@@ -30,8 +30,7 @@ const nav__links = [
 
 const Navbar = () => {
     return (
-        <nav className=' hidden md:block max-w-[1200px] px-5 mb-8 '>
-
+        <nav className=' hidden md:block max-w-[1200px] px-5 '>
             <div className='flex items-center justify-center'>
                 {nav__links.map((item, index) => (
                     <div key={index} className=' border-r-2 last:border-r-0'>

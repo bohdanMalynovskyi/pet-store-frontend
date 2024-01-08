@@ -1,13 +1,15 @@
 ﻿import React from 'react';
-import banner from '../assets/images/banner.jpg';
-import MegaMenu from '../components/Header/MegaMenu';
+
+import Hero from '../components/Hero/Hero';
+import Deals from '../components/Deals';
+
 
 
 const Home = () => {
   return (
-    <div className=''>
-      <img src={banner} alt="banner" />
-      <MegaMenu/>
+    <div className=' flex flex-col'>
+      <Hero/>
+      <Deals/>
     </div>
   )
 }

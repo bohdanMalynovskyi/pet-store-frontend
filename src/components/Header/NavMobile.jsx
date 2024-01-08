@@ -35,7 +35,7 @@ const NavMobile = () => {
         setClick(!click);
     };
     return (
-        <nav className=' absolute w-full h-[100vh] bg-[#fff] px-5'>
+        <nav className=' absolute z-10 w-full h-[100vh] bg-[#fff] px-5'>
 
             <div className=' my-5 ul '>
                 {nav__links.map((item, index) => (
