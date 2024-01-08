@@ -1,0 +1,31 @@
+﻿import React from 'react';
+import { HeartIcon } from '@heroicons/react/24/outline';
+import PropTypes from 'prop-types';
+
+const Item = (props) => {
+  return (
+    <div className=' px-3 max-w-[335px] min-h-[384px] hover:shadow-md'>
+        <img className='mx-auto w-[150px] h-[150px] mb-3' src={props.image} alt="" />
+        <h5 className=' text-base font-bold mb-1'>{props.title}</h5>
+        <p className=' text-sm'>{props.description}</p>
+        <div className=' flex gap-2 mb-3'> 
+            <div className=' text-cyan text-lg font-bold'>{props.new_price}</div>
+            <div className=' text-zinc  text-lg font-bold line-through'>{props.old_price}</div>
+        </div>
+        <div className=' flex gap-2  items-center'>
+            <div className=' w-8 h-8 hover:text-cyan'><HeartIcon/></div>
+            <button className=' bg-primary text-[#fff] rounded-[20px] px-[70px]  py-2 justify-center items-center'>Додати в кошик</button>
+        
+        </div>
+    </div>
+  )
+}
+Item.propTypes = {
+    image: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    new_price: PropTypes.number.isRequired,
+    old_price: PropTypes.number.isRequired,
+  };
+
+export default Item
