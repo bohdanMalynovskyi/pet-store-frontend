@@ -2,15 +2,15 @@
 import { HeartIcon } from '@heroicons/react/24/outline';
 import PropTypes from 'prop-types';
 
-const Item = (props) => {
+const Item = ({image, title, description, new_price, old_price}) => {
   return (
     <div className=' px-3 max-w-[335px] min-h-[384px] hover:shadow-md'>
-        <img className='mx-auto w-[150px] h-[150px] mb-3' src={props.image} alt="" />
-        <h5 className=' text-base font-bold mb-1'>{props.title}</h5>
-        <p className=' text-sm'>{props.description}</p>
+        <img className='mx-auto w-[150px] h-[150px] mb-3' src={image} alt="" />
+        <h5 className=' text-base font-bold mb-1'>{title}</h5>
+        <p className=' text-sm'>{description}</p>
         <div className=' flex gap-2 mb-3'> 
-            <div className=' text-cyan text-lg font-bold'>{props.new_price}</div>
-            <div className=' text-zinc  text-lg font-bold line-through'>{props.old_price}</div>
+            <div className=' text-cyan text-lg font-bold'>{new_price} грн</div>
+            <div className=' text-zinc  text-lg font-bold line-through'>{old_price} грн</div>
         </div>
         <div className=' flex gap-2  items-center'>
             <div className=' w-8 h-8 hover:text-cyan'><HeartIcon/></div>
