@@ -1,12 +1,13 @@
 ﻿import React from 'react';
-import data from "../db/data"
-import Item from './Item/Item';
+// import data from "../../db/data"
+// import Item from '../Item/Item';
+import SwiperDeals from '../Swiper/SwiperDeals';
 
 const Deals = () => {
   return (
-    <section className=' max-w-[1260px] px-4 '>
+    <section className='container max-w-[1260px] px-4 '>
         <h3 className=' text-lg font-bold mb-2'>Акції та знижки</h3>
-        <div>
+        {/* <div>
             {data.map((item)=>{
                 return <Item  
                 key={item.id} 
@@ -16,7 +17,8 @@ const Deals = () => {
                 new_price={item.new_price}
                 old_price={item.old_price} />
             })}
-        </div>
+        </div> */}
+        <SwiperDeals/>
     </section>
   )
 }
