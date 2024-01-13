@@ -1,50 +1,47 @@
-﻿import React from 'react';
+﻿import React, {} from 'react';
 import { NavLink } from 'react-router-dom';
+import nav__links from "../../db/menu"
 
-const nav__links = [
-    {
-        display: "Собакам",
-        path: "/dogs"
-    },
-    {
-        display: "Котам",
-        path: "/cats"
-    },
-    {
-        display: "Гризунам",
-        path: "/smallpets"
-    },
-    {
-        display: "Птахам",
-        path: "/birds"
-    },
-    {
-        display: "Рибам",
-        path: "/fish"
-    },
-    {
-        display: "Рептиліям",
-        path: "/reptiles"
-    },
-]
 
 const Navbar = () => {
+    console.log(nav__links);
     return (
-        <nav className=' hidden md:block max-w-[1200px] px-5 '>
-            <div className='flex items-center justify-center'>
-                {nav__links.map((item, index) => (
-                    <div key={index} className=' border-r-2 last:border-r-0'>
-                        <NavLink
-                            className=' mx-5 font-bold block transition hover:text-cyan '
-                            to={item.path}
-                        >{item.display}
-                        </NavLink>
-                    </div>
-                ))}
-            </div>
 
-        </nav>
+        <nav className='hidden md:block max-w-[1200px] px-5'>
+            <ul className='flex items-center justify-center'>
+                {nav__links.map((item, index) => (
+                    <li
+                        key={index}
+                        className='border-r-2 last:border-r-0'
+                    >
+
+                        <NavLink
+                                className='relative mx-5 font-bold block transition hover:text-cyan'
+                                to={item.path}
+                            >
+                                {item.display}
+                            </NavLink>
+
+
+                    </li>
+
+                ))}
+            </ul>
+        </nav >
     )
 }
 
 export default Navbar
+
+
+
+
+
+
+
+
+
+
+
+
+
