@@ -7,7 +7,6 @@ import data from "../../db/data";
 import Item from '../Item/Item';
 import ArrowLeft from "../Swiper/cart-left.svg";
 import ArrowRight from "../Swiper/cart-right.svg"
-
 SwiperCore.use([Pagination])
 export default function SwiperDeals() {
   const SlideRef = useRef();
