@@ -1,4 +1,4 @@
-﻿const nav__links = [
+const nav__links = [
     {
         id: "1",
         display: "Собакам",
@@ -31,7 +31,8 @@
             },
         ]
     },
-    {   id: "2",
+    {   
+        id: "2",
         display: "Котам",
         path: "/cats",
         dropdown: [
@@ -64,8 +65,37 @@
 
     },
     {
+        id:"3",
         display: "Гризунам",
         path: "/smallpets",
+        dropdown:[
+            {
+                id:"3.1",
+                display:"Корм для гризунів",
+                path:"/korm-dlya-grizuniv",
+            },
+            {
+                id:"3.2",
+                display:"Клітки для гризунів",
+                path:"/klitki-dlya-grizuniv",
+            },
+            {
+                id:"3.3",
+                display:"Ласощі для гризунів",
+                path:"/lasoshhi-dlya-grizuniv",
+            },
+            {
+                id:"3.4",
+                display:"Вітаміни для гризунів",
+                path:"/vitamini-dlya-grizuniv",
+            },
+            {
+                id:"3.5",
+                display:"Іграшки для гризунів",
+                path:"/igrashki-dlya-grizunv",
+            },
+
+        ]
 
     },
     {
