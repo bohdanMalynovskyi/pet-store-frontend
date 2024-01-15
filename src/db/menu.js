@@ -1,4 +1,4 @@
-﻿const nav__links = [
+const nav__links = [
     {
         id: "1",
         display: "Собакам",
