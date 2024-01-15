@@ -1,50 +1,52 @@
-﻿import React from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-
-const nav__links = [
-    {
-        display: "Собакам",
-        path: "/dogs"
-    },
-    {
-        display: "Котам",
-        path: "/cats"
-    },
-    {
-        display: "Гризунам",
-        path: "/smallpets"
-    },
-    {
-        display: "Птахам",
-        path: "/birds"
-    },
-    {
-        display: "Рибам",
-        path: "/fish"
-    },
-    {
-        display: "Рептиліям",
-        path: "/reptiles"
-    },
-]
+import navLinks from "../../db/menu";
 
 const Navbar = () => {
     return (
-        <nav className=' hidden md:block max-w-[1200px] px-5 '>
-            <div className='flex items-center justify-center'>
-                {nav__links.map((item, index) => (
-                    <div key={index} className=' border-r-2 last:border-r-0'>
+        <nav className='hidden md:block max-w-[1200px] px-5'>
+            <ul className='flex items-center justify-center'>
+                {navLinks.map((item, index) => (
+                    <li key={index} className='group relative'>
                         <NavLink
-                            className=' mx-5 font-bold block transition hover:text-cyan '
+                            className='relative mx-5 font-bold block transition hover:text-hover'
                             to={item.path}
-                        >{item.display}
+                        >
+                            {item.display}
                         </NavLink>
-                    </div>
+                        {item.dropdown && (
+                            <div className='absolute z-50 hidden group-hover:block inline-block whitespace-nowrap bg-[#fff] drop-shadow-md p-[40px]'>
+                                <ul>
+                                    {item.dropdown.map((subItem) => (
+                                        <li key={subItem.id}>
+                                            <NavLink
+                                                className='block py-2 px-4 transition hover:text-hover'
+                                                to={subItem.path}
+                                            >
+                                                {subItem.display}
+                                            </NavLink>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </li>
                 ))}
-            </div>
-
+            </ul>
         </nav>
-    )
-}
+    );
+};
 
-export default Navbar
+export default Navbar;
+
+
+
+
+
+
+
+
+
+
+
+

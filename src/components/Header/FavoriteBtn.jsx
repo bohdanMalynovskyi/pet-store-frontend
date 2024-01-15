@@ -20,7 +20,7 @@ const Favorite = () => {
   const navbarClasses = isMobile ? 'text-[#fff] w-6 h-6' : 'text-primary w-8 h-8';
 
   return (
-    <div className={` ml-[120px] hover:text-cyan ${navbarClasses}`}>
+    <div className={` hover:text-hover ${navbarClasses}`}>
       <HeartIcon/>
     </div>
   );

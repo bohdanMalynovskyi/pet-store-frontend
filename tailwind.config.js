@@ -7,12 +7,11 @@ module.exports =withMT({
   theme: {
     extend: {
       colors: {
-        'primary': '#001A61',
-        'cyan':"#3786A5",
+        'primary': '#011240',
+        'hover':"#3786A5",
         'zinc':'#B2B2B2'
       }
     },
   },
-  'primary': '#001A61',
   plugins: [],
 }) 

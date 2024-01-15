@@ -18,7 +18,7 @@ const Cart = () => {
   }, []);
   const navbarClasses = isMobile ? 'text-[#fff] w-6 h-6' : 'text-primary w-8 h-8';
   return (
-    <div className={` hover:text-cyan ${navbarClasses}`}><ShoppingBagIcon/></div>
+    <div className={` hover:text-hover ${navbarClasses}`}><ShoppingBagIcon/></div>
   )
 }
 
