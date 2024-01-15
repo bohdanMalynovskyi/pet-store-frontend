@@ -9,11 +9,11 @@ const Item = ({image, title, description, new_price, old_price}) => {
         <h5 className=' text-base font-bold mb-1'>{title}</h5>
         <p className=' text-sm'>{description}</p>
         <div className=' flex gap-2 mb-3'> 
-            <div className=' text-cyan text-lg font-bold'>{new_price} грн</div>
+            <div className=' text-hover text-lg font-bold'>{new_price} грн</div>
             <div className=' text-zinc  text-lg font-bold line-through'>{old_price} грн</div>
         </div>
         <div className=' flex gap-2  items-center'>
-            <div className=' w-8 h-8 hover:text-cyan'><HeartIcon/></div>
+            <div className=' w-8 h-8 hover:text-hover'><HeartIcon/></div>
             <button className=' bg-primary w-[271px] text-[#fff] rounded-[20px]  py-2 justify-center items-center'>Додати в кошик</button>
         
         </div>

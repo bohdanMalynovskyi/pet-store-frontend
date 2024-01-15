@@ -1,38 +1,43 @@
-﻿import React, {} from 'react';
+﻿import React from 'react';
 import { NavLink } from 'react-router-dom';
-import nav__links from "../../db/menu"
-
+import navLinks from "../../db/menu";
 
 const Navbar = () => {
-    console.log(nav__links);
     return (
-
         <nav className='hidden md:block max-w-[1200px] px-5'>
             <ul className='flex items-center justify-center'>
-                {nav__links.map((item, index) => (
-                    <li
-                        key={index}
-                        className='border-r-2 last:border-r-0'
-                    >
-
+                {navLinks.map((item, index) => (
+                    <li key={index} className='group relative'>
                         <NavLink
-                                className='relative mx-5 font-bold block transition hover:text-cyan'
-                                to={item.path}
-                            >
-                                {item.display}
-                            </NavLink>
-
-
+                            className='relative mx-5 font-bold block transition hover:text-hover'
+                            to={item.path}
+                        >
+                            {item.display}
+                        </NavLink>
+                        {item.dropdown && (
+                            <div className='absolute z-50 hidden group-hover:block inline-block whitespace-nowrap bg-[#fff] drop-shadow-md p-[40px]'>
+                                <ul>
+                                    {item.dropdown.map((subItem) => (
+                                        <li key={subItem.id}>
+                                            <NavLink
+                                                className='block py-2 px-4 transition hover:text-hover'
+                                                to={subItem.path}
+                                            >
+                                                {subItem.display}
+                                            </NavLink>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </li>
-
                 ))}
             </ul>
-        </nav >
-    )
-}
+        </nav>
+    );
+};
 
-export default Navbar
-
+export default Navbar;
 
 
 

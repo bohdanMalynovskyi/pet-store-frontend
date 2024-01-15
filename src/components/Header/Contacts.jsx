@@ -8,8 +8,8 @@ const Contacts = () => {
 
     return (
         <div className='hidden md:block items-center bg-[#fff] text-lg group'>
-            <div className=' flex items-center gap-1 hover:text-cyan'>
-                <button className='hover:drop-shadow-lg cursor-pointer  text-lg hover:text-cyan' onClick={() => setShowContacts((prev) => !prev)}>Контакти</button>
+            <div className=' flex items-center gap-1 hover:text-hover'>
+                <button className='hover:drop-shadow-lg cursor-pointer  text-lg hover:text-hover' onClick={() => setShowContacts((prev) => !prev)}>Контакти</button>
                 <ChevronDownIcon
                 className={`h-6 w-6 transition-transform lg:block ${showContacts?"rotate-180 " : ""}`}/>
             </div>
