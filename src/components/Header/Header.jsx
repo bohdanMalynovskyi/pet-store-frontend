@@ -79,7 +79,7 @@ const Header = ({ isHomePage }) => {
           <SearchDesktop />
 
            {/*  пошук мобверсія/ контакти / улюблене / кошик */}
-          <div className='menu__right flex items-center gap-5'>
+          <div className='menu__right flex items-center gap-5 relative'>
             <Search />
             <Contacts /> 
             <Favorite/>
@@ -90,7 +90,6 @@ const Header = ({ isHomePage }) => {
 
         <div>
           <Navbar />
-    
         </div>
       </div>
       {/* меню на моб */}
