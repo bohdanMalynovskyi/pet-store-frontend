@@ -8,11 +8,39 @@ const nav__links = [
                 id:'1.1',
                 display: "Корм для собак",
                 path: "/korm-dlya-sobak",
+                subcategory:[
+                    {
+                        id:'1.1.1',
+                        display: "Сухий корм",
+                    },
+                    {
+                        id:'1.1.2',
+                        display: "Вологий корм",
+                    },
+                    {
+                        id:'1.1.3',
+                        display: "Паштет",
+                    },
+                ]
             },
             {
                 id:'1.2',
                 display: "Одяг для собак",
                 path: "/odyag-dlya-sobak",
+                subcategory:[
+                    {
+                        id:'1.1.1',
+                        display: "Сухий корм",
+                    },
+                    {
+                        id:'1.1.2',
+                        display: "Вологий корм",
+                    },
+                    {
+                        id:'1.1.3',
+                        display: "Паштет",
+                    },
+                ]
             },
             {
                 id:'1.3',

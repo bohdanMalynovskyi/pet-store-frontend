@@ -9,7 +9,7 @@ const Layout = () => {
     const location = useLocation();
     const isHomePage = location.pathname === '/home';
     return (
-        <div className=' min-h-screen flex flex-col text-primary'>
+        <div className=' font-ttnorms min-h-screen flex flex-col text-primary'>
             <Header isHomePage={isHomePage}/>
             <div className=' flex-auto'>
                 <Routes />
