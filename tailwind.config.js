@@ -13,5 +13,6 @@ module.exports =withMT({
       }
     },
   },
+  primary: '#011240',
   plugins: [],
 }) 

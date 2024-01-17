@@ -1,4 +1,9 @@
 @import url('https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css');
+@import url('./style/typography/style');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  font-family: 'TT Norms', sans-serif;
+}
