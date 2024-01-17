@@ -33,6 +33,8 @@
       }
     ],
     "react/react-in-jsx-scope": "off",
-    "import/namespace": "off"
+    "react/prop-types": "off",
+    "import/namespace": "off",
+    "no-debugger": "off"
   }
 }
