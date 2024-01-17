@@ -9,10 +9,10 @@ module.exports =withMT({
       colors: {
         'primary': '#011240',
         'hover':"#3786A5",
-        'zinc':'#B2B2B2'
+        'zinc':'#B2B2B2',
+        'txtWhite': '#FFFFFF',
       }
     },
   },
-  primary: '#011240',
   plugins: [],
 }) 

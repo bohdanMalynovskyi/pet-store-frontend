@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 import Header from "../Header/Header";
-import Footer from "../Footer/Footer";
 import Routes from '../../routes/Routers';
 import { useLocation } from 'react-router-dom';
+import Footer from '../Footer/Footer';
 
 
 const Layout = () => {
@@ -14,7 +14,7 @@ const Layout = () => {
             <div className=' flex-auto'>
                 <Routes />
             </div>
-            <Footer />
+            <Footer/>
         </div>
 
     )
