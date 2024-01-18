@@ -7,10 +7,12 @@ import New from '../components/New/New';
 const Home = () => {
   return (
     <div className=' flex flex-col'>
-      <Hero/>
-      <Deals/>
-      <New/>
+      <Hero />
+      <div className=' container flex flex-col mx-auto max-w-[1260px] px-4'>
+        <Deals />
+        <New />
       </div>
+    </div>
   )
 }
 

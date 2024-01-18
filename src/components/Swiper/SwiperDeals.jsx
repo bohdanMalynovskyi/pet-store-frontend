@@ -5,8 +5,8 @@ import "swiper/swiper-bundle.min.css";
 import "swiper/components/pagination/pagination.scss";
 import data from "../../db/data";
 import Item from '../Item/Item';
-import ArrowLeft from "../Swiper/cart-left.svg";
-import ArrowRight from "../Swiper/cart-right.svg"
+// import ArrowLeft from "../Swiper/cart-left.svg";
+// import ArrowRight from "../Swiper/cart-right.svg"
 
 SwiperCore.use([Pagination])
 export default function SwiperDeals() {
@@ -19,10 +19,35 @@ export default function SwiperDeals() {
     SlideRef.current.swiper.slidePrev();
   };
   return (
-    <div className=' container mx-auto'>
-      <div>
-        <button onClick={handlePrev}><img src={ArrowLeft} alt="swipe-left" /></button>
-        <button onClick={handleNext}><img src={ArrowRight} alt="swipe-right" /></button>
+    <div className=' relative'>
+      <div className=' absolute -top-8 right-0 flex justify-end gap-5'>
+        <button onClick={handlePrev}>
+          <svg  width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clipPath="url(#clip0_4_3869)">
+              <rect className="arrow hover:fill-hover" width="24" height="24" rx="4" fill="#011240" />
+              <path d="M16 19L8.5 11.5L16 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </g>
+            <defs>
+              <clipPath id="clip0_4_3869">
+                <rect width="24" height="24" rx="4" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+
+        </button>
+        <button onClick={handleNext}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clipPath="url(#clip0_4_3881)">
+              <rect className="arrow hover:fill-hover" width="24" height="24" rx="4" fill="#011240" />
+              <path d="M8 19L15.5 11.5L8 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </g>
+            <defs>
+              <clipPath id="clip0_4_3869">
+                <rect width="24" height="24" rx="4" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+        </button>
       </div>
       <Swiper
         slidesPerView={1}
@@ -65,3 +90,6 @@ export default function SwiperDeals() {
     </div>
   );
 }
+
+
+
