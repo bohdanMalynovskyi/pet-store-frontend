@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 const Item = ({image, title, description, new_price, old_price}) => {
   return (
-    <div className=' px-4 py-4 max-w-[335px] min-h-[384px] hover:shadow-md'>
+    <div className='mx-auto px-4 py-4 max-w-[335px] min-h-[384px] hover:shadow-md'>
         <img className='mx-auto w-[150px] h-[150px] mb-3' src={image} alt="" />
         <h5 className=' text-base font-bold mb-1'>{title}</h5>
         <p className=' text-sm'>{description}</p>

@@ -5,8 +5,6 @@ import "swiper/swiper-bundle.min.css";
 import "swiper/components/pagination/pagination.scss";
 import data from "../../db/data";
 import Item from '../Item/Item';
-// import ArrowLeft from "../Swiper/cart-left.svg";
-// import ArrowRight from "../Swiper/cart-right.svg"
 
 SwiperCore.use([Pagination])
 export default function SwiperDeals() {
@@ -20,7 +18,7 @@ export default function SwiperDeals() {
   };
   return (
     <div className=' relative'>
-      <div className=' absolute -top-8 right-0 flex justify-end gap-5'>
+      <div className='hidden sm:absolute -top-8 right-0 sm:flex justify-end gap-5'>
         <button onClick={handlePrev}>
           <svg  width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0_4_3869)">
@@ -56,7 +54,7 @@ export default function SwiperDeals() {
             slidesPerView: 1,
             spaceBetween: 10,
           },
-          480: {
+          539: {
             slidesPerView: 2,
             spaceBetween: 10,
           },
