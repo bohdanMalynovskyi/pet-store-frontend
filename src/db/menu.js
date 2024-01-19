@@ -5,55 +5,32 @@ const nav__links = [
         path: "/dogs",
         dropdown: [
             {
-                id:'1.1',
+                id:'11',
                 display: "Корм для собак",
-                path: "/korm-dlya-sobak",
-                subcategory:[
-                    {
-                        id:'1.1.1',
-                        display: "Сухий корм",
-                    },
-                    {
-                        id:'1.1.2',
-                        display: "Вологий корм",
-                    },
-                    {
-                        id:'1.1.3',
-                        display: "Паштет",
-                    },
+                path: "/dogs/korm-dlya-sobak",
+                children:[
+                    {id:'111', display: "Сухий корм", path:"/dogs/korm-dlya-sobak/111"},
+                    {id:'112',display: "Вологий корм",path:"/dogs/korm-dlya-sobak/112"},
+                    {id:'113',display: "Паштет",path:"/dogs/korm-dlya-sobak/113"},
                 ]
             },
             {
-                id:'1.2',
+                id:'12',
                 display: "Одяг для собак",
                 path: "/odyag-dlya-sobak",
-                subcategory:[
-                    {
-                        id:'1.1.1',
-                        display: "Сухий корм",
-                    },
-                    {
-                        id:'1.1.2',
-                        display: "Вологий корм",
-                    },
-                    {
-                        id:'1.1.3',
-                        display: "Паштет",
-                    },
-                ]
             },
             {
-                id:'1.3',
+                id:'13',
                 display: "Іграшки для собак",
                 path: "/igrashki-dlya-sobak",
             },
             {
-                id:'1.4',
+                id:'14',
                 display: "Ласощі для собак",
                 path: "/lasoshhi-dlya-sobak",
             },
             {
-                id:'1.5',
+                id:'15',
                 display: "Вітаміни для собак",
                 path: "/vitamini-dlya-sobak",
             },
@@ -65,27 +42,27 @@ const nav__links = [
         path: "/cats",
         dropdown: [
             {
-                id:'1.1',
+                id:'21',
                 display: "Корм для котів",
                 path: "/korm-dlya-kotiv",
             },
             {
-                id:'1.2',
+                id:'22',
                 display: "Одяг для котів",
                 path: "/odyag-dlya-kotiv",
             },
             {
-                id:'1.3',
+                id:'23',
                 display: "Іграшки для котів",
                 path: "/igrashki-dlya-kotiv",
             },
             {
-                id:'1.4',
+                id:'24',
                 display: "Ласощі для котів",
                 path: "/lasoshhi-dlya-kotiv",
             },
             {
-                id:'1.5',
+                id:'25',
                 display: "Вітаміни для котів",
                 path: "/vitamini-dlya-kotiv",
             },
@@ -98,45 +75,47 @@ const nav__links = [
         path: "/smallpets",
         dropdown:[
             {
-                id:"3.1",
+                id:"31",
                 display:"Корм для гризунів",
                 path:"/korm-dlya-grizuniv",
             },
             {
-                id:"3.2",
+                id:"32",
                 display:"Клітки для гризунів",
                 path:"/klitki-dlya-grizuniv",
             },
             {
-                id:"3.3",
+                id:"33",
                 display:"Ласощі для гризунів",
                 path:"/lasoshhi-dlya-grizuniv",
             },
             {
-                id:"3.4",
+                id:"34",
                 display:"Вітаміни для гризунів",
                 path:"/vitamini-dlya-grizuniv",
             },
             {
-                id:"3.5",
+                id:"35",
                 display:"Іграшки для гризунів",
                 path:"/igrashki-dlya-grizunv",
             },
-
         ]
 
     },
     {
+        id:"4",
         display: "Птахам",
         path: "/birds",
 
     },
     {
+        id:"5",
         display: "Рибам",
         path: "/fish",
 
     },
     {
+        id:"6",
         display: "Рептиліям",
         path: "/reptiles",
 
@@ -144,3 +123,6 @@ const nav__links = [
 ]
 
 export default nav__links
+
+
+
