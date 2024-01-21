@@ -6,8 +6,8 @@ export const Facebook = ({ color, onClick }) => {
   return (
     <svg
       onClick={onClick}
-      className="cursor-pointer"
       xmlns="http://www.w3.org/2000/svg"
+      className="cursor-pointer"
       width="25"
       height="24"
       viewBox="0 0 25 24"
