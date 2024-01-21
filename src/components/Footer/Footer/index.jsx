@@ -23,10 +23,14 @@ const Footer = () => {
       <div className={`${style.storeInfo.default} ${createClass('storeInfo')}`}>
         <div className={`${createClass('logoLink')}`}>
           <a href="/home">
-            <LogoVertical className={`${createClass('logo')}`} />
+            <LogoVertical className={`${createClass('logo')}`} color={'txtSecondary'} />
           </a>
         </div>
-        <ProductList classColumn={classColumn} classTitle={classTitle} classItem={`${classItem} hover:text-hover`} />
+        <ProductList
+          classColumn={classColumn}
+          classTitle={classTitle}
+          classItem={`${classItem} hover:text-secondary`}
+        />
         <Contacts classColumn={classColumn} classTitle={classTitle} classItem={classItem} classIcons={classIcons} />
         <StoreAddressSchedule classColumn={classColumn} classItem={classItem} />
       </div>

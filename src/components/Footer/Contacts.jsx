@@ -10,13 +10,13 @@ const Contacts = ({ classColumn, classTitle, classItem, classIcons }) => {
       <div className={classItem}>
         <div className={classIcons}>
           <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
-            <Instagram />
+            <Instagram color={'txtSecondary'} />
           </a>
           <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
-            <Facebook />
+            <Facebook color={'txtSecondary'} />
           </a>
           <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer">
-            <Tiktok />
+            <Tiktok color={'txtSecondary'} />
           </a>
         </div>
       </div>
