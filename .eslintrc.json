@@ -35,6 +35,8 @@
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "import/namespace": "off",
-    "no-debugger": "off"
+    "no-debugger": "off",
+    "import/no-unresolved": ["error", { "ignoreCase": true }],
+    "import/no-unresolved": ["error", { "ignore": ["^\\."] }]
   }
 }
