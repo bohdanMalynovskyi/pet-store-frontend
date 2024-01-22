@@ -4,15 +4,15 @@ import navLinks from "../../db/menu";
 
 const Navbar = () => {
     return (
-        <nav className='relative hidden md:block max-w-[1200px] px-5 '>
+        <nav className='  select-none relative hidden md:block max-w-[1200px] px-5 '>
             <ul className='flex items-center justify-center'>
 
                 {navLinks.map((item, index) => {
                     return (
-                        <li key={index} className='group'>
+                        <li key={index} className='group  select-none'>
                             {/* категорія тварин */}
                             <NavLink
-                                className='relative mx-5 text-lg font-ttnorms font-bold block transition hover:text-hover'
+                                className=' select-none relative mx-5 text-lg font-ttnorms font-bold block transition hover:text-hover'
                                 to={item.path}
                             >
                                 {item.display}
