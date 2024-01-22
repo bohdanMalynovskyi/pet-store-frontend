@@ -1,6 +1,6 @@
 ﻿import React, {useState} from 'react';
-import searchIcon from "../../assets/images/search-dark.svg"
-import closeIcon from "../../assets/images/close.svg"
+import search from "../../assets/images/search-dark.svg"
+import close from "../../assets/images/close.svg"
 
 const SearchDesktop = () => {
   const [searchText, setSearchText] = useState('');
@@ -27,7 +27,7 @@ const SearchDesktop = () => {
           onBlur={handleInputBlur}
           className='  cursor-pointer border-none w-full outline-none'
           placeholder='Введіть ваш запит' />
-        <img src={isInputFocused ? closeIcon : searchIcon}
+        <img src={isInputFocused ? close : search}
           alt={isInputFocused ? 'Close' : 'Search'}
           className='search-icon' />
       </form>
