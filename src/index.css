@@ -4,6 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary: #011240; /*active*/
+  --secondary: #3786a5; /*hover*/
+  --third: #317b98; /*press*/
+  --disabled: #b2b2b2;
+  --background: #f2cc85;
+  --accent: #f2cc85;
+  --txtPrimary: #161616;
+  --txtSecondary: #ffffff; /*txtWhite*/
+}
 body {
   font-family: 'TT Norms', sans-serif;
 }
