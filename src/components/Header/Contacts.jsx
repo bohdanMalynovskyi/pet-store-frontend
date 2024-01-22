@@ -8,11 +8,16 @@ const Contacts = () => {
 
     return (
         <div className='hidden md:block items-center bg-[#fff] text-lg group'>
-            <div className=' flex items-center gap-1 hover:text-hover'>
-                <button className='hover:drop-shadow-lg cursor-pointer  text-lg hover:text-hover' onClick={() => setShowContacts((prev) => !prev)}>Контакти</button>
+            <button  onClick={() => setShowContacts((prev) => !prev)} className=' flex items-center gap-1 hover:text-hover'>
+                <span
+                    className='hover:drop-shadow-lg cursor-pointer  text-lg hover:text-hover'
+                   
+                >
+                    Контакти
+                </span>
                 <ChevronDownIcon
-                className={`h-6 w-6 transition-transform lg:block ${showContacts?"rotate-180 " : ""}`}/>
-            </div>
+                    className={`h-6 w-6 transition-transform lg:block ${showContacts ? "rotate-180 " : ""}`} />
+            </button>
             {
                 showContacts && (
                     <div className=' flex flex-col absolute bg-white'>
