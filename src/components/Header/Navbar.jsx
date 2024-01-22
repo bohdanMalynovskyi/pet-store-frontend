@@ -27,7 +27,7 @@ const Navbar = () => {
                                             return (
                                                 <li key={`${item.id}-${subItem.id}`}>
                                                     <NavLink
-                                                        className='block mb-5 transition hover:text-hover'
+                                                        className='block text-lg font-medium mb-5 transition hover:text-hover'
                                                         to={subItem.path}
                                                     >
                                                         {subItem.display}
