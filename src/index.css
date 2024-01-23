@@ -6,10 +6,18 @@
 
 @font-face {
     font-family: "TTNorms";
-    src: url("../src/style/fonts/TTNorms-Regular.otf") format('opentype'),
-        url("../src/style/fonts/TTNorms-Bold.otf") format('opentype');
+    font-weight: 400;
+    src: url("../src/style/typography/TTNorms-Regular.ttf") format('truetype');
 }
 
-/* .arrow {
-    @apply ;
-}; */
+@font-face {
+    font-family: "TTNorms";
+    font-weight: 500;
+    src: url("../src/style/typography/TTNorms-Medium.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: "TTNorms";
+    font-weight: 700;
+    src: url("../src/style/typography/TTNorms-Bold.ttf") format('truetype');
+}

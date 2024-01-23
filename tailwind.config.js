@@ -9,10 +9,11 @@ module.exports =withMT({
       colors: {
         'primary': '#011240',
         'hover':"#3786A5",
-        'zinc':'#B2B2B2'
+        'zinc':'#B2B2B2',
+        'txtPrimary': '#161616',
       },
       fontFamily: {
-        ttnorms: ["TTNorms",'sans-serif'],
+        norms: ["TTNorms",'sans-serif'],
       }
     },
   },
