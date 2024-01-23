@@ -7,7 +7,7 @@ import Scrollup from "../../assets/images/scrollup.svg"
 
 const Layout = () => {
     return (
-        <div className=' font-ttnorms min-h-screen flex flex-col text-primary'>
+        <div className=' font-norms min-h-screen flex flex-col text-primary'>
             <div className=' flex-auto'>
                 <Routes />
                 <ScrollToTop smooth

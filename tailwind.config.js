@@ -12,7 +12,7 @@ module.exports =withMT({
         'zinc':'#B2B2B2'
       },
       fontFamily: {
-        ttnorms: ["TTNorms",'sans-serif'],
+        norms: ["TTNorms",'sans-serif'],
       }
     },
   },
