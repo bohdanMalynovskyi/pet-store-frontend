@@ -1,5 +1,5 @@
 @import url('https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css');
-@import url('./style/typography/style');
+@import url('./style/typography/style.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,4 +16,21 @@
 }
 body {
   font-family: 'TT Norms', sans-serif;
+}
+@font-face {
+  font-family: "TTNorms";
+  font-weight: 400;
+  src: url("../src/style/typography/TTNorms-Regular.ttf") format('truetype');
+}
+
+@font-face {
+  font-family: "TTNorms";
+  font-weight: 500;
+  src: url("../src/style/typography/TTNorms-Medium.ttf") format('truetype');
+}
+
+@font-face {
+  font-family: "TTNorms";
+  font-weight: 700;
+  src: url("../src/style/typography/TTNorms-Bold.ttf") format('truetype');
 }

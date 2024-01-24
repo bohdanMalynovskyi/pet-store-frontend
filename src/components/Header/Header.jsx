@@ -5,17 +5,13 @@ import Navbar from './Navbar';
 import Search from './SearchBtn';
 import Contacts from './Contacts';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { IconButton, MobileNav } from '@material-tailwind/react';
 import { Bars3Icon, XMarkIcon, } from "@heroicons/react/24/outline";
 import Cart from './CartBtn';
 import SearchDesktop from './SearchDesktop';
 import Favorite from './FavoriteBtn';
 import NavMobile from './NavMobile';
-
-
-
-
+import { Heart } from '../../style/icons/Heart';
 
 const Header = ({ isHomePage }) => {
   const [isMobile, setIsMobile] = React.useState(false);
@@ -44,7 +40,7 @@ const Header = ({ isHomePage }) => {
   }, []);
 
   return (
-    <header className={` w-full relative ${navbarClasses}`}>
+    <header className={` w-full relative font-norms ${navbarClasses}` }>
       <div className=' mx-auto flex flex-col max-w-[1200px] px-5 py-[17px] md:py-[40px]  '>
         <div className=' flex items-center justify-between md:mb-8'>
           <div className='menu__left flex items-center'>
@@ -84,6 +80,7 @@ const Header = ({ isHomePage }) => {
             <Search />
             <Contacts /> 
             <Favorite/>
+            <Heart/>
             <Cart />
           </div>
         </div>
@@ -100,8 +97,5 @@ const Header = ({ isHomePage }) => {
   )
 }
 
-Header.propTypes = {
-  isHomePage: PropTypes.bool.isRequired, 
-};
 
 export default Header
