@@ -1,23 +1,19 @@
 @import url('https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css');
+@import url('./style/typography/style');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-@font-face {
-    font-family: "TTNorms";
-    font-weight: 400;
-    src: url("../src/style/typography/TTNorms-Regular.ttf") format('truetype');
+:root {
+  --primary: #011240; /*active*/
+  --secondary: #3786a5; /*hover*/
+  --third: #317b98; /*press*/
+  --disabled: #b2b2b2;
+  --background: #f2cc85;
+  --accent: #f2cc85;
+  --txtPrimary: #161616;
+  --txtSecondary: #ffffff; /*txtWhite*/
 }
-
-@font-face {
-    font-family: "TTNorms";
-    font-weight: 500;
-    src: url("../src/style/typography/TTNorms-Medium.ttf") format('truetype');
-}
-
-@font-face {
-    font-family: "TTNorms";
-    font-weight: 700;
-    src: url("../src/style/typography/TTNorms-Bold.ttf") format('truetype');
+body {
+  font-family: 'TT Norms', sans-serif;
 }

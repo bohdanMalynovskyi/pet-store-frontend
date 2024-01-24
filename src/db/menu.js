@@ -36,8 +36,7 @@ const nav__links = [
             },
         ]
     },
-    {   
-        id: "2",
+    {   id: "2",
         display: "Котам",
         path: "/cats",
         dropdown: [
@@ -70,7 +69,6 @@ const nav__links = [
 
     },
     {
-        id:"3",
         display: "Гризунам",
         path: "/smallpets",
         dropdown:[

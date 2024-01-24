@@ -11,6 +11,7 @@ module.exports =withMT({
         'hover':"#3786A5",
         'zinc':'#B2B2B2',
         'txtPrimary': '#161616',
+        'txtSecondary': '#FFFFFF',
       },
       fontFamily: {
         norms: ["TTNorms",'sans-serif'],

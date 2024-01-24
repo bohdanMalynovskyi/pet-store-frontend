@@ -4,7 +4,6 @@ import store from './redux';
 import theme from './style/theme';
 import Layout from './components/Layout/Layout';
 
-
 function App() {
   return (
     <Provider store={store}>
