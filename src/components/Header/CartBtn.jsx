@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 
 const Cart = () => {
   const [isMobile, setIsMobile] = React.useState(false);
@@ -19,8 +19,6 @@ const Cart = () => {
   return (
     <div className={` hover:text-hover ${navbarClasses}`}>
       <svg
-        width="32"
-        height="32"
         viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg">
