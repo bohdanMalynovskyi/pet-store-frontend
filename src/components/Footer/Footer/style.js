@@ -1,6 +1,6 @@
 const style = {
   wrapper: {
-    default: 'flex w-full flex-col items-center overflow-hidden bg-primary text-txtWhite pb-[50px]',
+    default: 'flex w-full flex-col items-center overflow-hidden bg-primary text-txtSecondary pb-[50px]',
     desktop: 'pt-[50px] gap-[30px]',
     mobile: 'p-[20px] pb-[50px] justify-center items-center flex-col gap-10',
   },
@@ -14,8 +14,8 @@ const style = {
     mobile: 'px-[20px]',
   },
   logo: {
-    desktop: 'cursor-pointer w-[85px] h-[50px]',
-    mobile: 'cursor-pointer w-[64px] h-[38px]',
+    desktop: 'cursor-pointer w-[125px] h-[52px]',
+    mobile: 'cursor-pointer w-[94px] h-[38px]',
   },
   column: {
     default: 'flex flex-col gap-[12px]',
