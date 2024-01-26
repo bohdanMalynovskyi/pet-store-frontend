@@ -26,4 +26,3 @@ dist-ssr
 # Backend files
 /backend/.venv
 /backend/.idea
-/backend/.env
