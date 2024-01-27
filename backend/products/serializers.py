@@ -14,11 +14,12 @@ class ChangeablePriceSerializer(serializers.ModelSerializer):
     sale_price = serializers.SerializerMethodField()
 
     def get_sale_price(self, obj):
-        return obj.price - ((obj.price / 100) * obj.sale)
+        sale_price = obj.price - ((obj.price / 100) * obj.sale)
+        return '{:.2f}'.format(sale_price)
 
     class Meta:
         model = ChangeablePrice
-        fields = ['id', 'price', 'sale_price', 'sale', 'length', 'width', 'height', 'weight', 'size', 'volume']
+        fields = ['id', 'price', 'sale', 'sale_price', 'length', 'width', 'height', 'weight', 'size', 'volume']
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):
@@ -42,7 +43,8 @@ class ProductSerializer(serializers.ModelSerializer):
     sale_price = serializers.SerializerMethodField()
 
     def get_sale_price(self, obj):
-        return obj.price - ((obj.price / 100) * obj.sale)
+        sale_price = obj.price - ((obj.price / 100) * obj.sale)
+        return '{:.2f}'.format(sale_price)
 
     class Meta:
         model = Product
