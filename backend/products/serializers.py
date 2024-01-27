@@ -30,7 +30,7 @@ class ProductImagesSerializer(serializers.ModelSerializer):
 class TagsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tags
-        fields = ['title', 'text']
+        fields = ['id', 'title', 'text']
 
 
 class ProductSerializer(serializers.ModelSerializer):
