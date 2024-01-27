@@ -77,7 +77,7 @@ class ChangeablePrice(models.Model):
 
     def save(self, *args, **kwargs):
         if self.product and self.price is not None:
-            self.product.price = None  # setting none, due to requirements
+            self.product.price = 0  # setting none, due to requirements
             self.product.price = 0  # setting 0, due to requirements
             self.product.save()
 
