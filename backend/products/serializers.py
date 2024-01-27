@@ -43,11 +43,12 @@ class ProductSerializer(serializers.ModelSerializer):
     sale_price = serializers.SerializerMethodField()
 
     def get_sale_price(self, obj):
-        sale_price = obj.price - ((obj.price / 100) * obj.sale)
-        return '{:.2f}'.format(sale_price)
+        if obj.price:
+            sale_price = obj.price - ((obj.price / 100) * obj.sale)
+            return '{:.2f}'.format(sale_price)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'subcategory', 'price', 'sale', 'sale_price', 'changeable_prices', 'is_new', 'images', 'description',
+        fields = ['id', 'name', 'subcategory', 'price', 'sale', 'sale_price', 'changeable_prices', 'is_new', 'images',
+                  'description',
                   'tags', 'brand']
-        # TODO CALCULATE PRICE WITH SALES
