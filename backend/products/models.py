@@ -64,16 +64,24 @@ class ChangeablePrice(models.Model):
         price = f"Price: {self.price}"
         additional_info = ""
 
-        if self.volume is not None: # must be exactly this condition(if changed in would be 0 but not None)
+        if self.volume is not None:  # must be exactly this condition due to requirements
             additional_info = f"Volume: {self.volume}"
         elif self.size:
             additional_info = f"Size: {self.size}"
-        elif self.weight is not None: # must be exactly this condition
+        elif self.weight is not None:  # must be exactly this condition
             additional_info = f"Weight: {self.weight}"
         elif all((self.length, self.width, self.height)):
             additional_info = f"{self.length} x {self.width} x {self.height}"
 
         return f"{product_name} - {additional_info} - {price}" if additional_info else f"{product_name} - NO DATA - {price}"
+
+    def save(self, *args, **kwargs):
+        if self.product and self.price is not None:
+            self.product.price = None  # setting none, due to requirements
+            self.product.price = 0  # setting 0, due to requirements
+            self.product.save()
+
+        super().save(*args, **kwargs)
 
 
 class ProductImages(models.Model):
@@ -98,3 +106,6 @@ class Tags(models.Model):
     class Meta:
         verbose_name_plural = "tag"
         verbose_name = "tags"
+
+    def __str__(self):
+        return f"{self.title} - {self.product.name}"
