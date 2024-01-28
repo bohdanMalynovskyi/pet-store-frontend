@@ -1,0 +1,1 @@
+export { selectResponsiveStyle } from './selectResponsiveStyle';

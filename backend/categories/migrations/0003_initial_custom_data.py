@@ -7,9 +7,9 @@ def insert_initial_data(apps, schema_editor):
     SubCategory = apps.get_model('categories', 'SubCategory')
 
     # Вставка данных в AnimalCategory
-    AnimalCategory.objects.create(name='Dog')
-    AnimalCategory.objects.create(name='Cat')
-    AnimalCategory.objects.create(name='Parrot')
+    AnimalCategory.objects.create(name='Dogs')
+    AnimalCategory.objects.create(name='Cats')
+    AnimalCategory.objects.create(name='Parrots')
 
     # Вставка данных в ProductCategory
     product_category1 = ProductCategory.objects.create(name='Food', animal_category_id=1)
