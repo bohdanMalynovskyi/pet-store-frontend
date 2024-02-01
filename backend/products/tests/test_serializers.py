@@ -1,8 +1,8 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from categories.tests.test_serializers import SubCategoryTests
-from products.models import Brand, Product, ChangeablePrice, Tags, ProductImages
-from products.serializers import BrandSerializer, ProductSerializer, ChangeablePriceSerializer, TagsSerializer, \
+from products.models import Brand, Product, ChangeablePrice, AdditionalFields, ProductImages
+from products.serializers import BrandSerializer, ProductSerializer, ChangeablePriceSerializer, AdditionalFieldsSerializer, \
     ProductImagesSerializer
 
 
@@ -26,7 +26,7 @@ class ProductTests(BrandTests):
 
     def setUp(self):
         super().setUp()
-        self.product = Product.objects.create(name='ProPlan', subcategory=self.sub_category, sale=50, price=100,
+        self.product = Product.objects.create(name='ProPlan', subcategory=self.sub_category, discount=50, price=100,
                                               description='cool', brand=self.brand)
 
     def test_ok(self):
@@ -38,13 +38,13 @@ class ProductTests(BrandTests):
                 'name': 'Wet food'
             },
             'price': '100.00',
-            'sale': 50,
-            'sale_price': '50.00',
+            'discount': 50,
+            'discount_price': '50.00',
             'changeable_prices': [],
             'is_new': True,
             'images': [],
             'description': 'cool',
-            'tags': [],
+            'additional_fields': [],
             'brand': {
                 'id': self.brand.id,
                 'name': 'Purina',
@@ -58,30 +58,31 @@ class ProductTests(BrandTests):
 class ChangeablePriceTests(ProductTests):
     def setUp(self):
         super().setUp()
-        self.changeable_price = ChangeablePrice.objects.create(price=100, sale=50, product=self.product, order=1,
+        self.changeable_price = ChangeablePrice.objects.create(price=100, discount=50, product=self.product, order=1,
                                                                size='S')
 
     def test_ok(self):
         expected_data = {
             'id': self.changeable_price.id,
             'price': '100.00',
-            'sale': 50,
-            'sale_price': '50.00',
+            'discount': 50,
+            'discount_price': '50.00',
             'length': None,
             'width': None,
             'height': None,
             'weight': None,
             'size': 'S',
-            'volume': None
+            'volume': None,
+            'quantity_in_pack': None
         }
         data = ChangeablePriceSerializer(self.changeable_price).data
         self.assertEqual(expected_data, data)
 
 
-class TagsSerializerTests(ProductTests):
+class AdditionalFieldsSerializerTests(ProductTests):
     def setUp(self):
         super().setUp()
-        self.tag = Tags.objects.create(title='title', product=self.product, text='text')
+        self.tag = AdditionalFields.objects.create(title='title', product=self.product, text='text')
 
     def test_ok(self):
         expected_data = {
@@ -89,7 +90,7 @@ class TagsSerializerTests(ProductTests):
             'title': 'title',
             'text': 'text',
         }
-        data = TagsSerializer(self.tag).data
+        data = AdditionalFieldsSerializer(self.tag).data
         self.assertEqual(expected_data, data)
 
 

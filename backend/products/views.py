@@ -7,7 +7,7 @@ from products.serializers import ProductSerializer, BrandSerializer, ChangeableP
 
 
 class ProductViewSet(ReadOnlyModelViewSet):
-    queryset = Product.objects.all().prefetch_related('changeable_prices', 'additional_fields', 'images').select_related('brand',
+    queryset = Product.objects.all().order_by('id').prefetch_related('changeable_prices', 'additional_fields', 'images').select_related('brand',
                                                                                                             'subcategory')
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
@@ -19,7 +19,7 @@ class ChangeablePriceViewSet(ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 
-class TagsViewSet(ReadOnlyModelViewSet):
+class AdditionalDataViewSet(ReadOnlyModelViewSet):
     queryset = AdditionalFields.objects.all()
     serializer_class = AdditionalFieldsSerializer
     permission_classes = [permissions.AllowAny]
