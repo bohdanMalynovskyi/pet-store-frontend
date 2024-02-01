@@ -7,7 +7,8 @@ def create_initial_data(apps, schema_editor):
     Brand = apps.get_model('products', 'Brand')
     ChangeablePrice = apps.get_model('products', 'ChangeablePrice')
     ProductImages = apps.get_model('products', 'ProductImages')
-    Tags = apps.get_model('products', 'Tags')
+    AdditionalFields = apps.get_model('products', 'AdditionalFields')
+    SubCategory = apps.get_model('categories', 'SubCategory')
 
     # Create three instances of Brand
     Brand.objects.bulk_create([
@@ -18,16 +19,18 @@ def create_initial_data(apps, schema_editor):
 
     # Create three instances of Product
     Product.objects.bulk_create([
-        Product(name='Product1', price=10.00, sale=20, brand=Brand.objects.get(name='Brand2')),
+        Product(name='Product1', price=10.00, discount=20, brand=Brand.objects.get(name='Brand2'),
+                subcategory=SubCategory.objects.all().first()),
         Product(name='Product2', brand=Brand.objects.get(name='Brand3')),
-        Product(name='Product3', price=30.00, brand=Brand.objects.get(name='Brand1')),
+        Product(name='Product3', price=30.00, brand=Brand.objects.get(name='Brand1'),
+                subcategory=SubCategory.objects.all().last()),
     ])
 
     # Create three instances of ChangeablePrice
     ChangeablePrice.objects.bulk_create([
-        ChangeablePrice(product=Product.objects.get(name='Product2'), price=5.00, sale=2, order=1, size='S'),
-        ChangeablePrice(product=Product.objects.get(name='Product2'), price=15.00, sale=2, order=2, size='M'),
-        ChangeablePrice(product=Product.objects.get(name='Product2'), price=25.00, sale=2, order=3, size='L'),
+        ChangeablePrice(product=Product.objects.get(name='Product2'), price=5.00, discount=2, order=1, size='S'),
+        ChangeablePrice(product=Product.objects.get(name='Product2'), price=15.00, discount=2, order=2, size='M'),
+        ChangeablePrice(product=Product.objects.get(name='Product2'), price=25.00, discount=2, order=3, size='L'),
     ])
 
     # Create three instances of ProductImages
@@ -44,18 +47,18 @@ def create_initial_data(apps, schema_editor):
                       order=1),
     ])
 
-    # Create three instances of Tags
-    Tags.objects.bulk_create([
-        Tags(product=Product.objects.get(name='Product3'), title='Tag1', text='Tag text 1'),
-        Tags(product=Product.objects.get(name='Product3'), title='Tag2', text='Tag text 2'),
-        Tags(product=Product.objects.get(name='Product1'), title='Tag3', text='Tag text 3'),
-        Tags(product=Product.objects.get(name='Product2'), title='Tag3', text='Tag text 3'),
+    # Create three instances of Additional Fields
+    AdditionalFields.objects.bulk_create([
+        AdditionalFields(product=Product.objects.get(name='Product3'), title='Tag1', text='Tag text 1'),
+        AdditionalFields(product=Product.objects.get(name='Product3'), title='Tag2', text='Tag text 2'),
+        AdditionalFields(product=Product.objects.get(name='Product1'), title='Tag3', text='Tag text 3'),
+        AdditionalFields(product=Product.objects.get(name='Product2'), title='Tag3', text='Tag text 3'),
     ])
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('products', '0001_initial'),
+        ('products', '0002_rename_sale_changeableprice_discount_and_more'),
     ]
 
     operations = [

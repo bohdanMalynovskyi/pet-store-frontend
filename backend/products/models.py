@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.db.models import PositiveSmallIntegerField, PositiveIntegerField
 
 from categories.models import SubCategory
 
@@ -20,7 +21,7 @@ class Product(models.Model):
     name = models.CharField(max_length=256, null=False, blank=False, unique=True)
     subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    sale = models.PositiveSmallIntegerField(default=0, validators=[
+    discount = models.PositiveSmallIntegerField(default=0, validators=[
         MinValueValidator(0, message='Sale cannot be negative.'),
         MaxValueValidator(100, message='Sale cannot be greater than 100.')
     ])
@@ -47,8 +48,9 @@ class ChangeablePrice(models.Model):
     weight = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     size = models.CharField(max_length=50, null=True, blank=True)
     volume = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    quantity_in_pack = PositiveIntegerField(null=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, null=False, blank=False)
-    sale = models.PositiveSmallIntegerField(default=0, validators=[
+    discount = models.PositiveSmallIntegerField(default=0, validators=[
         MinValueValidator(0, message='Sale cannot be negative.'),
         MaxValueValidator(100, message='Sale cannot be greater than 100.')
     ])
@@ -98,14 +100,14 @@ class ProductImages(models.Model):
         return f"{self.product.name} - Photo {self.order}"
 
 
-class Tags(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='tags')
+class AdditionalFields(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='additional_fields')
     title = models.CharField(max_length=256, null=False, blank=False)
     text = models.TextField(null=False, blank=False)
 
     class Meta:
-        verbose_name_plural = "tag"
-        verbose_name = "tags"
+        verbose_name_plural = "additional fields"
+        verbose_name = "additional field"
 
     def __str__(self):
         return f"{self.title} - {self.product.name}"
