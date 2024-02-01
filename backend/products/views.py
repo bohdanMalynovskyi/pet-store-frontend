@@ -1,12 +1,13 @@
 from rest_framework import permissions
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from products.models import Product, Brand, ChangeablePrice, Tags
-from products.serializers import ProductSerializer, BrandSerializer, ChangeablePriceSerializer, TagsSerializer
+from products.models import Product, Brand, ChangeablePrice, AdditionalFields
+from products.serializers import ProductSerializer, BrandSerializer, ChangeablePriceSerializer, \
+    AdditionalFieldsSerializer
 
 
 class ProductViewSet(ReadOnlyModelViewSet):
-    queryset = Product.objects.all().prefetch_related('changeable_prices', 'tags', 'images').select_related('brand',
+    queryset = Product.objects.all().prefetch_related('changeable_prices', 'additional_fields', 'images').select_related('brand',
                                                                                                             'subcategory')
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
@@ -19,7 +20,6 @@ class ChangeablePriceViewSet(ReadOnlyModelViewSet):
 
 
 class TagsViewSet(ReadOnlyModelViewSet):
-    queryset = Tags.objects.all()
-    serializer_class = TagsSerializer
+    queryset = AdditionalFields.objects.all()
+    serializer_class = AdditionalFieldsSerializer
     permission_classes = [permissions.AllowAny]
-

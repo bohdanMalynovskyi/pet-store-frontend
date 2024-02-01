@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from categories.serializers import SubCategorySerializer
-from products.models import Brand, ChangeablePrice, ProductImages, Tags, Product
+from products.models import Brand, ChangeablePrice, ProductImages, AdditionalFields, Product
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -11,15 +11,16 @@ class BrandSerializer(serializers.ModelSerializer):
 
 
 class ChangeablePriceSerializer(serializers.ModelSerializer):
-    sale_price = serializers.SerializerMethodField()
+    discount_price = serializers.SerializerMethodField()
 
-    def get_sale_price(self, obj):
-        sale_price = obj.price - ((obj.price / 100) * obj.sale)
-        return '{:.2f}'.format(sale_price)
+    def get_discount_price(self, obj):
+        discount_price = obj.price - ((obj.price / 100) * obj.discount)
+        return '{:.2f}'.format(discount_price)
 
     class Meta:
         model = ChangeablePrice
-        fields = ['id', 'price', 'sale', 'sale_price', 'length', 'width', 'height', 'weight', 'size', 'volume']
+        fields = ['id', 'price', 'discount', 'discount_price', 'length', 'width', 'height', 'weight', 'size', 'volume',
+                  'quantity_in_pack']
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):
@@ -28,9 +29,9 @@ class ProductImagesSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
 
 
-class TagsSerializer(serializers.ModelSerializer):
+class AdditionalFieldsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Tags
+        model = AdditionalFields
         fields = ['id', 'title', 'text']
 
 
@@ -38,17 +39,18 @@ class ProductSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(many=False, read_only=True)
     changeable_prices = ChangeablePriceSerializer(many=True, read_only=True)
     images = ProductImagesSerializer(many=True, read_only=True)
-    tags = TagsSerializer(many=True, read_only=True)
+    additional_fields = AdditionalFieldsSerializer(many=True, read_only=True)
     subcategory = SubCategorySerializer(many=False, read_only=True)
-    sale_price = serializers.SerializerMethodField()
+    discount_price = serializers.SerializerMethodField()
 
-    def get_sale_price(self, obj):
+    def get_discount_price(self, obj):
         if obj.price:
-            sale_price = obj.price - ((obj.price / 100) * obj.sale)
-            return '{:.2f}'.format(sale_price)
+            discount_price = obj.price - ((obj.price / 100) * obj.discount)
+            return '{:.2f}'.format(discount_price)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'subcategory', 'price', 'sale', 'sale_price', 'changeable_prices', 'is_new', 'images',
+        fields = ['id', 'name', 'subcategory', 'price', 'discount', 'discount_price', 'changeable_prices', 'is_new',
+                  'images',
                   'description',
-                  'tags', 'brand']
+                  'additional_fields', 'brand']
