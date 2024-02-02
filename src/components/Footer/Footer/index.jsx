@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import React, { useEffect } from 'react';
 import style from './style';
 import useWindowSize from '../../../hooks/useWindowSize';
 import { selectResponsiveStyle } from '../../../utils';
@@ -6,10 +6,16 @@ import ProductList from '../ProductList';
 import Contacts from '../Contacts';
 import StoreAddressSchedule from '../StoreAddressSchedule';
 import { LogoVertical, Mastercard, Visa } from '../../../style/icons';
+import { fetchAnimalCategories } from '../../../redux/features/animalCategories/actions';
+import { useDispatch } from 'react-redux';
 
 const Footer = () => {
   const size = useWindowSize();
   const isMobile = size.width < 720;
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchAnimalCategories());
+  }, [dispatch]);
 
   const createClass = (className) => selectResponsiveStyle(className, style, isMobile);
 
