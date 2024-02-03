@@ -1,3 +1,4 @@
+import { transformDataAnimalCategories } from '../../../utils/transformData';
 import actions from './actions';
 
 const INITIAL_STATE = {
@@ -14,7 +15,8 @@ const animalCategoriesReducer = (state = INITIAL_STATE, action) => {
       return { ...state, loading: true };
     }
     case actions.FETCH_ANIMAL_CATEGORIES_SUCCESS: {
-      return { ...state, loading: false, animalCategories: action.payload.data };
+      const transformedData = transformDataAnimalCategories(action.payload.data);
+      return { ...state, loading: false, animalCategories: transformedData };
     }
     case actions.FETCH_ANIMAL_CATEGORY_ID_SUCCESS: {
       return { ...state, loading: false, animalCategory: action.payload.data };
