@@ -3,7 +3,8 @@ from rest_framework import status
 
 from categories.tests.test_api import SubCategoryTestCase
 from products.models import Brand, Product, ChangeablePrice, AdditionalFields
-from products.serializers import ProductSerializer, ChangeablePriceSerializer, AdditionalFieldsSerializer
+from products.serializers import ProductSerializer, ChangeablePriceSerializer, AdditionalFieldsSerializer, \
+    ProductDetailSerializer
 from django.test import override_settings
 
 
@@ -38,7 +39,7 @@ class ProductTestCase(SubCategoryTestCase):
     def test_get_detail(self):
         url = reverse('products-detail', args=(self.product.id,))
         response = self.client.get(url)
-        serializer_data = ProductSerializer(self.product, ).data
+        serializer_data = ProductDetailSerializer(self.product, ).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data)
 
