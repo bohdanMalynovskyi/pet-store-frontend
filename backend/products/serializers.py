@@ -1,4 +1,5 @@
-from rest_framework import serializers
+from django.db.models import Sum
+from rest_framework import serializers, status
 
 from categories.serializers import SubCategorySerializer
 from products.models import Brand, ChangeablePrice, ProductImages, AdditionalFields, Product
@@ -36,11 +37,8 @@ class AdditionalFieldsSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    brand = BrandSerializer(many=False, read_only=True)
     changeable_prices = ChangeablePriceSerializer(many=True, read_only=True)
     images = ProductImagesSerializer(many=True, read_only=True)
-    additional_fields = AdditionalFieldsSerializer(many=True, read_only=True)
-    subcategory = SubCategorySerializer(many=False, read_only=True)
     discount_price = serializers.SerializerMethodField()
 
     def get_discount_price(self, obj):
@@ -50,7 +48,23 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
+        fields = ['id', 'name', 'price', 'discount', 'discount_price', 'changeable_prices', 'images', 'description']
+
+
+class ProductDetailSerializer(ProductSerializer):
+    subcategory = SubCategorySerializer(many=False, read_only=True)
+    brand = BrandSerializer(many=False, read_only=True)
+    additional_fields = AdditionalFieldsSerializer(many=True, read_only=True)
+    recommended_products = serializers.SerializerMethodField()
+
+    def get_recommended_products(self, obj):
+        recommended_products = Product.objects.filter(subcategory=obj.subcategory).exclude(id=obj.id)[:10]
+        serializer_object = ProductSerializer(recommended_products, many=True)
+        return serializer_object.data
+
+    class Meta:
+        model = Product
         fields = ['id', 'name', 'subcategory', 'price', 'discount', 'discount_price', 'changeable_prices', 'is_new',
                   'images',
                   'description',
-                  'additional_fields', 'brand']
+                  'additional_fields', 'brand', 'recommended_products']
