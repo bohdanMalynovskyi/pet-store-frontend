@@ -3,14 +3,18 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from products.models import Product, Brand, ChangeablePrice, AdditionalFields
 from products.serializers import ProductSerializer, BrandSerializer, ChangeablePriceSerializer, \
-    AdditionalFieldsSerializer
+    AdditionalFieldsSerializer, ProductDetailSerializer
 
 
 class ProductViewSet(ReadOnlyModelViewSet):
     queryset = Product.objects.all().order_by('id').prefetch_related('changeable_prices', 'additional_fields', 'images').select_related('brand',
                                                                                                             'subcategory')
-    serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return ProductDetailSerializer
+        return ProductSerializer
 
 
 class ChangeablePriceViewSet(ReadOnlyModelViewSet):
