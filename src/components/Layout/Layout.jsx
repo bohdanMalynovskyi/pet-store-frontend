@@ -2,7 +2,7 @@
 import Routes from '../../routes/Routers';
 import { useLocation } from 'react-router-dom';
 import Header from '../Header/Header';
-import Footer from '../Footer/Footer';
+import Footer from '../Footer';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAnimalCategories } from '../../redux/features/animalCategories/actions';
 import { selectAnimalCategories } from '../../redux/features/animalCategories/selectors';
@@ -21,6 +21,7 @@ const Layout = () => {
   if (loadingAnimalCategories) {
     return <div className="min-h-screen flex flex-col text-primary">Loading...</div>;
   }
+
   return (
     <div className="font-norms min-h-screen flex flex-col text-primary">
       <Header isHomePage={isHomePage} />

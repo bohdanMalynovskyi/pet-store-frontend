@@ -1,23 +1,23 @@
 ﻿import React from 'react';
-import logoBlack from "../../assets/images/logo.svg";
-import logoWhite from "../../assets/images/logo-white.svg"
+import logoBlack from '../../assets/images/logo.svg';
+import logoWhite from '../../assets/images/logo-white.svg';
 import Navbar from './Navbar';
 import Search from './SearchBtn';
 import Contacts from './Contacts';
 import { Link } from 'react-router-dom';
 import { IconButton, MobileNav } from '@material-tailwind/react';
-import { Bars3Icon, XMarkIcon, } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Cart from './CartBtn';
 import SearchDesktop from './SearchDesktop';
 import Favorite from './FavoriteBtn';
-import NavMobile from './NavMobile';
+
 import { Heart } from '../../style/icons/Heart';
+import NavMobile from './NavMobile/NavMobile';
 
 const Header = ({ isHomePage }) => {
   const [isMobile, setIsMobile] = React.useState(false);
   const [openNav, setOpenNav] = React.useState(false);
   React.useEffect(() => {
-
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 720);
     };
@@ -33,26 +33,17 @@ const Header = ({ isHomePage }) => {
   const logoSrc = isMobile ? logoWhite : logoBlack;
 
   React.useEffect(() => {
-    window.addEventListener(
-      "resize",
-      () => window.innerWidth >= 960 && setOpenNav(false),
-    );
+    window.addEventListener('resize', () => window.innerWidth >= 960 && setOpenNav(false));
   }, []);
 
   return (
-    <header className={` w-full relative font-norms ${navbarClasses}` }>
-      <div className=' mx-auto flex flex-col max-w-[1200px] px-5 py-[17px] md:py-[40px]  '>
-        <div className=' flex items-center justify-between md:mb-8'>
-          <div className='menu__left flex items-center'>
-
+    <header className={` w-full relative font-norms ${navbarClasses}`}>
+      <div className=" mx-auto flex flex-col max-w-[1200px] px-5 py-[17px] md:py-[40px]  ">
+        <div className=" flex items-center justify-between md:mb-8">
+          <div className="menu__left flex items-center">
             {/*  кнопка моб.меню */}
-            <div className=' burger mr-5'>
-              <IconButton
-                variant="text"
-                color="white"
-                className="md:hidden"
-                onClick={() => setOpenNav(!openNav)}
-              >
+            <div className=" burger mr-5">
+              <IconButton variant="text" color="white" className="md:hidden" onClick={() => setOpenNav(!openNav)}>
                 {openNav ? (
                   <XMarkIcon className="h-6 w-6" strokeWidth={2} />
                 ) : (
@@ -61,26 +52,25 @@ const Header = ({ isHomePage }) => {
               </IconButton>
             </div>
 
-                  {/* logo */}
-                  {isHomePage ? (
-                  <img src={logoSrc} alt="logo" />
-                ) : (
-                  <Link to="/">
-                    <img src={logoSrc} alt="logo" />
-                  </Link>
-                )}
-            
+            {/* logo */}
+            {isHomePage ? (
+              <img src={logoSrc} alt="logo" />
+            ) : (
+              <Link to="/">
+                <img src={logoSrc} alt="logo" />
+              </Link>
+            )}
           </div>
 
-           {/* пошук на десктоп-версії */}
+          {/* пошук на десктоп-версії */}
           <SearchDesktop />
 
-           {/*  пошук мобверсія/ контакти / улюблене / кошик */}
-          <div className='menu__right flex items-center gap-5 relative'>
+          {/*  пошук мобверсія/ контакти / улюблене / кошик */}
+          <div className="menu__right flex items-center gap-5 relative">
             <Search />
-            <Contacts /> 
-            <Favorite/>
-            <Heart/>
+            <Contacts />
+            <Favorite />
+            <Heart />
             <Cart />
           </div>
         </div>
@@ -90,12 +80,10 @@ const Header = ({ isHomePage }) => {
       </div>
       {/* меню на моб */}
       <MobileNav open={openNav}>
-      <NavMobile/>
+        <NavMobile />
       </MobileNav>
-
     </header>
-  )
-}
+  );
+};
 
-
-export default Header
+export default Header;

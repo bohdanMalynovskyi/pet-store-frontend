@@ -1,0 +1,218 @@
+.wrapper {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  background-color: var(--primary);
+  color: var(--txtSecondary);
+  padding-bottom: 50px;
+  padding-top: 50px;
+  gap: 30px;
+}
+
+.storeInfo {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.logoLink {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.logo {
+  cursor: pointer;
+  width: 125px;
+  height: 52px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 5px;
+}
+
+.column_payments {
+  align-items: center;
+}
+
+.title {
+  font-style: normal;
+  font-weight: bold;
+  line-height: normal;
+  font-size: 1.125rem;
+}
+
+.item {
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+}
+
+.icons {
+  display: flex;
+  gap: 20px;
+}
+
+.copyright {
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+}
+
+@media (max-width: 719px) {
+  .wrapper {
+    padding: 20px;
+    justify-content: center;
+  }
+
+  .storeInfo {
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .logo {
+    width: 94px;
+    height: 38px;
+  }
+
+  .column {
+    align-items: center;
+  }
+
+  .title {
+    font-size: 1rem;
+    text-align: center;
+  }
+}
+
+/* .wrapper {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    background-color: var(--primary);
+    color: var(--txtSecondary);
+    padding-bottom: 50px;
+  }
+  
+  .storeInfo {
+    display: flex;
+    width: 100%;
+  }
+  
+  .logoLink {}
+  
+  .logo {}
+  
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .title {
+    font-style: normal;
+    font-weight: bold;
+    line-height: normal;
+  }
+  
+  .item {
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: normal;
+    line-height: normal;
+  }
+  
+  .icons {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .copyright {
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: normal;
+    line-height: normal;
+  }
+  
+
+  @media (min-width: 720px) {
+    .wrapper {
+      padding-top: 50px;
+      gap: 30px;
+    }
+  
+    .storeInfo {
+      justify-content: space-around;
+    }
+  
+    .logoLink {
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+  
+    .logo {
+      cursor: pointer;
+      width: 125px;
+      height: 52px;
+    }
+  
+    .column {
+      align-items: start;
+      margin: 5px;
+    }
+  
+    .title {
+      font-size: 1.125rem;
+    }
+  }
+  
+
+  @media (max-width: 719px) {
+    .wrapper {
+      padding: 20px;
+      padding-bottom: 50px;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .storeInfo {
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .logoLink {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  
+    .logo {
+      cursor: pointer;
+      width: 94px;
+      height: 38px;
+    }
+  
+    .column {
+      align-items: center;
+    }
+  
+    .title {
+      font-size: 1rem;
+      text-align: center;
+    }
+  }
+   */
