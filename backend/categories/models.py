@@ -2,6 +2,7 @@ from django.db import models
 
 
 class AnimalCategory(models.Model):
+    key = models.CharField(max_length=100, unique=True, null=False, blank=False, default='')
     name = models.CharField(max_length=100, unique=True, null=False, blank=False)
 
     class Meta:
@@ -13,6 +14,7 @@ class AnimalCategory(models.Model):
 
 
 class ProductCategory(models.Model):
+    key = models.CharField(max_length=100, null=False, blank=False, default='')
     name = models.CharField(max_length=100, null=False, blank=False)
     animal_category = models.ForeignKey(AnimalCategory, on_delete=models.CASCADE, null=False, blank=False,
                                         related_name='product_categories')
@@ -26,6 +28,7 @@ class ProductCategory(models.Model):
 
 
 class SubCategory(models.Model):
+    key = models.CharField(max_length=100, null=False, blank=False, default='')
     name = models.CharField(max_length=100, null=False, blank=False)
     product_category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, null=False, blank=False,
                                          related_name='subcategories')
