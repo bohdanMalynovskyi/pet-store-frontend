@@ -59,6 +59,7 @@ class ProductDetailTests(ProductsTests):
             'name': 'ProPlan',
             'subcategory': {
                 'id': self.sub_category.id,
+                'key': '',
                 'name': 'Wet food'
             },
             'price': '100.00',

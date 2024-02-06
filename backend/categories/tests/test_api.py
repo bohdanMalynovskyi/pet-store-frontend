@@ -9,8 +9,8 @@ from rest_framework.test import APITestCase
 
 class AnimalCategoryTestCase(APITestCase):
     def setUp(self):
-        self.animal_category1 = AnimalCategory.objects.create(name='Dog')
-        self.animal_category2 = AnimalCategory.objects.create(name='Cat')
+        self.animal_category1 = AnimalCategory.objects.create(name='Dog', key='dogss')
+        self.animal_category2 = AnimalCategory.objects.create(name='Cat', key='catss')
 
     def test_get_list(self):
         url = reverse('animalcategory-list')
