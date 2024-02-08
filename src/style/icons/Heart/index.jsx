@@ -1,7 +1,7 @@
 import { HeartDesktop } from './HeartDesktop';
 import { HeartMobile } from './HeartMobile';
 
-export const Heart = ({ size, type, itemСount, onClick }) => {
+export const HeartOld = ({ size, type, itemСount, onClick }) => {
   /*    Props:
     size(string): "desktop", "mobile"
     type(string): "card", "header"

@@ -25,7 +25,7 @@ export { CaretLeft } from './CaretLeft';
 export { CaretRight } from './CaretRight';
 
 export { Instagram } from './Instagram';
-export { Facebook } from './Facebook';
+export { Facebook } from './facebook';
 export { Tiktok } from './Tiktok';
 export { Phone } from './Phone';
 export { Google } from './Google';
@@ -36,5 +36,5 @@ export { Visa } from './Visa';
 export { Filter } from './Filter';
 export { Sort } from './Sort';
 
-export { Heart } from './../icons/Heart';
-export { Bag } from './../icons/Bag';
+export { Heart } from './Heart';
+export { Bag } from './Bag';

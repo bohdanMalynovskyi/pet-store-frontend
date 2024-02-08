@@ -1,0 +1,44 @@
+.icon {
+  user-select: none;
+  position: relative;
+  display: inline-block;
+  stroke: var(--primary);
+  width: 32px;
+  height: 32px;
+}
+
+.icon:hover {
+  stroke: var(--secondary);
+}
+
+.iconCount {
+  border-radius: 50%;
+  background-color: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  color: var(--txtSecondary);
+  font-weight: normal;
+  line-height: normal;
+  font-size: 1rem;
+  min-width: 16px;
+  height: 16px;
+  padding: 1px 3.5px;
+}
+
+@media (max-width: 720px) {
+  .icon {
+    width: 24px;
+    height: 24px;
+    stroke: var(--txtSecondary);
+  }
+  .iconCount {
+    font-size: 13px;
+    min-width: 14px;
+    height: 14px;
+    padding: 1px 2px;
+  }
+}
