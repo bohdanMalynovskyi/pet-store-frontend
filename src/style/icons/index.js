@@ -36,5 +36,5 @@ export { Visa } from './Visa';
 export { Filter } from './Filter';
 export { Sort } from './Sort';
 
-export { Heart } from './../icons/Heart';
-export { Bag } from './../icons/Bag';
+export { Heart } from './Heart';
+export { Bag } from './Bag';

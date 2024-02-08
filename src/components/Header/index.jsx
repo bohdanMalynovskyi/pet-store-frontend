@@ -1,23 +1,25 @@
-﻿import React from 'react';
-import logoBlack from '../../assets/images/logo.svg';
-import logoWhite from '../../assets/images/logo-white.svg';
+﻿import { useEffect, useState } from 'react';
+import styles from './index.module.css';
 import Navbar from './Navbar';
 import Search from './SearchBtn';
 import Contacts from './Contacts';
-import { Link } from 'react-router-dom';
+// import logoBlack from '../../assets/images/logo.svg';
+// import logoWhite from '../../assets/images/logo-white.svg';
+// import { Link } from 'react-router-dom';
+// import Cart from './CartBtn';
+// import Favorite from './FavoriteBtn';
 import { IconButton, MobileNav } from '@material-tailwind/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import Cart from './CartBtn';
 import SearchDesktop from './SearchDesktop';
-import Favorite from './FavoriteBtn';
 
-import { Heart } from '../../style/icons/Heart';
+// import { Heart } from '../../style/icons/Heart';
 import NavMobile from './NavMobile/NavMobile';
+import { Bag, Heart, LogoHorizontal, LogoVertical } from '../../style/icons';
 
-const Header = ({ isHomePage }) => {
-  const [isMobile, setIsMobile] = React.useState(false);
-  const [openNav, setOpenNav] = React.useState(false);
-  React.useEffect(() => {
+const Header = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [openNav, setOpenNav] = useState(false);
+  useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 720);
     };
@@ -29,10 +31,11 @@ const Header = ({ isHomePage }) => {
       window.removeEventListener('resize', checkScreenSize);
     };
   }, []);
-  const navbarClasses = isMobile ? 'bg-primary' : 'bg-[#ffffff]';
-  const logoSrc = isMobile ? logoWhite : logoBlack;
 
-  React.useEffect(() => {
+  const navbarClasses = isMobile ? 'bg-primary' : 'bg-[#ffffff]';
+  const logoSrc = isMobile ? <LogoHorizontal color="txtSecondary" /> : <LogoVertical color="primary" />;
+
+  useEffect(() => {
     window.addEventListener('resize', () => window.innerWidth >= 960 && setOpenNav(false));
   }, []);
 
@@ -53,13 +56,7 @@ const Header = ({ isHomePage }) => {
             </div>
 
             {/* logo */}
-            {isHomePage ? (
-              <img src={logoSrc} alt="logo" />
-            ) : (
-              <Link to="/">
-                <img src={logoSrc} alt="logo" />
-              </Link>
-            )}
+            {logoSrc}
           </div>
 
           {/* пошук на десктоп-версії */}
@@ -69,9 +66,11 @@ const Header = ({ isHomePage }) => {
           <div className="menu__right flex items-center gap-5 relative">
             <Search />
             <Contacts />
-            <Favorite />
-            <Heart />
-            <Cart />
+            {/* <Favorite /> */}
+            {/* <Heart /> */}
+            {/* <Cart /> */}
+            <Heart count={null} stylesIcon={styles.icon} stylesIconCount={styles.iconCount} />
+            <Bag count={null} stylesIcon={styles.icon} stylesIconCount={styles.iconCount} />
           </div>
         </div>
         <div>
