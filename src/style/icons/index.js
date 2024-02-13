@@ -25,7 +25,7 @@ export { CaretLeft } from './CaretLeft';
 export { CaretRight } from './CaretRight';
 
 export { Instagram } from './Instagram';
-export { Facebook } from './facebook';
+export { Facebook } from './Facebook';
 export { Tiktok } from './Tiktok';
 export { Phone } from './Phone';
 export { Google } from './Google';
