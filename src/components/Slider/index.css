@@ -1,0 +1,30 @@
+.swiper-slide {
+  width: auto;
+}
+
+.swiper-pagination {
+  position: static;
+}
+
+.swiper-pagination-bullet {
+  background-color: #3786a5;
+}
+
+.swiper-pagination-bullet {
+  /* Марджин між булетами виходить 8 пх . ПИТАННЯ! Підійде чи костилити на 10 по макету? */
+  width: 12px;
+  height: 12px;
+  /* margin: 0 5px; */
+}
+
+.swiper-wrapper {
+  margin-bottom: 20px;
+}
+
+.section {
+  padding-top: 100px;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
+}
