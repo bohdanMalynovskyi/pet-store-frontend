@@ -17,7 +17,7 @@ def authorize_cart(view_func):
         try:
             cart = Cart.objects.get(id=cart_pk)
             if cart.hash_code == hash_code:
-                # set_interact.delay(cart_id=cart.id)  # set "last interact" field to now
+                set_interact.delay(cart_id=cart.id)  # set "last interact" field to now
                 return view_func(request, cart, *args, **kwargs)
             else:
                 return Response({'error': 'cart not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -37,7 +37,7 @@ def authorize_featured(view_func):
         try:
             featured = FeaturedProducts.objects.get(id=featured_pk)
             if featured.hash_code == hash_code:
-                # set_interact.delay(featured_od=featured.id)  # set "last interact" field to now
+                set_interact.delay(featured_od=featured.id)  # set "last interact" field to now
                 return view_func(request, featured, *args, **kwargs)
             else:
                 return Response({'error': 'featured products not found'}, status=status.HTTP_404_NOT_FOUND)
