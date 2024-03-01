@@ -58,7 +58,8 @@ class ProductDetailSerializer(ProductSerializer):
     recommended_products = serializers.SerializerMethodField()
 
     def get_recommended_products(self, obj):
-        recommended_products = Product.objects.filter(subcategory=obj.subcategory).exclude(id=obj.id)[:10]
+        recommended_products = Product.objects.filter(subcategory=obj.subcategory).exclude(id=obj.id)[
+                               :10].prefetch_related('changeable_prices', 'images')
         serializer_object = ProductSerializer(recommended_products, many=True)
         return serializer_object.data
 
