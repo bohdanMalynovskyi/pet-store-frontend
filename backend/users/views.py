@@ -5,14 +5,17 @@ from rest_framework.response import Response
 
 from users.logic import authorize_cart, authorize_featured
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem
-from users.serializers import CartSerializer, CartItemSerializer, FeaturedProductsSerializer, FeaturedItemSerializer
+from users.serializers import CartSerializer, FeaturedProductsSerializer
 
 
 @api_view(['POST'])
 def create_cart(request):
     """Function to create cart"""
     try:
-        cart = Cart.objects.create()
+        if request.user.is_authenticated:
+            cart = Cart.objects.create(user=request.user)
+        else:
+            cart = Cart.objects.create(user=None)
         serializer = CartSerializer(cart)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -57,7 +60,7 @@ def decrease_quantity(request, cart, product_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
+@api_view(['DELETE'])
 @authorize_cart
 def delete_cart_item(request, cart, product_pk):
     try:
@@ -83,8 +86,11 @@ def clear_cart(request, cart):
 def create_featured_products(request):
     """Function to create featured products"""
     try:
-        featured_products = FeaturedProducts.objects.create()
-        serializer = FeaturedProductsSerializer(featured_products)
+        if request.user.is_authenticated:
+            featured = FeaturedProducts.objects.create(user=request.user)
+        else:
+            featured = FeaturedProducts.objects.create(user=None)
+        serializer = FeaturedProductsSerializer(featured)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -109,7 +115,7 @@ def add_to_featured(request, featured, product_pk):
         return Response('product does not exist', status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
+@api_view(['DELETE'])
 @authorize_featured
 def delete_featured_item(request, featured, product_pk):
     try:
