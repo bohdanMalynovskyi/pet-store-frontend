@@ -1,7 +1,22 @@
 from rest_framework import serializers
 
 from products.serializers import ProductSerializer
-from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem
+from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User
+
+from djoser.serializers import UserCreateSerializer, UserSerializer
+
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+    class Meta(UserCreateSerializer.Meta):
+        model = User
+        fields = ('email', 'password', 'first_name', 'second_name', 'last_name', 'phone_number')
+
+
+class CustomUserSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        model = User
+        fields = (
+            'id', 'email', 'first_name', 'second_name', 'last_name', 'phone_number')
 
 
 class CartItemSerializer(serializers.ModelSerializer):
