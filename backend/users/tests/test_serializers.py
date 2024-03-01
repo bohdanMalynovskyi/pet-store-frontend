@@ -1,7 +1,11 @@
-from products.models import Product
+from unittest import TestCase
+
+from django.contrib.auth.hashers import check_password
+
 from products.tests.test_serializers import ProductsTests
-from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem
-from users.serializers import CartItemSerializer, CartSerializer, FeaturedItemSerializer, FeaturedProductsSerializer
+from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User
+from users.serializers import CartItemSerializer, CartSerializer, FeaturedItemSerializer, FeaturedProductsSerializer, \
+    CustomUserSerializer, CustomUserCreateSerializer
 
 
 class CartItemSerializerTest(ProductsTests):
@@ -86,3 +90,51 @@ class FeaturedProductSerializerTest(FeaturedItemSerializerTest):
         }
         data = FeaturedProductsSerializer(self.featured).data
         self.assertEqual(expected_data, data)
+
+
+class CustomUserSerializerTest(TestCase):
+    def setUp(self):
+        self.user_data = {
+            'email': 'test1@example.com',
+            'password': 'testpassword',
+            'first_name': 'John',
+            'second_name': 'Doe',
+            'last_name': 'Smith',
+            'phone_number': '1234567890',
+        }
+        self.user = User.objects.create(**self.user_data)
+
+    def test_serialization(self):
+        serializer = CustomUserSerializer(instance=self.user)
+        expected_data = {
+            'id': self.user.id,
+            'email': 'test1@example.com',
+            'first_name': 'John',
+            'second_name': 'Doe',
+            'last_name': 'Smith',
+            'phone_number': '1234567890',
+        }
+        self.assertEqual(serializer.data, expected_data)
+
+
+class CustomUserCreateSerializerTest(TestCase):
+    def setUp(self):
+        self.user_data = {
+            'email': 'test2@example.com',
+            'password': 'testpassword',
+            'first_name': 'John',
+            'second_name': 'Doe',
+            'last_name': 'Smith',
+            'phone_number': '1234567890',
+        }
+
+    def test_create_serialization(self):
+        serializer = CustomUserCreateSerializer(data=self.user_data)
+        self.assertTrue(serializer.is_valid())
+        saved_user = serializer.save()
+        self.assertEqual(saved_user.email, 'test2@example.com')
+        self.assertTrue(check_password('testpassword', saved_user.password))
+        self.assertEqual(saved_user.first_name, 'John')
+        self.assertEqual(saved_user.second_name, 'Doe')
+        self.assertEqual(saved_user.last_name, 'Smith')
+        self.assertEqual(saved_user.phone_number, '1234567890')
