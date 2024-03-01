@@ -11,3 +11,4 @@ django-cors-headers==4.3.1
 celery[redis]==5.3.6
 flower==2.0.1
 celery-singleton==0.3.1
+djoser==2.2.2
