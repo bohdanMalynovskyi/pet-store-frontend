@@ -13,7 +13,10 @@ def create_cart(request):
     """Function to create cart"""
     try:
         if request.user.is_authenticated:
-            cart = Cart.objects.create(user=request.user)
+            if hasattr(request.user, 'cart'):
+                return Response({'error': 'cart is already exist'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                cart = Cart.objects.create(user=request.user)
         else:
             cart = Cart.objects.create(user=None)
         serializer = CartSerializer(cart)
@@ -87,7 +90,10 @@ def create_featured_products(request):
     """Function to create featured products"""
     try:
         if request.user.is_authenticated:
-            featured = FeaturedProducts.objects.create(user=request.user)
+            if hasattr(request.user, 'featured'):
+                return Response({'error': 'featured products are already exist'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                featured = FeaturedProducts.objects.create(user=request.user)
         else:
             featured = FeaturedProducts.objects.create(user=None)
         serializer = FeaturedProductsSerializer(featured)

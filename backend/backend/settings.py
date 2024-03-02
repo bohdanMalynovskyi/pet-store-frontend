@@ -184,7 +184,7 @@ DJOSER = {
         'username_changed_confirmation': 'users.email.EmailChangedConfirmation',
     },
     'SERIALIZERS': {
-        'user_create': 'users.serializers.CustomUserCreateSerializer',
+        'user_create_password_retype': 'users.serializers.CustomUserCreateRetypeSerializer',
         'user': 'users.serializers.CustomUserSerializer',
     }
 }

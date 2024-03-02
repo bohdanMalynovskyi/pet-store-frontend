@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import check_password
 from products.tests.test_serializers import ProductsTests
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User
 from users.serializers import CartItemSerializer, CartSerializer, FeaturedItemSerializer, FeaturedProductsSerializer, \
-    CustomUserSerializer, CustomUserCreateSerializer
+    CustomUserSerializer, CustomUserCreateRetypeSerializer
 
 
 class CartItemSerializerTest(ProductsTests):
@@ -122,14 +122,15 @@ class CustomUserCreateSerializerTest(TestCase):
         self.user_data = {
             'email': 'test2@example.com',
             'password': 'testpassword',
+            're_password': 'testpassword',
             'first_name': 'John',
             'second_name': 'Doe',
             'last_name': 'Smith',
-            'phone_number': '1234567890',
+            'phone_number': '1234567890'
         }
 
     def test_create_serialization(self):
-        serializer = CustomUserCreateSerializer(data=self.user_data)
+        serializer = CustomUserCreateRetypeSerializer(data=self.user_data)
         self.assertTrue(serializer.is_valid())
         saved_user = serializer.save()
         self.assertEqual(saved_user.email, 'test2@example.com')
