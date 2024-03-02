@@ -342,3 +342,28 @@ class CustomDjoserEndpointTests(APITestCase):
         self.assertEqual(new_user.first_name, new_user_data['first_name'])
         self.assertEqual(new_user.last_name, new_user_data['last_name'])
         self.assertEqual(new_user.phone_number, new_user_data['phone_number'])
+
+    def test_user_registration_with_cart_and_featured(self):
+        cart = Cart.objects.create()
+        featured = FeaturedProducts.objects.create()
+        new_user_data = {
+            'email': 'newuser@example.com',
+            'password': 'newuserpassword',
+            're_password': 'newuserpassword',
+            'first_name': 'Jane',
+            'last_name': 'Doe',
+            'phone_number': '987654321',
+            'cart_hash_code': f'{cart.hash_code}',
+            'featured_hash_code': f'{featured.hash_code}'
+        }
+        response = self.client.post(reverse('user-list'), new_user_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(User.objects.count(), 2)
+        new_user = User.objects.get(email=new_user_data['email'])
+        self.assertEqual(new_user.first_name, new_user_data['first_name'])
+        self.assertEqual(new_user.last_name, new_user_data['last_name'])
+        self.assertEqual(new_user.phone_number, new_user_data['phone_number'])
+        self.assertEqual(new_user.cart.hash_code, None)
+        self.assertEqual(new_user.cart.user, new_user)
+        self.assertEqual(new_user.featured.user, new_user)
+        self.assertEqual(new_user.featured.hash_code, None)
