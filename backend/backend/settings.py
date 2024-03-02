@@ -161,12 +161,13 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'users.User'
 
 DOMAIN = 'localhost:5173'
+SITE_NAME = "PetTopia"
 
 DJOSER = {
     'USER_ID_FIELD': 'id',
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
-    'USERNAME_RESET_CONFIRM_RETYPE': True,
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'LOGOUT_ON_PASSWORD_CHANGE': True,
     'SEND_CONFIRMATION_EMAIL': True,
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
@@ -177,6 +178,11 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}/',
     'USERNAME_RESET_CONFIRM_URL': 'email/reset/confirm/{uid}/{token}/',
     'SEND_ACTIVATION_EMAIL': True,
+    'EMAIL': {
+        'password_reset': 'users.email.PasswordReset',
+        'username_reset': 'users.email.EmailReset',
+        'username_changed_confirmation': 'users.email.EmailChangedConfirmation',
+    },
     'SERIALIZERS': {
         'user_create': 'users.serializers.CustomUserCreateSerializer',
         'user': 'users.serializers.CustomUserSerializer',
