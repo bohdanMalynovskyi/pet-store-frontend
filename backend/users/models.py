@@ -68,7 +68,7 @@ def generate_unique_hash():
 
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='cart')
-    hash_code = models.CharField(max_length=64, null=True, blank=True)
+    hash_code = models.CharField(max_length=64, null=True, blank=True, db_index=True)
     products = models.ManyToManyField(Product, through='CartItem')
     last_interact = models.DateTimeField(auto_now_add=datetime.now())
 
@@ -84,7 +84,7 @@ class CartItem(models.Model):
 
 class FeaturedProducts(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='featured')
-    hash_code = models.CharField(max_length=64, null=True, blank=True)
+    hash_code = models.CharField(max_length=64, null=True, blank=True, db_index=True)
     products = models.ManyToManyField(Product, through='FeaturedItem')
     last_interact = models.DateTimeField(auto_now_add=datetime.now())
 
@@ -107,9 +107,3 @@ def generate_cart_hash(sender, instance, **kwargs):
 def generate_featured_hash(sender, instance, **kwargs):
     if not instance.hash_code and not instance.user:
         instance.hash_code = generate_unique_hash()
-
-
-@receiver(post_save, sender=User)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)

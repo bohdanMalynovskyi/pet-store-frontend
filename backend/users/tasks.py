@@ -27,7 +27,7 @@ def set_interact(cart_id=None, featured_id=None):
 def delete_old_carts():
     one_week_ago = datetime.now() - timedelta(weeks=1)
 
-    for cart in Cart.objects.all():
+    for cart in Cart.objects.filter(hash_code__isnull=False):
         if cart.last_interact < one_week_ago:
             cart.delete()
     logger.info("Old carts have been deleted")
@@ -38,7 +38,7 @@ def delete_old_carts():
 def delete_old_featured():
     one_week_ago = datetime.now() - timedelta(weeks=1)
 
-    for featured in FeaturedProducts.objects.all():
+    for featured in FeaturedProducts.objects.filter(hash_code__isnull=False):
         if featured.last_interact < one_week_ago:
             featured.delete()
     logger.info("Old featured have been deleted")

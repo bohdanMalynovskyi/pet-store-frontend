@@ -23,7 +23,7 @@ class CartTestCase(APITestCase):
     def test_create_cart_with_user(self):
         url = reverse('create-cart')
         user = User.objects.create(email='tomatoma1234@gmail.com')
-        token = Token.objects.get(user=user).key
+        token = Token.objects.create(user=user).key
         headers = {'Authorization': f'Token {token}'}
         response = self.client.post(url, headers=headers)
 
@@ -36,7 +36,7 @@ class CartTestCase(APITestCase):
 
     def setUp(self):
         self.user = User.objects.create(email='tomatoma123@gmail.com')
-        self.token = Token.objects.get(user=self.user).key
+        self.token = Token.objects.create(user=self.user).key
         self.product1 = Product.objects.get(id=1)
         self.product2 = Product.objects.get(id=2)
         self.cart1 = Cart.objects.create()
@@ -185,7 +185,7 @@ class FeaturedTestCase(APITestCase):
     def test_create_featured_with_user(self):
         url = reverse('create-featured')
         user = User.objects.create(email='tomatoma1234@gmail.com')
-        token = Token.objects.get(user=user).key
+        token = Token.objects.create(user=user).key
         headers = {'Authorization': f'Token {token}'}
         response = self.client.post(url, headers=headers)
 
@@ -198,7 +198,7 @@ class FeaturedTestCase(APITestCase):
 
     def setUp(self):
         self.user = User.objects.create(email='tomatoma123@gmail.com')
-        self.token = Token.objects.get(user=self.user).key
+        self.token = Token.objects.create(user=self.user).key
         self.product1 = Product.objects.get(id=1)
         self.product2 = Product.objects.get(id=2)
         self.featured1 = FeaturedProducts.objects.create()
