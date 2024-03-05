@@ -21,7 +21,7 @@ def authorize_cart(view_func):
             try:
                 hash_code = request.headers.get('Cart').split(' ')[1]
             except AttributeError:
-                return Response({'error': 'no token provided'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'no token provided'}, status=status.HTTP_401_UNAUTHORIZED)
             try:
                 cart = Cart.objects.get(hash_code=hash_code)
                 set_interact.delay(cart_id=cart.id)  # set "last interact" field to now
@@ -46,7 +46,7 @@ def authorize_featured(view_func):
             try:
                 hash_code = request.headers.get('Featured').split(' ')[1]
             except AttributeError:
-                return Response({'error': 'no token provided'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'no token provided'}, status=status.HTTP_401_UNAUTHORIZED)
             try:
                 featured = FeaturedProducts.objects.get(hash_code=hash_code)
                 set_interact.delay(featured_id=request.user.featured.id)  # set "last interact" field to now

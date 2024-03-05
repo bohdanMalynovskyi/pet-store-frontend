@@ -1,13 +1,19 @@
 from django.db import IntegrityError
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from users.docs import no_token, not_found, cart_success, bad_request, featured_success, cart_auth, featured_auth
 from users.logic import authorize_cart, authorize_featured
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem
 from users.serializers import CartSerializer, FeaturedProductsSerializer
 
 
+@swagger_auto_schema(method='post',
+                     responses={201: openapi.Response(description='Cart created', schema=CartSerializer),
+                                400: bad_request, 404: not_found})
 @api_view(['POST'])
 def create_cart(request):
     """Function to create cart"""
@@ -25,6 +31,8 @@ def create_cart(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@swagger_auto_schema(method='get', responses={200: cart_success, 401: no_token, 404: not_found},
+                     manual_parameters=cart_auth)
 @api_view(['GET'])
 @authorize_cart
 def get_cart(request, cart):
@@ -32,6 +40,8 @@ def get_cart(request, cart):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found},
+                     manual_parameters=cart_auth)
 @api_view(['POST'])
 @authorize_cart
 def add_to_cart(request, cart, product_pk):
@@ -40,12 +50,17 @@ def add_to_cart(request, cart, product_pk):
         cart_item.quantity += 1
         cart_item.save()
     except CartItem.DoesNotExist:
-        CartItem.objects.create(cart_id=cart.id, quantity=1, product_id=product_pk)
+        try:
+            CartItem.objects.create(cart_id=cart.id, quantity=1, product_id=product_pk)
+        except IntegrityError:
+            return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
     cart.refresh_from_db()
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found},
+                     manual_parameters=cart_auth)
 @api_view(['POST'])
 @authorize_cart
 def decrease_quantity(request, cart, product_pk):
@@ -63,6 +78,8 @@ def decrease_quantity(request, cart, product_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='delete', responses={200: cart_success, 401: no_token, 404: not_found},
+                     manual_parameters=cart_auth)
 @api_view(['DELETE'])
 @authorize_cart
 def delete_cart_item(request, cart, product_pk):
@@ -76,6 +93,8 @@ def delete_cart_item(request, cart, product_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found},
+                     manual_parameters=cart_auth)
 @api_view(['POST'])
 @authorize_cart
 def clear_cart(request, cart):
@@ -85,6 +104,10 @@ def clear_cart(request, cart):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='post',
+                     responses={201: openapi.Response(description='Featured products created',
+                                                      schema=FeaturedProductsSerializer), 400: bad_request,
+                                404: not_found})
 @api_view(['POST'])
 def create_featured_products(request):
     """Function to create featured products"""
@@ -102,6 +125,8 @@ def create_featured_products(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@swagger_auto_schema(method='get', responses={200: featured_success, 401: no_token, 404: not_found},
+                     manual_parameters=featured_auth)
 @api_view(['GET'])
 @authorize_featured
 def get_featured(request, featured):
@@ -110,6 +135,8 @@ def get_featured(request, featured):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='post', responses={200: featured_success, 401: no_token, 404: not_found},
+                     manual_parameters=featured_auth)
 @api_view(['POST'])
 @authorize_featured
 def add_to_featured(request, featured, product_pk):
@@ -118,9 +145,11 @@ def add_to_featured(request, featured, product_pk):
         serializer = FeaturedProductsSerializer(featured)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except IntegrityError:
-        return Response('product does not exist', status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 
+@swagger_auto_schema(method='delete', responses={200: featured_success, 401: no_token, 404: not_found},
+                     manual_parameters=featured_auth)
 @api_view(['DELETE'])
 @authorize_featured
 def delete_featured_item(request, featured, product_pk):
@@ -133,6 +162,8 @@ def delete_featured_item(request, featured, product_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='post', responses={200: featured_success, 401: no_token, 404: not_found},
+                     manual_parameters=featured_auth)
 @api_view(['POST'])
 @authorize_featured
 def clear_featured(request, featured):
