@@ -32,3 +32,42 @@ services:
     restart: always
     ports:
       - "8088:8080"
+
+  redis:
+    image: redis:latest
+    depends_on:
+      - django
+
+  worker:
+    build: /backend
+    hostname: worker
+    entrypoint: celery
+    command: -A celery_app.app worker --loglevel=info
+    links:
+      - redis
+      - postgres
+    depends_on:
+      - redis
+      - django
+      - postgres
+
+  worker-beat:
+    build: /backend
+    hostname: worker-beat
+    entrypoint: celery
+    command: -A celery_app.app beat --loglevel=info
+    depends_on:
+      - redis
+      - django
+      - postgres
+
+  flower:
+    build: /backend
+    entrypoint: celery
+    command: -A celery_app.app flower --loglevel=info
+    links:
+      - redis
+    depends_on:
+      - redis
+    ports:
+      - "5555:5555"

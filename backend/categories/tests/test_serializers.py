@@ -7,11 +7,12 @@ from categories.serializers import AnimalCategorySerializer, ProductCategorySeri
 class AnimalCategoryTests(TestCase):
 
     def setUp(self):
-        self.animal_category = AnimalCategory.objects.create(name='Dog')
+        self.animal_category = AnimalCategory.objects.create(name='Dog', key='dog')
 
     def test_ok(self):
         expected_data = {
             'id': self.animal_category.id,
+            'key': 'dog',
             'name': 'Dog',
             'product_categories': []
         }
@@ -28,6 +29,7 @@ class ProductCategoryTests(AnimalCategoryTests):
     def test_ok(self):
         expected_data = {
             'id': self.product_category.id,
+            'key': '',
             'name': 'Food',
             'subcategories': []
             }
@@ -43,6 +45,7 @@ class SubCategoryTests(ProductCategoryTests):
     def test_ok(self):
         expected_data = {
             'id': self.sub_category.id,
+            'key': '',
             'name': 'Wet food'
         }
         data = SubCategorySerializer(self.sub_category).data

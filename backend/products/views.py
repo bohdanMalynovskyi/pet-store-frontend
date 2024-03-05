@@ -1,16 +1,27 @@
+from django.db.models import Prefetch, F
 from rest_framework import permissions
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from categories.models import SubCategory
 from products.models import Product, Brand, ChangeablePrice, AdditionalFields
 from products.serializers import ProductSerializer, BrandSerializer, ChangeablePriceSerializer, \
-    AdditionalFieldsSerializer
+    AdditionalFieldsSerializer, ProductDetailSerializer
 
 
 class ProductViewSet(ReadOnlyModelViewSet):
-    queryset = Product.objects.all().order_by('id').prefetch_related('changeable_prices', 'additional_fields', 'images').select_related('brand',
-                                                                                                            'subcategory')
-    serializer_class = ProductSerializer
+    queryset = Product.objects.all().order_by('id').prefetch_related('changeable_prices', 'additional_fields', 'images'
+                                                                     ).select_related('brand', 'subcategory')
     permission_classes = [permissions.AllowAny]
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return ProductDetailSerializer
+        return ProductSerializer
+
+    def get_queryset(self):
+        if self.action == 'list':
+            return Product.objects.all().order_by('id').prefetch_related('changeable_prices', 'images')
+        return self.queryset
 
 
 class ChangeablePriceViewSet(ReadOnlyModelViewSet):
