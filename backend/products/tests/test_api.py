@@ -55,6 +55,22 @@ class ProductTestCase(SubCategoryTestCase):
         self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
         self.assertEqual({"detail": "Method \"POST\" not allowed."}, response.data)
 
+    def test_search_product_by_name(self):
+        url = reverse('products-list')
+        search_query = 'ProPlan'
+        response = self.client.get(url, {'search': search_query})
+        serializer_data = ProductSerializer(self.product).data
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serializer_data, response.data[0])
+
+    def test_search_product_by_description(self):
+        url = reverse('products-list')
+        search_query = 'cool'
+        response = self.client.get(url, {'search': search_query})
+        serializer_data = ProductSerializer(self.product).data
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serializer_data, response.data[0])
+
 
 class ChangeablePriceTestCase(ProductTestCase):
     def setUp(self):
@@ -89,6 +105,12 @@ class ChangeablePriceTestCase(ProductTestCase):
         self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
         self.assertEqual({"detail": "Method \"POST\" not allowed."}, response.data)
 
+    def test_search_product_by_name(self):
+        pass
+
+    def test_search_product_by_description(self):
+        pass
+
 
 class AdditionalFieldsTestCase(ProductTestCase):
     def setUp(self):
@@ -121,3 +143,10 @@ class AdditionalFieldsTestCase(ProductTestCase):
         response = self.client.post(url)
         self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
         self.assertEqual({"detail": "Method \"POST\" not allowed."}, response.data)
+
+
+    def test_search_product_by_name(self):
+        pass
+
+    def test_search_product_by_description(self):
+        pass

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('auth', '0012_alter_user_first_name_max_length'),
-        ('products', '0003_search_conf'),
+        ('products', '0004_initial_custom_product_data'),
     ]
 
     operations = [

@@ -58,7 +58,7 @@ def create_initial_data(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('products', '0002_rename_sale_changeableprice_discount_and_more'),
+        ('products', '0003_search_conf'),
     ]
 
     operations = [
