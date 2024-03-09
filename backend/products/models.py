@@ -1,6 +1,8 @@
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from django.db.models import PositiveSmallIntegerField, PositiveIntegerField
+from django.db.models import PositiveIntegerField
 
 from categories.models import SubCategory
 
@@ -30,10 +32,12 @@ class Product(models.Model):
                                            validators=[MinValueValidator(0, message='Quantity cannot be negative')])
     description = models.TextField(null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, null=True, blank=True)
+    search_vector = SearchVectorField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "product"
         verbose_name = "products"
+        indexes = [GinIndex(fields=['search_vector'])]
 
     def __str__(self):
         return f'{self.name} - {self.brand}'
