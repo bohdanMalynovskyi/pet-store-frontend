@@ -1,3 +1,5 @@
+from django.db.models import F
+from django.db.models.functions import Lower
 from django.urls import reverse
 from rest_framework import status
 
@@ -70,6 +72,38 @@ class ProductTestCase(SubCategoryTestCase):
         serializer_data = ProductSerializer(self.product).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data[0])
+
+    def test_sort_by_discount_price_ascending(self):
+        """Test sorting products by discount price in ascending order."""
+        url = reverse('products-list')
+        response = self.client.get(url, {'ordering': 'price'})
+        response_data = response.data
+        for product in response_data:
+            for image in product.get('images', []):
+                # Remove the domain and protocol, keep only relative paths
+                image['image'] = image['image'].removeprefix('http://testserver')
+        sorted_products = Product.objects.all().annotate(
+            discount_price=F('price') - (F('price') * F('discount') / 100)
+        ).order_by('discount_price')
+        serializer_data = ProductSerializer(sorted_products, many=True).data
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serializer_data, response.data)
+
+    def test_sort_by_discount_price_descending(self):
+        """Test sorting products by discount price in descending order."""
+        url = reverse('products-list')
+        response = self.client.get(url, {'ordering': '-price'})
+        response_data = response.data
+        for product in response_data:
+            for image in product.get('images', []):
+                # Remove the domain and protocol, keep only relative paths
+                image['image'] = image['image'].removeprefix('http://testserver')
+        sorted_products = Product.objects.all().annotate(
+            discount_price=F('price') - (F('price') * F('discount') / 100)
+        ).order_by('-discount_price')
+        serializer_data = ProductSerializer(sorted_products, many=True).data
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serializer_data, response.data)
 
 
 class ChangeablePriceTestCase(ProductTestCase):
