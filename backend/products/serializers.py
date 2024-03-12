@@ -43,7 +43,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_discount_price(self, obj):
         if obj.price:
-            discount_price = obj.price - ((obj.price / 100) * obj.discount)
+            try:
+                discount_price = obj.discount_price
+            except AttributeError:
+                discount_price = obj.price - ((obj.price / 100) * obj.discount)
+
             return '{:.2f}'.format(discount_price)
 
     class Meta:

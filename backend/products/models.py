@@ -82,9 +82,9 @@ class ChangeablePrice(models.Model):
         return f"{product_name} - {additional_info} - {price}" if additional_info else f"{product_name} - NO DATA - {price}"
 
     def save(self, *args, **kwargs):
-        if self.product and self.price is not None:
-            self.product.price = 0  # setting none, due to requirements
-            self.product.price = 0  # setting 0, due to requirements
+        if self.product and self.price is not None and self.order == 1:
+            self.product.discount = self.discount
+            self.product.price = self.price
             self.product.save()
 
         super().save(*args, **kwargs)

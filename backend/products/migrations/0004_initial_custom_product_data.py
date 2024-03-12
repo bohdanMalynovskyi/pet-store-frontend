@@ -21,7 +21,7 @@ def create_initial_data(apps, schema_editor):
     Product.objects.bulk_create([
         Product(name='Product1', price=10.00, discount=20, brand=Brand.objects.get(name='Brand2'),
                 subcategory=SubCategory.objects.all().first()),
-        Product(name='Product2', brand=Brand.objects.get(name='Brand3')),
+        Product(name='Product2', brand=Brand.objects.get(name='Brand3'), price=5, discount=2),
         Product(name='Product3', price=30.00, brand=Brand.objects.get(name='Brand1'),
                 subcategory=SubCategory.objects.all().last()),
     ])
