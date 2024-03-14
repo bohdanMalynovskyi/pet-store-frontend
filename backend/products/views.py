@@ -2,7 +2,7 @@ from django.db.models import F
 from rest_framework import permissions, filters
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from products.filters import CustomSearchFilter
+from products.filters import CustomSearchFilter, CustomPagination
 from products.models import Product, ChangeablePrice, AdditionalFields
 from products.serializers import ProductSerializer, ChangeablePriceSerializer, \
     AdditionalFieldsSerializer, ProductDetailSerializer
@@ -14,6 +14,7 @@ class ProductViewSet(ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
     filter_backends = [CustomSearchFilter, filters.OrderingFilter]
     ordering_fields = ('price',)
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

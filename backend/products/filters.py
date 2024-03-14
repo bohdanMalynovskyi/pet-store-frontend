@@ -1,5 +1,6 @@
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from rest_framework import filters
+from rest_framework.pagination import PageNumberPagination
 
 from products.models import Product
 
@@ -23,3 +24,7 @@ class CustomSearchFilter(filters.SearchFilter):
             search=search_query).order_by('-rank')
 
         return queryset
+
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10
