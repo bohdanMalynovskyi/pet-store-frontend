@@ -1,4 +1,6 @@
 from django.db.models import F
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, filters
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -59,6 +61,16 @@ class ProductViewSet(ReadOnlyModelViewSet):
             elif ordering == '-discount_price':
                 return ['-price']
         return super().get_ordering()
+
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('min_price', openapi.IN_QUERY, description="Minimum price filter", type=openapi.TYPE_NUMBER),
+        openapi.Parameter('max_price', openapi.IN_QUERY, description="Maximum price filter", type=openapi.TYPE_NUMBER),
+        openapi.Parameter('subcategory', openapi.IN_QUERY, description="Subcategory filter", type=openapi.TYPE_INTEGER),
+        openapi.Parameter('animal_category', openapi.IN_QUERY, description="Animal category filter", type=openapi.TYPE_INTEGER),
+        openapi.Parameter('product_category', openapi.IN_QUERY, description="Product category filter", type=openapi.TYPE_INTEGER),
+    ])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class ChangeablePriceViewSet(ReadOnlyModelViewSet):
