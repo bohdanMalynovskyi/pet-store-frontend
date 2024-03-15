@@ -17,7 +17,7 @@ COPY . /app/backend
 WORKDIR /app/backend
 
 # Применяем миграции и создаем суперпользователя
-CMD ["sh", "-c", "python manage.py migrate && python manage.py createsuperuser --noinput --username=admin --email=admin@example.com && python manage.py runserver 0.0.0.0:8000 --noreload"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py createsuperuser --email=admin@example.com --first_name=john --second_name=walter --last_name=smith --phone_number=09789186 --noinput && python manage.py runserver 0.0.0.0:8000 --noreload"]
 
 
 
