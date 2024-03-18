@@ -66,9 +66,13 @@ def generate_unique_hash():
     return hash_code
 
 
+class HashCode(models.Model):
+    token = models.CharField(max_length=64, null=False, blank=False, db_index=True)
+
+
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='cart')
-    hash_code = models.CharField(max_length=64, null=True, blank=True, db_index=True)
+    hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, null=True, blank=True)
     products = models.ManyToManyField(Product, through='CartItem')
     last_interact = models.DateTimeField(auto_now_add=datetime.now())
 
@@ -84,7 +88,7 @@ class CartItem(models.Model):
 
 class FeaturedProducts(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='featured')
-    hash_code = models.CharField(max_length=64, null=True, blank=True, db_index=True)
+    hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, null=True, blank=True)
     products = models.ManyToManyField(Product, through='FeaturedItem')
     last_interact = models.DateTimeField(auto_now_add=datetime.now())
 
@@ -97,13 +101,21 @@ class FeaturedItem(models.Model):
         return f'featured:{self.featured_products} - {self.product}'
 
 
+@receiver(pre_save, sender=HashCode)
+def generate_cart_hash(sender, instance, **kwargs):
+    if not instance.token:
+        instance.token = generate_unique_hash()
+
+
 @receiver(pre_save, sender=Cart)
 def generate_cart_hash(sender, instance, **kwargs):
     if not instance.hash_code and not instance.user:
-        instance.hash_code = generate_unique_hash()
+        hash_code = HashCode.objects.create()
+        instance.hash_code = hash_code
 
 
 @receiver(pre_save, sender=FeaturedProducts)
 def generate_featured_hash(sender, instance, **kwargs):
     if not instance.hash_code and not instance.user:
-        instance.hash_code = generate_unique_hash()
+        hash_code = HashCode.objects.create()
+        instance.hash_code = hash_code
