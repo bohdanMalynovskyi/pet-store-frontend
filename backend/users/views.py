@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.db.models import Prefetch
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -35,7 +36,12 @@ def create_cart(request):
                      manual_parameters=cart_auth)
 @api_view(['GET'])
 @authorize_cart
-def get_cart(request, cart):
+def get_cart(request, cart_id):
+    cart = Cart.objects.select_related('hash_code').prefetch_related(
+                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
+                        'product__changeable_prices', 'product__images')
+                    )
+                ).get(id=cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -44,17 +50,21 @@ def get_cart(request, cart):
                      manual_parameters=cart_auth)
 @api_view(['POST'])
 @authorize_cart
-def add_to_cart(request, cart, product_pk):
+def add_to_cart(request, cart_id, product_pk):
     try:
-        cart_item = cart.cart_items.get(product_id=product_pk)
+        cart_item = CartItem.objects.get(product_id=product_pk, cart_id=cart_id)
         cart_item.quantity += 1
         cart_item.save()
     except CartItem.DoesNotExist:
         try:
-            CartItem.objects.create(cart_id=cart.id, quantity=1, product_id=product_pk)
+            CartItem.objects.create(cart_id=cart_id, quantity=1, product_id=product_pk)
         except IntegrityError:
             return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    cart.refresh_from_db()
+    cart = Cart.objects.select_related('hash_code').prefetch_related(
+                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
+                        'product__changeable_prices', 'product__images')
+                    )
+                ).get(id=cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -63,17 +73,19 @@ def add_to_cart(request, cart, product_pk):
                      manual_parameters=cart_auth)
 @api_view(['POST'])
 @authorize_cart
-def decrease_quantity(request, cart, product_pk):
+def decrease_quantity(request, cart_id, product_pk):
     try:
-        cart_item = cart.cart_items.get(product_id=product_pk)
+        item = CartItem.objects.get(product_id=product_pk, cart_id=cart_id)
     except CartItem.DoesNotExist:
         return Response({'error': 'cart item does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    if cart_item.quantity > 1:
-        cart_item.quantity -= 1
-        cart_item.save()
-    elif cart_item.quantity == 1:
-        cart_item.delete()
-    cart.refresh_from_db()
+    if item.quantity > 1:
+        item.quantity -= 1
+        item.save()
+    elif item.quantity == 1:
+        item.delete()
+    cart = Cart.objects.select_related('hash_code').prefetch_related(
+                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
+                        'product__changeable_prices', 'product__images'))).get(id=cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -82,13 +94,17 @@ def decrease_quantity(request, cart, product_pk):
                      manual_parameters=cart_auth)
 @api_view(['DELETE'])
 @authorize_cart
-def delete_cart_item(request, cart, product_pk):
+def delete_cart_item(request, cart_id, product_pk):
     try:
-        cart_item = cart.cart_items.get(product_id=product_pk)
+        item = CartItem.objects.get(product_id=product_pk, cart_id=cart_id)
+        item.delete()
     except CartItem.DoesNotExist:
         return Response({'error': 'cart item does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    cart_item.delete()
-    cart.refresh_from_db()
+    cart = Cart.objects.select_related('hash_code').prefetch_related(
+                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
+                        'product__changeable_prices', 'product__images')
+                    )
+                ).get(id=cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -97,9 +113,13 @@ def delete_cart_item(request, cart, product_pk):
                      manual_parameters=cart_auth)
 @api_view(['POST'])
 @authorize_cart
-def clear_cart(request, cart):
-    cart.cart_items.all().delete()
-    cart.refresh_from_db()
+def clear_cart(request, cart_id):
+    CartItem.objects.filter(cart_id=cart_id).delete()
+    cart = Cart.objects.select_related('hash_code').prefetch_related(
+                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
+                        'product__changeable_prices', 'product__images')
+                    )
+                ).get(id=cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -129,35 +149,54 @@ def create_featured_products(request):
                      manual_parameters=featured_auth)
 @api_view(['GET'])
 @authorize_featured
-def get_featured(request, featured):
-    featured.refresh_from_db()
+def get_featured(request, featured_id):
+    featured = FeaturedProducts.objects.select_related('hash_code').prefetch_related(
+                    Prefetch('featured_items', queryset=FeaturedItem.objects.select_related('product').prefetch_related(
+                        'product__changeable_prices', 'product__images')
+                    )
+                ).get(id=featured_id)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='post', responses={200: featured_success, 401: no_token, 404: not_found},
+@swagger_auto_schema(method='post', responses={200: featured_success, 401: no_token, 404: not_found, 400: bad_request},
                      manual_parameters=featured_auth)
 @api_view(['POST'])
 @authorize_featured
-def add_to_featured(request, featured, product_pk):
+def add_to_featured(request, featured_id, product_pk):
     try:
-        FeaturedItem.objects.create(featured_products_id=featured.id, product_id=product_pk)
-        serializer = FeaturedProductsSerializer(featured)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except IntegrityError:
-        return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        FeaturedItem.objects.get(featured_products_id=featured_id, product_id=product_pk)
+        return Response({'error': 'item already exist'}, status=status.HTTP_400_BAD_REQUEST)
+    except FeaturedItem.DoesNotExist:
+        try:
+            FeaturedItem.objects.create(featured_products_id=featured_id, product_id=product_pk)
+        except IntegrityError:
+            return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+    featured = FeaturedProducts.objects.select_related('hash_code').prefetch_related(
+                    Prefetch('featured_items', queryset=FeaturedItem.objects.select_related('product').prefetch_related(
+                        'product__changeable_prices', 'product__images')
+                    )
+                ).get(id=featured_id)
+    serializer = FeaturedProductsSerializer(featured)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(method='delete', responses={200: featured_success, 401: no_token, 404: not_found},
                      manual_parameters=featured_auth)
 @api_view(['DELETE'])
 @authorize_featured
-def delete_featured_item(request, featured, product_pk):
+def delete_featured_item(request, featured_id, product_pk):
     try:
-        featured_item = featured.featured_items.get(product_id=product_pk)
+        featured_item = FeaturedItem.objects.get(product_id=product_pk, featured_products_id=featured_id)
+        featured_item.delete()
     except FeaturedItem.DoesNotExist:
         return Response({'error': 'featured item does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    featured_item.delete()
+    featured = FeaturedProducts.objects.select_related('hash_code').prefetch_related(
+                    Prefetch('featured_items', queryset=FeaturedItem.objects.select_related('product').prefetch_related(
+                        'product__changeable_prices', 'product__images')
+                    )
+                ).get(id=featured_id)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -166,7 +205,12 @@ def delete_featured_item(request, featured, product_pk):
                      manual_parameters=featured_auth)
 @api_view(['POST'])
 @authorize_featured
-def clear_featured(request, featured):
-    featured.featured_items.all().delete()
+def clear_featured(request, featured_id):
+    FeaturedItem.objects.filter(featured_products_id=featured_id).delete()
+    featured = FeaturedProducts.objects.select_related('hash_code').prefetch_related(
+                    Prefetch('featured_items', queryset=FeaturedItem.objects.select_related('product').prefetch_related(
+                        'product__changeable_prices', 'product__images')
+                    )
+                ).get(id=featured_id)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)
