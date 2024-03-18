@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from products.serializers import ProductSerializer
-from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User
+from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
 
 from djoser.serializers import UserCreateSerializer, UserSerializer, UserCreatePasswordRetypeSerializer
 
@@ -35,16 +35,18 @@ class CustomUserCreateRetypeSerializer(UserCreatePasswordRetypeSerializer):
         user = User.objects.create_user(**validated_data)
 
         try:
-            cart = Cart.objects.get(hash_code=cart_hash_code)
+            cart = Cart.objects.get(hash_code__token=cart_hash_code)
             cart.user = user
+            cart.hash_code.delete()
             cart.hash_code = None
             cart.save()
         except Cart.DoesNotExist:
             pass
 
         try:
-            featured = FeaturedProducts.objects.get(hash_code=featured_hash_code)
+            featured = FeaturedProducts.objects.get(hash_code__token=featured_hash_code)
             featured.user = user
+            featured.hash_code.delete()
             featured.hash_code = None
             featured.save()
         except FeaturedProducts.DoesNotExist:
@@ -68,8 +70,21 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'quantity']
 
 
+class HashCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HashCode
+        fields = ['token']
+
+
 class CartSerializer(serializers.ModelSerializer):
     cart_items = CartItemSerializer(many=True, read_only=True)
+    hash_code = serializers.SerializerMethodField()
+
+    def get_hash_code(self, obj):
+        try:
+            return obj.hash_code.token
+        except AttributeError:
+            return None
 
     class Meta:
         model = Cart
@@ -87,6 +102,14 @@ class FeaturedItemSerializer(serializers.ModelSerializer):
 
 class FeaturedProductsSerializer(serializers.ModelSerializer):
     featured_items = FeaturedItemSerializer(many=True, read_only=True)
+    hash_code = serializers.SerializerMethodField()
+
+    def get_hash_code(self, obj):
+        try:
+            return obj.hash_code.token
+        except AttributeError:
+            return None
+
 
     class Meta:
         model = FeaturedProducts
