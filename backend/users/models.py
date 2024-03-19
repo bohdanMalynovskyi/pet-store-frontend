@@ -5,7 +5,7 @@ from datetime import datetime
 from django.contrib.auth.base_user import BaseUserManager
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 
 from products.models import Product
@@ -119,3 +119,15 @@ def generate_featured_hash(sender, instance, **kwargs):
     if not instance.hash_code and not instance.user:
         hash_code = HashCode.objects.create()
         instance.hash_code = hash_code
+
+
+@receiver(post_delete, sender=Cart)
+def delete_related_hashcode(sender, instance, **kwargs):
+    if instance.hash_code:
+        instance.hash_code.delete()
+
+
+@receiver(post_delete, sender=FeaturedProducts)
+def delete_related_hashcode(sender, instance, **kwargs):
+    if instance.hash_code:
+        instance.hash_code.delete()
