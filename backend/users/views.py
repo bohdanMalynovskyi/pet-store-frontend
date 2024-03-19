@@ -8,6 +8,8 @@ from rest_framework.response import Response
 
 from users.docs import no_token, not_found, cart_success, bad_request, featured_success, cart_auth, featured_auth
 from users.logic import authorize_cart, authorize_featured
+from users.logic import get_cart as get_cart_q
+from users.logic import get_featured as get_featured_q
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem
 from users.serializers import CartSerializer, FeaturedProductsSerializer
 
@@ -37,11 +39,7 @@ def create_cart(request):
 @api_view(['GET'])
 @authorize_cart
 def get_cart(request, cart_id):
-    cart = Cart.objects.select_related('hash_code').prefetch_related(
-                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
-                        'product__changeable_prices', 'product__images')
-                    )
-                ).get(id=cart_id)
+    cart = get_cart_q(cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -60,11 +58,7 @@ def add_to_cart(request, cart_id, product_pk):
             CartItem.objects.create(cart_id=cart_id, quantity=1, product_id=product_pk)
         except IntegrityError:
             return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    cart = Cart.objects.select_related('hash_code').prefetch_related(
-                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
-                        'product__changeable_prices', 'product__images')
-                    )
-                ).get(id=cart_id)
+    cart = get_cart_q(cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -83,9 +77,7 @@ def decrease_quantity(request, cart_id, product_pk):
         item.save()
     elif item.quantity == 1:
         item.delete()
-    cart = Cart.objects.select_related('hash_code').prefetch_related(
-                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
-                        'product__changeable_prices', 'product__images'))).get(id=cart_id)
+    cart = get_cart_q(cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -100,11 +92,7 @@ def delete_cart_item(request, cart_id, product_pk):
         item.delete()
     except CartItem.DoesNotExist:
         return Response({'error': 'cart item does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    cart = Cart.objects.select_related('hash_code').prefetch_related(
-                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
-                        'product__changeable_prices', 'product__images')
-                    )
-                ).get(id=cart_id)
+    cart = get_cart_q(cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -115,11 +103,7 @@ def delete_cart_item(request, cart_id, product_pk):
 @authorize_cart
 def clear_cart(request, cart_id):
     CartItem.objects.filter(cart_id=cart_id).delete()
-    cart = Cart.objects.select_related('hash_code').prefetch_related(
-                    Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
-                        'product__changeable_prices', 'product__images')
-                    )
-                ).get(id=cart_id)
+    cart = get_cart_q(cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -150,11 +134,7 @@ def create_featured_products(request):
 @api_view(['GET'])
 @authorize_featured
 def get_featured(request, featured_id):
-    featured = FeaturedProducts.objects.select_related('hash_code').prefetch_related(
-                    Prefetch('featured_items', queryset=FeaturedItem.objects.select_related('product').prefetch_related(
-                        'product__changeable_prices', 'product__images')
-                    )
-                ).get(id=featured_id)
+    featured = get_featured_q(featured_id)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -173,11 +153,7 @@ def add_to_featured(request, featured_id, product_pk):
         except IntegrityError:
             return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-    featured = FeaturedProducts.objects.select_related('hash_code').prefetch_related(
-                    Prefetch('featured_items', queryset=FeaturedItem.objects.select_related('product').prefetch_related(
-                        'product__changeable_prices', 'product__images')
-                    )
-                ).get(id=featured_id)
+    featured = get_featured_q(featured_id)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -192,11 +168,7 @@ def delete_featured_item(request, featured_id, product_pk):
         featured_item.delete()
     except FeaturedItem.DoesNotExist:
         return Response({'error': 'featured item does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    featured = FeaturedProducts.objects.select_related('hash_code').prefetch_related(
-                    Prefetch('featured_items', queryset=FeaturedItem.objects.select_related('product').prefetch_related(
-                        'product__changeable_prices', 'product__images')
-                    )
-                ).get(id=featured_id)
+    featured = get_featured_q(featured_id)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -207,10 +179,6 @@ def delete_featured_item(request, featured_id, product_pk):
 @authorize_featured
 def clear_featured(request, featured_id):
     FeaturedItem.objects.filter(featured_products_id=featured_id).delete()
-    featured = FeaturedProducts.objects.select_related('hash_code').prefetch_related(
-                    Prefetch('featured_items', queryset=FeaturedItem.objects.select_related('product').prefetch_related(
-                        'product__changeable_prices', 'product__images')
-                    )
-                ).get(id=featured_id)
+    featured = get_featured_q(featured_id)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)
