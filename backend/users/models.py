@@ -5,13 +5,16 @@ from datetime import datetime
 from django.contrib.auth.base_user import BaseUserManager
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import post_save, pre_save, post_delete
+from django.db.models.signals import post_save, pre_save, post_delete, pre_delete
 from django.dispatch import receiver
+from pytz import timezone
 
 from products.models import Product
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
+
+kiev_tz = timezone('Europe/Kiev')
 
 
 class UserManager(BaseUserManager):
@@ -74,7 +77,10 @@ class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='cart')
     hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, null=True, blank=True)
     products = models.ManyToManyField(Product, through='CartItem')
-    last_interact = models.DateTimeField(auto_now_add=datetime.now())
+    last_interact = models.DateTimeField(auto_now_add=datetime.now(kiev_tz))
+
+    def delete(self, using=None, keep_parents=False):
+        self.hash_code.delete()
 
 
 class CartItem(models.Model):
@@ -90,7 +96,10 @@ class FeaturedProducts(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='featured')
     hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, null=True, blank=True)
     products = models.ManyToManyField(Product, through='FeaturedItem')
-    last_interact = models.DateTimeField(auto_now_add=datetime.now())
+    last_interact = models.DateTimeField(auto_now_add=datetime.now(kiev_tz))
+
+    def delete(self, using=None, keep_parents=False):
+        self.hash_code.delete()
 
 
 class FeaturedItem(models.Model):
@@ -119,15 +128,3 @@ def generate_featured_hash(sender, instance, **kwargs):
     if not instance.hash_code and not instance.user:
         hash_code = HashCode.objects.create()
         instance.hash_code = hash_code
-
-
-@receiver(post_delete, sender=Cart)
-def delete_related_hashcode(sender, instance, **kwargs):
-    if instance.hash_code:
-        instance.hash_code.delete()
-
-
-@receiver(post_delete, sender=FeaturedProducts)
-def delete_related_hashcode(sender, instance, **kwargs):
-    if instance.hash_code:
-        instance.hash_code.delete()

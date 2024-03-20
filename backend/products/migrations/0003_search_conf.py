@@ -1,4 +1,8 @@
+from django.conf import settings
 from django.db import migrations
+
+
+db_name = settings.DATABASES['default']['NAME']
 
 
 class Migration(migrations.Migration):
@@ -8,7 +12,13 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
+            f"""
+            ALTER DATABASE {db_name} SET timezone TO 'Europe/Kiev';
             """
+        ),
+        migrations.RunSQL(
+            """
+            -- Ваша текущая SQL команда
             CREATE TEXT SEARCH DICTIONARY ukrainian_huns (TEMPLATE = ispell, DictFile = uk_ua, AffFile = uk_ua, StopWords = ukrainian);
             CREATE TEXT SEARCH DICTIONARY ukrainian_stem (template = simple, stopwords = ukrainian);
             CREATE TEXT SEARCH CONFIGURATION ukrainian (PARSER=default);
