@@ -35,7 +35,7 @@ class CustomUserCreateRetypeSerializer(UserCreatePasswordRetypeSerializer):
         user = User.objects.create_user(**validated_data)
 
         try:
-            cart = Cart.objects.get(hash_code__token=cart_hash_code)
+            cart = Cart.objects.get(hash_code__key=cart_hash_code)
             cart.user = user
             cart.hash_code.delete()
             cart.hash_code = None
@@ -44,7 +44,7 @@ class CustomUserCreateRetypeSerializer(UserCreatePasswordRetypeSerializer):
             pass
 
         try:
-            featured = FeaturedProducts.objects.get(hash_code__token=featured_hash_code)
+            featured = FeaturedProducts.objects.get(hash_code__key=featured_hash_code)
             featured.user = user
             featured.hash_code.delete()
             featured.hash_code = None
@@ -73,7 +73,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 class HashCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = HashCode
-        fields = ['token']
+        fields = ['key']
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -82,7 +82,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     def get_hash_code(self, obj):
         try:
-            return obj.hash_code.token
+            return obj.hash_code.key
         except AttributeError:
             return None
 
@@ -106,7 +106,7 @@ class FeaturedProductsSerializer(serializers.ModelSerializer):
 
     def get_hash_code(self, obj):
         try:
-            return obj.hash_code.token
+            return obj.hash_code.key
         except AttributeError:
             return None
 

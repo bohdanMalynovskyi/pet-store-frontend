@@ -24,7 +24,7 @@ def authorize_cart(view_func):
             except AttributeError:
                 return Response({'error': 'no token provided'}, status=status.HTTP_401_UNAUTHORIZED)
             try:
-                cart = Cart.objects.select_related('hash_code').values('id').get(hash_code__token=hash_code)
+                cart = Cart.objects.select_related('hash_code').values('id').get(hash_code__key=hash_code)
                 set_interact.delay(cart_id=cart['id'])  # set "last interact" field to now
                 return view_func(request, cart['id'], *args, **kwargs)
             except Cart.DoesNotExist:
@@ -50,7 +50,7 @@ def authorize_featured(view_func):
                 return Response({'error': 'no token provided'}, status=status.HTTP_401_UNAUTHORIZED)
             try:
                 featured = FeaturedProducts.objects.select_related('hash_code').values('id').get(
-                    hash_code__token=hash_code)
+                    hash_code__key=hash_code)
                 set_interact.delay(featured_id=featured['id'])  # set "last interact" field to now
                 return view_func(request, featured['id'], *args, **kwargs)
             except FeaturedProducts.DoesNotExist:
