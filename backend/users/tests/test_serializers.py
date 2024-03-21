@@ -43,7 +43,7 @@ class CartSerializerTest(CartItemSerializerTest):
         serializer = CartItemSerializer(self.cart_item1)
         expected_data = {
             'id': self.cart.id,
-            'hash_code': self.cart.hash_code.token,
+            'hash_code': self.cart.hash_code.key,
             'cart_items': [serializer.data]
         }
 
@@ -85,7 +85,7 @@ class FeaturedProductSerializerTest(FeaturedItemSerializerTest):
         serializer = FeaturedItemSerializer(self.featured_item1)
         expected_data = {
             'id': self.featured.id,
-            'hash_code': self.featured.hash_code.token,
+            'hash_code': self.featured.hash_code.key,
             'featured_items': [serializer.data]
         }
         data = FeaturedProductsSerializer(self.featured).data
