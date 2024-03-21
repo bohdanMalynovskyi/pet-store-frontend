@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('users', '0002_alter_cart_hash_code_and_more'),
     ]
@@ -14,18 +13,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='HashCode',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(db_index=True, max_length=64)),
-            ],
+                ('key', models.CharField(max_length=40, primary_key=True, serialize=False, verbose_name='Key'))]
         ),
         migrations.AlterField(
             model_name='cart',
             name='hash_code',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='users.hashcode'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                       to='users.hashcode'),
         ),
         migrations.AlterField(
             model_name='featuredproducts',
             name='hash_code',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='users.hashcode'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                       to='users.hashcode'),
         ),
     ]

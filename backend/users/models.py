@@ -1,4 +1,6 @@
+import binascii
 import hashlib
+import os
 import random
 from datetime import datetime
 
@@ -70,7 +72,19 @@ def generate_unique_hash():
 
 
 class HashCode(models.Model):
-    token = models.CharField(max_length=64, null=False, blank=False, db_index=True)
+    key = models.CharField(_("Key"), max_length=40, primary_key=True)
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = self.generate_key()
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def generate_key(cls):
+        return binascii.hexlify(os.urandom(20)).decode()
+
+    def __str__(self):
+        return self.key
 
 
 class Cart(models.Model):
@@ -108,12 +122,6 @@ class FeaturedItem(models.Model):
 
     def __str__(self):
         return f'featured:{self.featured_products} - {self.product}'
-
-
-@receiver(pre_save, sender=HashCode)
-def generate_cart_hash(sender, instance, **kwargs):
-    if not instance.token:
-        instance.token = generate_unique_hash()
 
 
 @receiver(pre_save, sender=Cart)
