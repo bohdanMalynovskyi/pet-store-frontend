@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
-from products.models import Product
+from products.models import Product, ChangeablePrice
 
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User
 from users.serializers import CartSerializer, CartItemSerializer, FeaturedProductsSerializer, FeaturedItemSerializer
@@ -38,11 +38,14 @@ class CartTestCase(APITestCase):
         self.user = User.objects.create(email='tomatoma123@gmail.com')
         self.token = Token.objects.create(user=self.user).key
         self.product1 = Product.objects.get(id=1)
-        self.product2 = Product.objects.get(id=2)
+        self.product2 = Product.objects.get(id=3)
+        self.product3 = Product.objects.get(id=2)
         self.cart1 = Cart.objects.create()
         self.cart2 = Cart.objects.create(user=self.user)
+        self.cart3 = Cart.objects.create()
         self.cart_item1 = CartItem.objects.create(product=self.product1, cart=self.cart1, quantity=2)
         self.cart_item2 = CartItem.objects.create(product=self.product1, cart=self.cart2, quantity=2)
+        self.cart_item3 = CartItem.objects.create(product=self.product3, cart=self.cart3, quantity=1)
 
     def test_get_cart(self):
         url = reverse('get-cart')
@@ -77,6 +80,16 @@ class CartTestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(self.cart1.cart_items.last().quantity, 2)
+
+    def test_change_cart_item_changeable_price(self):
+        url = reverse('change-cart-changeable-price', args=[self.product3.id, ChangeablePrice.objects.all()[0].id])
+        headers = {'Cart': f'Token {self.cart3.hash_code.key}'}
+        response = self.client.post(url, headers=headers)
+
+        self.assertEqual(self.cart3.cart_items.last().changeable_price.id, ChangeablePrice.objects.all()[0].id)
+        serializer = CartSerializer(self.cart3)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serializer.data, response.data)
 
     def test_add_to_cart_with_user(self):
         url = reverse('add-to-cart', args=[self.product2.id])
@@ -200,11 +213,14 @@ class FeaturedTestCase(APITestCase):
         self.user = User.objects.create(email='tomatoma123@gmail.com')
         self.token = Token.objects.create(user=self.user).key
         self.product1 = Product.objects.get(id=1)
-        self.product2 = Product.objects.get(id=2)
+        self.product2 = Product.objects.get(id=3)
+        self.product3 = Product.objects.get(id=2)
         self.featured1 = FeaturedProducts.objects.create()
         self.featured2 = FeaturedProducts.objects.create(user=self.user)
+        self.featured3 = Cart.objects.create()
         self.featured_item1 = FeaturedItem.objects.create(product=self.product1, featured_products=self.featured1)
         self.featured_item2 = FeaturedItem.objects.create(product=self.product1, featured_products=self.featured2)
+        self.featured_item3 = CartItem.objects.create(product=self.product3, cart=self.featured3, quantity=1)
 
     def test_get_featured(self):
         url = reverse('get-featured')
@@ -234,6 +250,16 @@ class FeaturedTestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(self.featured1.featured_items.count(), 2)
+
+    def test_change_featured_item_changeable_price(self):
+        url = reverse('change-featured-changeable-price', args=[self.product3.id, ChangeablePrice.objects.all()[0].id])
+        headers = {'Cart': f'Token {self.featured3.hash_code.key}'}
+        response = self.client.post(url, headers=headers)
+
+        self.assertEqual(self.featured3.cart_items.last().changeable_price.id, ChangeablePrice.objects.all()[0].id)
+        serializer = CartSerializer(self.featured3)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serializer.data, response.data)
 
     def test_add_to_featured_with_user(self):
         url = reverse('add-to-featured', args=[self.product2.id])
