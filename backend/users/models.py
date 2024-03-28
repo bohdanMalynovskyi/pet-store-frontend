@@ -5,13 +5,14 @@ import random
 from datetime import datetime
 
 from django.contrib.auth.base_user import BaseUserManager
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save, pre_save, post_delete, pre_delete
 from django.dispatch import receiver
 from pytz import timezone
 
-from products.models import Product
+from products.models import Product, ChangeablePrice
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
@@ -60,6 +61,7 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True, blank=False, null=False)
     second_name = models.CharField(max_length=150, blank=True)
     phone_number = models.CharField(max_length=15, blank=True)
+    # counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'second_name', 'last_name', 'phone_number']
@@ -96,14 +98,25 @@ class Cart(models.Model):
     def delete(self, using=None, keep_parents=False):
         self.hash_code.delete()
 
+    def __str__(self):
+        return f'cart {self.id} - {self.user}'
+
 
 class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    quantity = models.PositiveIntegerField(
+        validators=[MinValueValidator(1, 'Quantity must be greater than or equal to 1.')])
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cart_items')
+    changeable_price = models.ForeignKey(ChangeablePrice, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'cart:{self.cart.id} - {self.product} - {self.quantity} pcs'
+
+    def save(self, *args, **kwargs):
+        if self.changeable_price:
+            if self.product != self.changeable_price.product:
+                raise ValidationError('Changeable price must belong to product')
+        super().save()
 
 
 class FeaturedProducts(models.Model):
@@ -119,9 +132,16 @@ class FeaturedProducts(models.Model):
 class FeaturedItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     featured_products = models.ForeignKey(FeaturedProducts, on_delete=models.CASCADE, related_name='featured_items')
+    changeable_price = models.ForeignKey(ChangeablePrice, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'featured:{self.featured_products} - {self.product}'
+
+    def save(self, *args, **kwargs):
+        if self.changeable_price:
+            if self.product != self.changeable_price.product:
+                raise ValidationError('Changeable price must belong to product')
+        super().save()
 
 
 @receiver(pre_save, sender=Cart)
