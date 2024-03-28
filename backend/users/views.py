@@ -1,12 +1,14 @@
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.db.models import Prefetch
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from users.docs import no_token, not_found, cart_success, bad_request, featured_success, cart_auth, featured_auth
+from products.models import ChangeablePrice
+from users.docs import no_token, not_found, cart_success, bad_request, featured_success, cart_auth, featured_auth, \
+    changeable_price
 from users.logic import authorize_cart, authorize_featured
 from users.logic import get_cart as get_cart_q
 from users.logic import get_featured as get_featured_q
@@ -44,20 +46,45 @@ def get_cart(request, cart_id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found},
-                     manual_parameters=cart_auth)
+@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found, 400: bad_request},
+                         manual_parameters=cart_auth, request_body=changeable_price)
 @api_view(['POST'])
 @authorize_cart
 def add_to_cart(request, cart_id, product_pk):
     try:
-        cart_item = CartItem.objects.get(product_id=product_pk, cart_id=cart_id)
-        cart_item.quantity += 1
-        cart_item.save()
-    except CartItem.DoesNotExist:
         try:
-            CartItem.objects.create(cart_id=cart_id, quantity=1, product_id=product_pk)
-        except IntegrityError:
-            return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            cart_item = CartItem.objects.get(product_id=product_pk, cart_id=cart_id)
+            cart_item.quantity += 1
+            cart_item.save()
+        except CartItem.DoesNotExist:
+            try:
+                changeable_price = request.data.get('changeable_price')
+                CartItem.objects.create(cart_id=cart_id, quantity=1, product_id=product_pk,
+                                        changeable_price_id=changeable_price)
+            except IntegrityError:
+                return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    except ValidationError as e:
+        return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+    cart = get_cart_q(cart_id)
+    serializer = CartSerializer(cart)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found, 400: bad_request},
+                     manual_parameters=cart_auth)
+@api_view(['POST'])
+@authorize_cart
+def change_cart_item_changeable_price(request, cart_id, product_pk, changeable_price_pk):
+    try:
+        item = CartItem.objects.get(product_id=product_pk, cart_id=cart_id)
+        item.changeable_price_id = changeable_price_pk
+        item.save()
+    except CartItem.DoesNotExist:
+        return Response({'error': 'cart item does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    except ValidationError as e:
+        return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+    except ChangeablePrice.DoesNotExist:
+        return Response({'error': 'changeable price does not exist'}, status=status.HTTP_404_NOT_FOUND)
     cart = get_cart_q(cart_id)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -140,19 +167,43 @@ def get_featured(request, featured_id):
 
 
 @swagger_auto_schema(method='post', responses={200: featured_success, 401: no_token, 404: not_found, 400: bad_request},
-                     manual_parameters=featured_auth)
+                     manual_parameters=featured_auth, request_body=changeable_price)
 @api_view(['POST'])
 @authorize_featured
 def add_to_featured(request, featured_id, product_pk):
     try:
-        FeaturedItem.objects.get(featured_products_id=featured_id, product_id=product_pk)
-        return Response({'error': 'item already exist'}, status=status.HTTP_400_BAD_REQUEST)
-    except FeaturedItem.DoesNotExist:
         try:
-            FeaturedItem.objects.create(featured_products_id=featured_id, product_id=product_pk)
-        except IntegrityError:
-            return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            FeaturedItem.objects.get(featured_products_id=featured_id, product_id=product_pk)
+            return Response({'error': 'item already exist'}, status=status.HTTP_400_BAD_REQUEST)
+        except FeaturedItem.DoesNotExist:
+            try:
+                changeable_price = request.data.get('changeable_price')
+                FeaturedItem.objects.create(featured_products_id=featured_id, product_id=product_pk,
+                                            changeable_price_id=changeable_price)
+            except IntegrityError:
+                return Response({'error': 'product does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    except ValidationError as e:
+        return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+    featured = get_featured_q(featured_id)
+    serializer = FeaturedProductsSerializer(featured)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found, 400: bad_request},
+                     manual_parameters=featured_auth)
+@api_view(['POST'])
+@authorize_featured
+def change_featured_item_changeable_price(request, featured_id, product_pk, changeable_price_pk):
+    try:
+        item = FeaturedItem.objects.get(product_id=product_pk, cart_id=featured_id)
+        item.changeable_price_id = changeable_price_pk
+        item.save()
+    except FeaturedItem.DoesNotExist:
+        return Response({'error': 'featured item does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    except ValidationError as e:
+        return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+    except ChangeablePrice.DoesNotExist:
+        return Response({'error': 'changeable price does not exist'}, status=status.HTTP_404_NOT_FOUND)
     featured = get_featured_q(featured_id)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)

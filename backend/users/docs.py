@@ -53,8 +53,8 @@ cart_auth = [
         in_=openapi.IN_HEADER,
         type=openapi.TYPE_STRING,
         description='Cart token in headers. Example: "Cart: Token <hash-code>"'
-        )
-    ]
+    )
+]
 
 featured_auth = [
     openapi.Parameter(
@@ -68,5 +68,13 @@ featured_auth = [
         in_=openapi.IN_HEADER,
         type=openapi.TYPE_STRING,
         description='Featured token in headers. Example: "Featured: Token <hash-code>"'
-        )
-    ]
+    ),
+]
+
+changeable_price = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'changeable_price': openapi.Schema(type=openapi.TYPE_INTEGER),
+    },
+    required=[]
+)
