@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from products.serializers import ProductSerializer
+from products.serializers import ProductSerializer, ChangeablePriceSerializer
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
 
 from djoser.serializers import UserCreateSerializer, UserSerializer, UserCreatePasswordRetypeSerializer
@@ -64,10 +64,11 @@ class CustomUserSerializer(UserSerializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
+    changeable_price = ChangeablePriceSerializer()
 
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity']
+        fields = ['id', 'product', 'quantity', 'changeable_price']
 
 
 class HashCodeSerializer(serializers.ModelSerializer):
@@ -94,10 +95,11 @@ class CartSerializer(serializers.ModelSerializer):
 
 class FeaturedItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
+    changeable_price = ChangeablePriceSerializer()
 
     class Meta:
         model = FeaturedItem
-        fields = ['id', 'product']
+        fields = ['id', 'product', 'changeable_price']
 
 
 class FeaturedProductsSerializer(serializers.ModelSerializer):
@@ -109,7 +111,6 @@ class FeaturedProductsSerializer(serializers.ModelSerializer):
             return obj.hash_code.key
         except AttributeError:
             return None
-
 
     class Meta:
         model = FeaturedProducts

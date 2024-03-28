@@ -28,7 +28,8 @@ class CartItemSerializerTest(ProductsTests):
                 'images': [],
                 'description': 'cool'
             },
-            'quantity': 1
+            'quantity': 1,
+            'changeable_price': None
         }
         data = CartItemSerializer(self.cart_item1).data
         self.assertEqual(expected_data, data)
@@ -71,6 +72,7 @@ class FeaturedItemSerializerTest(ProductsTests):
                 'images': [],
                 'description': 'cool'
             },
+            'changeable_price': None
         }
         data = FeaturedItemSerializer(self.featured_item1).data
         self.assertEqual(expected_data, data)
