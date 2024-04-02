@@ -61,7 +61,7 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True, blank=False, null=False)
     second_name = models.CharField(max_length=150, blank=True)
     phone_number = models.CharField(max_length=15, blank=True)
-    # counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
+    counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'second_name', 'last_name', 'phone_number']
@@ -89,14 +89,24 @@ class HashCode(models.Model):
         return self.key
 
 
-class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='cart')
-    hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, null=True, blank=True)
-    products = models.ManyToManyField(Product, through='CartItem')
-    last_interact = models.DateTimeField(auto_now_add=datetime.now(kiev_tz))
+class UnregisteredUser(models.Model):
+    hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, blank=False, null=False)
+    first_name = models.CharField(max_length=150, blank=True, null=True)
+    second_name = models.CharField(max_length=150, blank=True, null=True)
+    last_name = models.CharField(max_length=150, blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
 
     def delete(self, using=None, keep_parents=False):
         self.hash_code.delete()
+
+
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='cart')
+    unregistered_user = models.OneToOneField(UnregisteredUser, on_delete=models.CASCADE, null=True, blank=True,
+                                             related_name='cart')
+    products = models.ManyToManyField(Product, through='CartItem')
+    last_interact = models.DateTimeField(auto_now_add=datetime.now(kiev_tz))
 
     def __str__(self):
         return f'cart {self.id} - {self.user}'
@@ -121,12 +131,10 @@ class CartItem(models.Model):
 
 class FeaturedProducts(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='featured')
-    hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, null=True, blank=True)
+    unregistered_user = models.OneToOneField(UnregisteredUser, on_delete=models.CASCADE, null=True, blank=True,
+                                             related_name='featured')
     products = models.ManyToManyField(Product, through='FeaturedItem')
     last_interact = models.DateTimeField(auto_now_add=datetime.now(kiev_tz))
-
-    def delete(self, using=None, keep_parents=False):
-        self.hash_code.delete()
 
 
 class FeaturedItem(models.Model):
@@ -142,17 +150,3 @@ class FeaturedItem(models.Model):
             if self.product != self.changeable_price.product:
                 raise ValidationError('Changeable price must belong to product')
         super().save()
-
-
-@receiver(pre_save, sender=Cart)
-def generate_cart_hash(sender, instance, **kwargs):
-    if not instance.hash_code and not instance.user:
-        hash_code = HashCode.objects.create()
-        instance.hash_code = hash_code
-
-
-@receiver(pre_save, sender=FeaturedProducts)
-def generate_featured_hash(sender, instance, **kwargs):
-    if not instance.hash_code and not instance.user:
-        hash_code = HashCode.objects.create()
-        instance.hash_code = hash_code

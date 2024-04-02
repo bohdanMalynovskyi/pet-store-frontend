@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from products.serializers import ProductSerializer, ChangeablePriceSerializer
-from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
+from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode, UnregisteredUser
 
 from djoser.serializers import UserCreateSerializer, UserSerializer, UserCreatePasswordRetypeSerializer
 
@@ -34,23 +34,19 @@ class CustomUserCreateRetypeSerializer(UserCreatePasswordRetypeSerializer):
 
         user = User.objects.create_user(**validated_data)
 
-        try:
-            cart = Cart.objects.get(hash_code__key=cart_hash_code)
+        if cart_hash_code:
+            cart = Cart.objects.get(unregistered_user__hash_code__key=cart_hash_code)
             cart.user = user
-            cart.hash_code.delete()
-            cart.hash_code = None
+            cart.unregistered_user.delete()
+            cart.unregistered_user = None
             cart.save()
-        except Cart.DoesNotExist:
-            pass
 
-        try:
-            featured = FeaturedProducts.objects.get(hash_code__key=featured_hash_code)
+        if featured_hash_code:
+            featured = FeaturedProducts.objects.get(unregistered_user__hash_code__key=featured_hash_code)
             featured.user = user
-            featured.hash_code.delete()
-            featured.hash_code = None
+            featured.unregistered_user.delete()
+            featured.unregistered_user = None
             featured.save()
-        except FeaturedProducts.DoesNotExist:
-            pass
 
         return user
 
@@ -77,13 +73,22 @@ class HashCodeSerializer(serializers.ModelSerializer):
         fields = ['key']
 
 
+class UnregisteredUserSerializer(serializers.ModelSerializer):
+    hash_code = serializers.CharField(source='hash_code.key')
+
+    class Meta:
+        model = UnregisteredUser
+        fields = ['id', 'hash_code', 'first_name', 'second_name', 'last_name', 'phone_number']
+        read_only_fields = ['hash_code']
+
+
 class CartSerializer(serializers.ModelSerializer):
     cart_items = CartItemSerializer(many=True, read_only=True)
     hash_code = serializers.SerializerMethodField()
 
     def get_hash_code(self, obj):
         try:
-            return obj.hash_code.key
+            return obj.unregistered_user.hash_code.key
         except AttributeError:
             return None
 
@@ -108,7 +113,7 @@ class FeaturedProductsSerializer(serializers.ModelSerializer):
 
     def get_hash_code(self, obj):
         try:
-            return obj.hash_code.key
+            return obj.unregistered_user.hash_code.key
         except AttributeError:
             return None
 

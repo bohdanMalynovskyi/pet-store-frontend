@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -12,7 +12,7 @@ from users.docs import no_token, not_found, cart_success, bad_request, featured_
 from users.logic import authorize_cart, authorize_featured
 from users.logic import get_cart as get_cart_q
 from users.logic import get_featured as get_featured_q
-from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem
+from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, UnregisteredUser, HashCode
 from users.serializers import CartSerializer, FeaturedProductsSerializer
 
 
@@ -29,7 +29,9 @@ def create_cart(request):
             else:
                 cart = Cart.objects.create(user=request.user)
         else:
-            cart = Cart.objects.create(user=None)
+            with transaction.atomic():
+                unregistered_user = UnregisteredUser.objects.create(hash_code=HashCode.objects.create())
+                cart = Cart.objects.create(unregistered_user=unregistered_user)
         serializer = CartSerializer(cart)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -149,7 +151,9 @@ def create_featured_products(request):
             else:
                 featured = FeaturedProducts.objects.create(user=request.user)
         else:
-            featured = FeaturedProducts.objects.create(user=None)
+            with transaction.atomic():
+                unregistered_user = UnregisteredUser.objects.create(hash_code=HashCode.objects.create())
+                featured = FeaturedProducts.objects.create(unregistered_user=unregistered_user)
         serializer = FeaturedProductsSerializer(featured)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
