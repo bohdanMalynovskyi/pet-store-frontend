@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from novaposhta.client import NovaPoshtaApi
+
+NP = NovaPoshtaApi(os.getenv('NOVA_POST_API_KEY'))
 
 load_dotenv()
 
@@ -54,6 +57,7 @@ INSTALLED_APPS = [
     'categories.apps.CategoriesConfig',
     'products.apps.ProductsConfig',
     'users.apps.UsersConfig',
+    'orders.apps.OrdersConfig',
 ]
 
 MIDDLEWARE = [
@@ -221,4 +225,11 @@ LOGGING = {
 }
 
 DRF_API_LOGGER_DATABASE = True
-DRF_API_LOGGER_EXCLUDE_KEYS = ['password', 're_password', 'CART', 'FEATURED', 'hash_code', 'token', 'access', 'refresh']
+DRF_API_LOGGER_EXCLUDE_KEYS = ['password', 're_password', 'CART', 'FEATURED', 'USER', 'hash_code', 'token', 'access',
+                               'refresh']
+
+SENDER_REF = os.getenv('SENDER_REF')
+CONTACT_SENDER = os.getenv('CONTACT_SENDER')
+SENDER_WAREHOUSE = os.getenv('SENDER_WAREHOUSE')
+CITY_SENDER = os.getenv('CITY_SENDER')
+SENDER_PHONE = os.getenv('SENDER_PHONE')
