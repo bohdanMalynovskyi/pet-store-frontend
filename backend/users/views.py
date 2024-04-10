@@ -7,13 +7,42 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from products.models import ChangeablePrice
-from users.docs import no_token, not_found, cart_success, bad_request, featured_success, cart_auth, featured_auth, \
-    changeable_price
+from users.docs import not_found, cart_success, bad_request, featured_success, cart_auth, featured_auth, \
+    changeable_price, set_user_data, set_user_data_body
 from users.logic import authorize_cart, authorize_featured
 from users.logic import get_cart as get_cart_q
 from users.logic import get_featured as get_featured_q
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, UnregisteredUser, HashCode
 from users.serializers import CartSerializer, FeaturedProductsSerializer
+
+
+@swagger_auto_schema(method='post', responses={200: 'OK', 400: bad_request}, manual_parameters=set_user_data,
+                     request_body=set_user_data_body)
+@api_view(['POST'])
+def set_user_data(request):
+    try:
+        if request.user.is_authenticated:
+            user = request.user
+        else:
+            hash_code = request.headers.get('User').split(' ')[1]
+            user = UnregisteredUser.objects.select_related('hash_code').get(hash_code__key=hash_code)
+    except (AttributeError, UnregisteredUser.DoesNotExist):
+        return Response({'error': 'Token is invalid or not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+    required_fields = ['first_name', 'last_name', 'phone']
+    for field in required_fields:
+        if not request.data.get(field):
+            return Response({field: ['This field is required.']}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.first_name = request.data.get('first_name')
+    user.last_name = request.data.get('last_name')
+    user.phone_number = request.data.get('phone')
+    user.second_name = request.data.get('second_name', user.second_name)  # Setting default value if not provided
+    try:
+        user.save()
+        return Response({'success': 'User data successfully set'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @swagger_auto_schema(method='post',
@@ -38,7 +67,7 @@ def create_cart(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@swagger_auto_schema(method='get', responses={200: cart_success, 401: no_token, 404: not_found},
+@swagger_auto_schema(method='get', responses={200: cart_success, 404: not_found},
                      manual_parameters=cart_auth)
 @api_view(['GET'])
 @authorize_cart
@@ -48,8 +77,8 @@ def get_cart(request, cart_id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found, 400: bad_request},
-                         manual_parameters=cart_auth, request_body=changeable_price)
+@swagger_auto_schema(method='post', responses={200: cart_success, 404: not_found, 400: bad_request},
+                     manual_parameters=cart_auth, request_body=changeable_price)
 @api_view(['POST'])
 @authorize_cart
 def add_to_cart(request, cart_id, product_pk):
@@ -72,7 +101,7 @@ def add_to_cart(request, cart_id, product_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found, 400: bad_request},
+@swagger_auto_schema(method='post', responses={200: cart_success, 404: not_found, 400: bad_request},
                      manual_parameters=cart_auth)
 @api_view(['POST'])
 @authorize_cart
@@ -92,7 +121,7 @@ def change_cart_item_changeable_price(request, cart_id, product_pk, changeable_p
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found},
+@swagger_auto_schema(method='post', responses={200: cart_success, 404: not_found},
                      manual_parameters=cart_auth)
 @api_view(['POST'])
 @authorize_cart
@@ -111,7 +140,7 @@ def decrease_quantity(request, cart_id, product_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='delete', responses={200: cart_success, 401: no_token, 404: not_found},
+@swagger_auto_schema(method='delete', responses={200: cart_success, 404: not_found},
                      manual_parameters=cart_auth)
 @api_view(['DELETE'])
 @authorize_cart
@@ -126,7 +155,7 @@ def delete_cart_item(request, cart_id, product_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found},
+@swagger_auto_schema(method='post', responses={200: cart_success, 404: not_found},
                      manual_parameters=cart_auth)
 @api_view(['POST'])
 @authorize_cart
@@ -160,7 +189,7 @@ def create_featured_products(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@swagger_auto_schema(method='get', responses={200: featured_success, 401: no_token, 404: not_found},
+@swagger_auto_schema(method='get', responses={200: featured_success, 404: not_found},
                      manual_parameters=featured_auth)
 @api_view(['GET'])
 @authorize_featured
@@ -170,7 +199,7 @@ def get_featured(request, featured_id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='post', responses={200: featured_success, 401: no_token, 404: not_found, 400: bad_request},
+@swagger_auto_schema(method='post', responses={200: featured_success, 404: not_found, 400: bad_request},
                      manual_parameters=featured_auth, request_body=changeable_price)
 @api_view(['POST'])
 @authorize_featured
@@ -193,7 +222,7 @@ def add_to_featured(request, featured_id, product_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='post', responses={200: cart_success, 401: no_token, 404: not_found, 400: bad_request},
+@swagger_auto_schema(method='post', responses={200: cart_success, 404: not_found, 400: bad_request},
                      manual_parameters=featured_auth)
 @api_view(['POST'])
 @authorize_featured
@@ -213,7 +242,7 @@ def change_featured_item_changeable_price(request, featured_id, product_pk, chan
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='delete', responses={200: featured_success, 401: no_token, 404: not_found},
+@swagger_auto_schema(method='delete', responses={200: featured_success, 404: not_found},
                      manual_parameters=featured_auth)
 @api_view(['DELETE'])
 @authorize_featured
@@ -228,7 +257,7 @@ def delete_featured_item(request, featured_id, product_pk):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='post', responses={200: featured_success, 401: no_token, 404: not_found},
+@swagger_auto_schema(method='post', responses={200: featured_success, 404: not_found},
                      manual_parameters=featured_auth)
 @api_view(['POST'])
 @authorize_featured
