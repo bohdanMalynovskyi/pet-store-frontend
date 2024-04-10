@@ -13,7 +13,7 @@ class ProductTestCase(SubCategoryTestCase):
         super().setUp()
         self.brand = Brand.objects.create(name='Purina', country='United States')
         self.product = Product.objects.create(name='ProPlan', subcategory=self.subcategory1, discount=50, price=100,
-                                              description='cool', brand=self.brand)
+                                              description='cool', brand=self.brand, weight=1)
 
     def test_get_list(self):
         """The problem arises from the fact that the serializer_data contains only relative paths(due to test environment) for images,

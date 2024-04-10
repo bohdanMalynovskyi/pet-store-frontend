@@ -101,10 +101,10 @@ class CustomUserSerializerTest(TestCase):
         self.user_data = {
             'email': 'test1@example.com',
             'password': 'testpassword',
-            'first_name': 'John',
-            'second_name': 'Doe',
-            'last_name': 'Smith',
-            'phone_number': '1234567890',
+            'first_name': 'Олександр',
+            'second_name': 'Олександрович',
+            'last_name': 'Олександренко',
+            'phone_number': '0682862345',
         }
         self.user = User.objects.create(**self.user_data)
 
@@ -113,10 +113,10 @@ class CustomUserSerializerTest(TestCase):
         expected_data = {
             'id': self.user.id,
             'email': 'test1@example.com',
-            'first_name': 'John',
-            'second_name': 'Doe',
-            'last_name': 'Smith',
-            'phone_number': '1234567890',
+            'first_name': 'Олександр',
+            'second_name': 'Олександрович',
+            'last_name': 'Олександренко',
+            'phone_number': '0682862345',
         }
         self.assertEqual(serializer.data, expected_data)
 
@@ -127,10 +127,10 @@ class CustomUserCreateSerializerTest(TestCase):
             'email': 'test2@example.com',
             'password': 'testpassword',
             're_password': 'testpassword',
-            'first_name': 'John',
-            'second_name': 'Doe',
-            'last_name': 'Smith',
-            'phone_number': '1234567890'
+            'first_name': 'Олександр',
+            'second_name': 'Олександрович',
+            'last_name': 'Олександренко',
+            'phone_number': '0682862345'
         }
 
     def test_create_serialization(self):
@@ -139,7 +139,7 @@ class CustomUserCreateSerializerTest(TestCase):
         saved_user = serializer.save()
         self.assertEqual(saved_user.email, 'test2@example.com')
         self.assertTrue(check_password('testpassword', saved_user.password))
-        self.assertEqual(saved_user.first_name, 'John')
-        self.assertEqual(saved_user.second_name, 'Doe')
-        self.assertEqual(saved_user.last_name, 'Smith')
-        self.assertEqual(saved_user.phone_number, '1234567890')
+        self.assertEqual(saved_user.first_name, 'Олександр')
+        self.assertEqual(saved_user.second_name, 'Олександрович')
+        self.assertEqual(saved_user.last_name, 'Олександренко')
+        self.assertEqual(saved_user.phone_number, '0682862345')

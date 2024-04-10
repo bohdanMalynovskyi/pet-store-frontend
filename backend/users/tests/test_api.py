@@ -5,8 +5,8 @@ from rest_framework.authtoken.models import Token
 from products.models import Product, ChangeablePrice
 
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, UnregisteredUser, HashCode
-from users.serializers import CartSerializer, CartItemSerializer, FeaturedProductsSerializer, FeaturedItemSerializer
-from rest_framework.test import APITestCase, APIClient
+from users.serializers import CartSerializer, FeaturedProductsSerializer
+from rest_framework.test import APITestCase
 
 
 class CartTestCase(APITestCase):
@@ -319,6 +319,47 @@ class FeaturedTestCase(APITestCase):
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(self.featured2.featured_items.count(), 0)
 
+    def test_authenticated_user_set_data(self):
+        headers = {'Authorization': f'Token {self.token}'}
+        data = {
+            'first_name': 'Валерій',
+            'last_name': 'Непийпиво',
+            'phone': '0682862345'
+        }
+        response = self.client.post(reverse('set_user_data'), data, format='json', headers=headers)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'Валерій')
+        self.assertEqual(self.user.last_name, 'Непийпиво')
+        self.assertEqual(self.user.phone_number, '0682862345')
+
+    def test_unauthenticated_user_set_data(self):
+        unregistered_user = UnregisteredUser.objects.create(hash_code=HashCode.objects.create())
+
+        data = {
+            'first_name': 'Валерій',
+            'last_name': 'Непийпиво',
+            'phone': '0682862345'
+        }
+        headers = {'User': f'Token {unregistered_user.hash_code}'}
+        response = self.client.post(reverse('set_user_data'), data, format='json', headers=headers)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        unregistered_user.refresh_from_db()
+        self.assertEqual(unregistered_user.first_name, 'Валерій')
+        self.assertEqual(unregistered_user.last_name, 'Непийпиво')
+        self.assertEqual(unregistered_user.phone_number, '0682862345')
+
+    def test_missing_required_fields(self):
+        headers = {'Authorization': f'Token {self.token}'}
+        data = {}
+        response = self.client.post(reverse('set_user_data'), data, format='json', headers=headers)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class CustomDjoserEndpointTests(APITestCase):
 
@@ -326,9 +367,9 @@ class CustomDjoserEndpointTests(APITestCase):
         self.user_data = {
             'email': 'test@example.com',
             'password': 'testpassword',
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'phone_number': '123456789'
+            'first_name': 'Олександр',
+            'last_name': 'Олександренко',
+            'phone_number': '0682862345'
         }
         self.user = User.objects.create_user(**self.user_data)
         self.login_url = reverse('login')
@@ -360,9 +401,9 @@ class CustomDjoserEndpointTests(APITestCase):
             'email': 'newuser@example.com',
             'password': 'newuserpassword',
             're_password': 'newuserpassword',
-            'first_name': 'Jane',
-            'last_name': 'Doe',
-            'phone_number': '987654321'
+            'first_name': 'Олександр',
+            'last_name': 'Олександренко',
+            'phone_number': '0682862345'
         }
         response = self.client.post(reverse('user-list'), new_user_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -381,9 +422,9 @@ class CustomDjoserEndpointTests(APITestCase):
             'email': 'newuser@example.com',
             'password': 'newuserpassword',
             're_password': 'newuserpassword',
-            'first_name': 'Jane',
-            'last_name': 'Doe',
-            'phone_number': '987654321',
+            'first_name': 'Олександр',
+            'last_name': 'Олександренко',
+            'phone_number': '0682862345',
             'cart_hash_code': f'{cart.unregistered_user.hash_code.key}',
             'featured_hash_code': f'{featured.unregistered_user.hash_code.key}'
         }
