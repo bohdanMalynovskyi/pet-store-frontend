@@ -38,6 +38,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(blank=True, null=True)),
                 ('brand', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='products.brand')),
                 ('subcategory', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='categories.subcategory')),
+                ('weight', models.DecimalField(blank=False, decimal_places=2, max_digits=7, null=False, default=1)),
             ],
             options={
                 'verbose_name': 'products',
