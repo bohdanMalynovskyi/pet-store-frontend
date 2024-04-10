@@ -28,7 +28,7 @@ class ProductsTests(BrandTests):
     def setUp(self):
         super().setUp()
         self.product = Product.objects.create(name='ProPlan', subcategory=self.sub_category, discount=50, price=100,
-                                              description='cool', brand=self.brand)
+                                              description='cool', brand=self.brand, weight=1)
 
     def test_ok(self):
         expected_data = {

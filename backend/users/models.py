@@ -7,11 +7,12 @@ from datetime import datetime
 from django.contrib.auth.base_user import BaseUserManager
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import post_save, pre_save, post_delete, pre_delete
 from django.dispatch import receiver
 from pytz import timezone
 
+from backend.settings import NP
 from products.models import Product, ChangeablePrice
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
@@ -62,10 +63,24 @@ class User(AbstractUser):
     second_name = models.CharField(max_length=150, blank=True)
     phone_number = models.CharField(max_length=15, blank=True)
     counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
+    contact_person_ref = models.CharField(max_length=36, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'second_name', 'last_name', 'phone_number']
     objects = UserManager()
+
+    def save(self, *args, **kwargs):
+        if self.first_name and self.last_name and self.phone_number:
+            response = NP.counterparty.save(self.first_name, self.second_name, self.last_name, self.phone_number,
+                                            self.email, 'PrivatePerson', '', 'Recipient', '')
+            if response['success']:
+                ref = response["data"][0]["Ref"]
+                contact_person_ref = response["data"][0]["ContactPerson"]['data'][0]["Ref"]
+                self.counterparty_ref = ref
+                self.contact_person_ref = contact_person_ref
+            else:
+                raise Exception(response['errors'])
+        super().save()
 
 
 def generate_unique_hash():
@@ -96,6 +111,20 @@ class UnregisteredUser(models.Model):
     last_name = models.CharField(max_length=150, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
+    contact_person_ref = models.CharField(max_length=36, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.first_name and self.last_name and self.phone_number:
+            response = NP.counterparty.save(self.first_name, self.second_name, self.last_name, self.phone_number, '',
+                                            'PrivatePerson', '', 'Recipient', '')
+            if response['success']:
+                ref = response["data"][0]["Ref"]
+                contact_person_ref = response["data"][0]["ContactPerson"]['data'][0]["Ref"]
+                self.counterparty_ref = ref
+                self.contact_person_ref = contact_person_ref
+            else:
+                raise Exception(response['errors'])
+        super().save()
 
     def delete(self, using=None, keep_parents=False):
         self.hash_code.delete()

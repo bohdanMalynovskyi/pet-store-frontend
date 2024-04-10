@@ -14,3 +14,4 @@ celery-singleton==0.3.1
 djoser==2.2.2
 django-filter==23.5
 drf-api-logger==1.1.15
+novaposhta-python-client==0.1.5
