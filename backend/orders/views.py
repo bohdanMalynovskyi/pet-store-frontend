@@ -1,9 +1,8 @@
-from django.utils.decorators import method_decorator
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from backend.settings import NP
@@ -11,30 +10,16 @@ from orders.docs import create_order_body, get_warehouse_body
 from orders.logic import create_order_from_cart
 from orders.models import Order
 from orders.serializers import OrderSerializer
-from users.docs import bad_request, not_found, cart_auth, set_user_data
+from users.docs import bad_request, not_found, cart_auth
 from users.logic import authorize_cart, get_cart
-from users.models import  UnregisteredUser
 
 
-@method_decorator(name='list', decorator=swagger_auto_schema(manual_parameters=set_user_data,
-                                                             responses={200: OrderSerializer, 400: 'Bad Request'}))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(manual_parameters=set_user_data,
-                                                                 responses={200: OrderSerializer, 400: 'Bad Request'}))
 class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OrderSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            queryset = Order.objects.filter(user=self.request.user)
-        else:
-            try:
-                hash_code = self.request.headers.get('User').split(' ')[1]
-                user = UnregisteredUser.objects.select_related('hash_code').get(hash_code__key=hash_code)
-                queryset = Order.objects.filter(unregistered_user=user)
-            except (AttributeError, UnregisteredUser.DoesNotExist):
-                return Response({'error': 'Token is invalid or not provided'}, status=status.HTTP_400_BAD_REQUEST)
-        return queryset
+        return Order.objects.filter(user=self.request.user)
 
 
 @swagger_auto_schema(method='post',
