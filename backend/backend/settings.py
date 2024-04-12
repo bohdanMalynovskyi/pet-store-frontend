@@ -14,10 +14,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 from novaposhta.client import NovaPoshtaApi
 
-NP = NovaPoshtaApi(os.getenv('NOVA_POST_API_KEY'))
-
 load_dotenv()
 
+NP = NovaPoshtaApi(api_key=os.getenv('NOVA_POST_API_KEY'))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
