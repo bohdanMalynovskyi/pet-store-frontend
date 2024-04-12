@@ -6,8 +6,6 @@ from users import views
 router = SimpleRouter()
 
 urlpatterns = [
-    path('set_user_data/', views.set_user_data, name='set_user_data'),
-
     path('cart/create/', views.create_cart, name='create-cart'),
     path('cart/', views.get_cart, name='get-cart'),
     path('cart/add/<int:product_pk>/', views.add_to_cart, name='add-to-cart'),

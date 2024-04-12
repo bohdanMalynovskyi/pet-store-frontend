@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 
 from products.models import Product, ChangeablePrice
 
-from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, UnregisteredUser, HashCode
+from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
 from users.serializers import CartSerializer, FeaturedProductsSerializer
 from rest_framework.test import APITestCase
 
@@ -30,7 +30,7 @@ class CartTestCase(APITestCase):
         cart = Cart.objects.last()
         serializer = CartSerializer(cart)
 
-        self.assertEqual(cart.unregistered_user, None)
+        self.assertEqual(cart.user, user)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(serializer.data, response.data)
 
@@ -40,18 +40,16 @@ class CartTestCase(APITestCase):
         self.product1 = Product.objects.get(id=1)
         self.product2 = Product.objects.get(id=3)
         self.product3 = Product.objects.get(id=2)
-        self.cart1 = Cart.objects.create(
-            unregistered_user=UnregisteredUser.objects.create(hash_code=HashCode.objects.create()))
+        self.cart1 = Cart.objects.create()
         self.cart2 = Cart.objects.create(user=self.user)
-        self.cart3 = Cart.objects.create(
-            unregistered_user=UnregisteredUser.objects.create(hash_code=HashCode.objects.create()))
+        self.cart3 = Cart.objects.create()
         self.cart_item1 = CartItem.objects.create(product=self.product1, cart=self.cart1, quantity=2)
         self.cart_item2 = CartItem.objects.create(product=self.product1, cart=self.cart2, quantity=2)
         self.cart_item3 = CartItem.objects.create(product=self.product3, cart=self.cart3, quantity=1)
 
     def test_get_cart(self):
         url = reverse('get-cart')
-        headers = {'Cart': f'Token {self.cart1.unregistered_user.hash_code.key}'}
+        headers = {'Cart': f'Token {self.cart1.hash_code.key}'}
         response = self.client.get(url, headers=headers)
 
         serializer = CartSerializer(self.cart1)
@@ -71,7 +69,7 @@ class CartTestCase(APITestCase):
 
     def test_add_to_cart(self):
         url = reverse('add-to-cart', args=[self.product2.id])
-        headers = {'Cart': f'Token {self.cart1.unregistered_user.hash_code.key}'}
+        headers = {'Cart': f'Token {self.cart1.hash_code.key}'}
         self.client.post(url, headers=headers)
 
         self.assertEqual(self.cart1.cart_items.last().quantity, 1)
@@ -85,7 +83,7 @@ class CartTestCase(APITestCase):
 
     def test_change_cart_item_changeable_price(self):
         url = reverse('change-cart-changeable-price', args=[self.product3.id, ChangeablePrice.objects.all()[0].id])
-        headers = {'Cart': f'Token {self.cart3.unregistered_user.hash_code.key}'}
+        headers = {'Cart': f'Token {self.cart3.hash_code.key}'}
         response = self.client.post(url, headers=headers)
 
         self.assertEqual(self.cart3.cart_items.last().changeable_price.id, ChangeablePrice.objects.all()[0].id)
@@ -111,7 +109,7 @@ class CartTestCase(APITestCase):
 
     def test_decrease_cart_item(self):
         url = reverse('decrease-quantity', args=[self.product1.id])
-        headers = {'Cart': f'Token {self.cart1.unregistered_user.hash_code.key}'}
+        headers = {'Cart': f'Token {self.cart1.hash_code.key}'}
         self.client.post(url, headers=headers)
 
         self.cart1.refresh_from_db()
@@ -143,7 +141,7 @@ class CartTestCase(APITestCase):
 
     def test_delete_cart_item(self):
         url = reverse('delete-cart-item', args=[self.product1.id])
-        headers = {'Cart': f'Token {self.cart1.unregistered_user.hash_code.key}'}
+        headers = {'Cart': f'Token {self.cart1.hash_code.key}'}
         response = self.client.delete(url, headers=headers)
 
         serializer = CartSerializer(self.cart1)
@@ -165,7 +163,7 @@ class CartTestCase(APITestCase):
 
     def test_clear_cart(self):
         url = reverse('clear-cart')
-        headers = {'Cart': f'Token {self.cart1.unregistered_user.hash_code.key}'}
+        headers = {'Cart': f'Token {self.cart1.hash_code.key}'}
         response = self.client.post(url, headers=headers)
 
         serializer = CartSerializer(self.cart1)
@@ -207,7 +205,7 @@ class FeaturedTestCase(APITestCase):
         featured = FeaturedProducts.objects.last()
         serializer = FeaturedProductsSerializer(featured)
 
-        self.assertEqual(featured.unregistered_user, None)
+        self.assertEqual(featured.user, user)
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         self.assertEqual(serializer.data, response.data)
 
@@ -217,18 +215,16 @@ class FeaturedTestCase(APITestCase):
         self.product1 = Product.objects.get(id=1)
         self.product2 = Product.objects.get(id=3)
         self.product3 = Product.objects.get(id=2)
-        self.featured1 = FeaturedProducts.objects.create(
-            unregistered_user=UnregisteredUser.objects.create(hash_code=HashCode.objects.create()))
+        self.featured1 = FeaturedProducts.objects.create()
         self.featured2 = FeaturedProducts.objects.create(user=self.user)
-        self.featured3 = Cart.objects.create(
-            unregistered_user=UnregisteredUser.objects.create(hash_code=HashCode.objects.create()))
+        self.featured3 = Cart.objects.create()
         self.featured_item1 = FeaturedItem.objects.create(product=self.product1, featured_products=self.featured1)
         self.featured_item2 = FeaturedItem.objects.create(product=self.product1, featured_products=self.featured2)
         self.featured_item3 = CartItem.objects.create(product=self.product3, cart=self.featured3, quantity=1)
 
     def test_get_featured(self):
         url = reverse('get-featured')
-        headers = {'Featured': f'Token {self.featured1.unregistered_user.hash_code.key}'}
+        headers = {'Featured': f'Token {self.featured1.hash_code.key}'}
         response = self.client.get(url, headers=headers)
 
         serializer = FeaturedProductsSerializer(self.featured1)
@@ -247,7 +243,7 @@ class FeaturedTestCase(APITestCase):
 
     def test_add_to_featured(self):
         url = reverse('add-to-featured', args=[self.product2.id])
-        headers = {'Featured': f'Token {self.featured1.unregistered_user.hash_code.key}'}
+        headers = {'Featured': f'Token {self.featured1.hash_code.key}'}
         response = self.client.post(url, headers=headers)
 
         serializer = FeaturedProductsSerializer(self.featured1)
@@ -257,7 +253,7 @@ class FeaturedTestCase(APITestCase):
 
     def test_change_featured_item_changeable_price(self):
         url = reverse('change-featured-changeable-price', args=[self.product3.id, ChangeablePrice.objects.all()[0].id])
-        headers = {'Cart': f'Token {self.featured3.unregistered_user.hash_code.key}'}
+        headers = {'Cart': f'Token {self.featured3.hash_code.key}'}
         response = self.client.post(url, headers=headers)
 
         self.assertEqual(self.featured3.cart_items.last().changeable_price.id, ChangeablePrice.objects.all()[0].id)
@@ -277,7 +273,7 @@ class FeaturedTestCase(APITestCase):
 
     def test_delete_featured_item(self):
         url = reverse('delete-featured-item', args=[self.product1.id])
-        headers = {'Featured': f'Token {self.featured1.unregistered_user.hash_code.key}'}
+        headers = {'Featured': f'Token {self.featured1.hash_code.key}'}
         response = self.client.delete(url, headers=headers)
 
         serializer = FeaturedProductsSerializer(self.featured1)
@@ -299,7 +295,7 @@ class FeaturedTestCase(APITestCase):
 
     def test_clear_featured(self):
         url = reverse('clear-featured')
-        headers = {'Featured': f'Token {self.featured1.unregistered_user.hash_code.key}'}
+        headers = {'Featured': f'Token {self.featured1.hash_code.key}'}
         response = self.client.post(url, headers=headers)
 
         serializer = FeaturedProductsSerializer(self.featured1)
@@ -318,47 +314,6 @@ class FeaturedTestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(self.featured2.featured_items.count(), 0)
-
-    def test_authenticated_user_set_data(self):
-        headers = {'Authorization': f'Token {self.token}'}
-        data = {
-            'first_name': 'Валерій',
-            'last_name': 'Непийпиво',
-            'phone': '0682862345'
-        }
-        response = self.client.post(reverse('set_user_data'), data, format='json', headers=headers)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.first_name, 'Валерій')
-        self.assertEqual(self.user.last_name, 'Непийпиво')
-        self.assertEqual(self.user.phone_number, '0682862345')
-
-    def test_unauthenticated_user_set_data(self):
-        unregistered_user = UnregisteredUser.objects.create(hash_code=HashCode.objects.create())
-
-        data = {
-            'first_name': 'Валерій',
-            'last_name': 'Непийпиво',
-            'phone': '0682862345'
-        }
-        headers = {'User': f'Token {unregistered_user.hash_code}'}
-        response = self.client.post(reverse('set_user_data'), data, format='json', headers=headers)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        unregistered_user.refresh_from_db()
-        self.assertEqual(unregistered_user.first_name, 'Валерій')
-        self.assertEqual(unregistered_user.last_name, 'Непийпиво')
-        self.assertEqual(unregistered_user.phone_number, '0682862345')
-
-    def test_missing_required_fields(self):
-        headers = {'Authorization': f'Token {self.token}'}
-        data = {}
-        response = self.client.post(reverse('set_user_data'), data, format='json', headers=headers)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class CustomDjoserEndpointTests(APITestCase):
@@ -414,10 +369,8 @@ class CustomDjoserEndpointTests(APITestCase):
         self.assertEqual(new_user.phone_number, new_user_data['phone_number'])
 
     def test_user_registration_with_cart_and_featured(self):
-        cart = Cart.objects.create(
-            unregistered_user=UnregisteredUser.objects.create(hash_code=HashCode.objects.create()))
-        featured = FeaturedProducts.objects.create(
-            unregistered_user=UnregisteredUser.objects.create(hash_code=HashCode.objects.create()))
+        cart = Cart.objects.create()
+        featured = FeaturedProducts.objects.create()
         new_user_data = {
             'email': 'newuser@example.com',
             'password': 'newuserpassword',
@@ -425,8 +378,8 @@ class CustomDjoserEndpointTests(APITestCase):
             'first_name': 'Олександр',
             'last_name': 'Олександренко',
             'phone_number': '0682862345',
-            'cart_hash_code': f'{cart.unregistered_user.hash_code.key}',
-            'featured_hash_code': f'{featured.unregistered_user.hash_code.key}'
+            'cart_hash_code': f'{cart.hash_code.key}',
+            'featured_hash_code': f'{featured.hash_code.key}'
         }
         response = self.client.post(reverse('user-list'), new_user_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -437,7 +390,7 @@ class CustomDjoserEndpointTests(APITestCase):
         self.assertEqual(new_user.phone_number, new_user_data['phone_number'])
         cart.refresh_from_db()
         featured.refresh_from_db()
-        self.assertEqual(new_user.cart.unregistered_user, None)
+        self.assertEqual(new_user.cart.hash_code, None)
         self.assertEqual(cart.user, new_user)
         self.assertEqual(featured.user, new_user)
-        self.assertEqual(new_user.featured.unregistered_user, None)
+        self.assertEqual(new_user.featured.hash_code, None)

@@ -1,16 +1,14 @@
 from orders.models import Order, OrderItem
 from orders.serializers import OrderItemSerializer, OrderSerializer
 from products.tests.test_serializers import ProductsTests
-from users.models import UnregisteredUser, HashCode
+from users.models import HashCode
 
 
 class OrderItemSerializerTest(ProductsTests):
 
     def setUp(self):
         super().setUp()
-        self.order = Order.objects.create(status='in_process', payment_type='cash',
-                                          unregistered_user=UnregisteredUser.objects.create(
-                                              hash_code=HashCode.objects.create()))
+        self.order = Order.objects.create(status='in_process', payment_type='cash')
         self.order_item1 = OrderItem.objects.create(product=self.product, order=self.order, quantity=1, fixed_price=50)
 
     def test_ok(self):

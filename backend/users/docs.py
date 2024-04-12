@@ -69,30 +69,3 @@ changeable_price = openapi.Schema(
     },
     required=[]
 )
-
-
-set_user_data = [
-    openapi.Parameter(
-        name='Authorization',
-        in_=openapi.IN_HEADER,
-        type=openapi.TYPE_STRING,
-        description='Bearer token for authentication'
-    ),
-    openapi.Parameter(
-        name='User',
-        in_=openapi.IN_HEADER,
-        type=openapi.TYPE_STRING,
-        description='Unregistered user token in headers. Example: "User: Token <hash-code>"'
-    )
-]
-
-set_user_data_body = openapi.Schema(
-    type=openapi.TYPE_OBJECT,
-    properties={
-        'first_name': openapi.Schema(type=openapi.TYPE_STRING),
-        'second_name': openapi.Schema(type=openapi.TYPE_STRING),
-        'last_name': openapi.Schema(type=openapi.TYPE_STRING),
-        'phone': openapi.Schema(type=openapi.TYPE_STRING),
-    },
-    required=['first_name', 'last_name', 'phone']
-)

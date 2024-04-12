@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from products.models import Product, ChangeablePrice
-from users.models import User, UnregisteredUser
+from users.models import User
 
 
 class Order(models.Model):
@@ -23,9 +23,9 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='orders')
-    unregistered_user = models.ForeignKey(UnregisteredUser, on_delete=models.CASCADE, null=True, blank=True,
-                                          related_name='orders')
-    ref = models.CharField(max_length=36, null=True, blank=True)
+    counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
+    contact_person_ref = models.CharField(max_length=36, blank=True, null=True)
+    document_ref = models.CharField(max_length=36, null=True, blank=True)
     products = models.ManyToManyField(Product, through='OrderItem')
     status = models.CharField(choices=STATUS, max_length=22, null=False, blank=False)
     payment_type = models.CharField(choices=PAYMENT_TYPE, max_length=7, null=False, blank=False)

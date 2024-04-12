@@ -79,6 +79,7 @@ class User(AbstractUser):
                 self.counterparty_ref = ref
                 self.contact_person_ref = contact_person_ref
             else:
+                print(response)
                 raise Exception(response['errors'])
         super().save()
 
@@ -104,41 +105,18 @@ class HashCode(models.Model):
         return self.key
 
 
-class UnregisteredUser(models.Model):
-    hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, blank=False, null=False)
-    first_name = models.CharField(max_length=150, blank=True, null=True)
-    second_name = models.CharField(max_length=150, blank=True, null=True)
-    last_name = models.CharField(max_length=150, blank=True, null=True)
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
-    contact_person_ref = models.CharField(max_length=36, blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        if self.first_name and self.last_name and self.phone_number:
-            response = NP.counterparty.save(self.first_name, self.second_name, self.last_name, self.phone_number, '',
-                                            'PrivatePerson', '', 'Recipient', '')
-            if response['success']:
-                ref = response["data"][0]["Ref"]
-                contact_person_ref = response["data"][0]["ContactPerson"]['data'][0]["Ref"]
-                self.counterparty_ref = ref
-                self.contact_person_ref = contact_person_ref
-            else:
-                raise Exception(response['errors'])
-        super().save()
-
-    def delete(self, using=None, keep_parents=False):
-        self.hash_code.delete()
-
-
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='cart')
-    unregistered_user = models.OneToOneField(UnregisteredUser, on_delete=models.CASCADE, null=True, blank=True,
-                                             related_name='cart')
+    hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, null=True, blank=True,
+                                     related_name='cart')
     products = models.ManyToManyField(Product, through='CartItem')
     last_interact = models.DateTimeField(auto_now_add=datetime.now(kiev_tz))
 
     def __str__(self):
         return f'cart {self.id} - {self.user}'
+
+    def delete(self, using=None, keep_parents=False):
+        self.hash_code.delete()
 
 
 class CartItem(models.Model):
@@ -160,10 +138,13 @@ class CartItem(models.Model):
 
 class FeaturedProducts(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='featured')
-    unregistered_user = models.OneToOneField(UnregisteredUser, on_delete=models.CASCADE, null=True, blank=True,
-                                             related_name='featured')
+    hash_code = models.OneToOneField(HashCode, on_delete=models.CASCADE, null=True, blank=True,
+                                     related_name='featured')
     products = models.ManyToManyField(Product, through='FeaturedItem')
     last_interact = models.DateTimeField(auto_now_add=datetime.now(kiev_tz))
+
+    def delete(self, using=None, keep_parents=False):
+        self.hash_code.delete()
 
 
 class FeaturedItem(models.Model):
@@ -179,3 +160,17 @@ class FeaturedItem(models.Model):
             if self.product != self.changeable_price.product:
                 raise ValidationError('Changeable price must belong to product')
         super().save()
+
+
+@receiver(pre_save, sender=Cart)
+def generate_cart_hash(sender, instance, **kwargs):
+    if not instance.hash_code and not instance.user:
+        hash_code = HashCode.objects.create()
+        instance.hash_code = hash_code
+
+
+@receiver(pre_save, sender=FeaturedProducts)
+def generate_featured_hash(sender, instance, **kwargs):
+    if not instance.hash_code and not instance.user:
+        hash_code = HashCode.objects.create()
+        instance.hash_code = hash_code
