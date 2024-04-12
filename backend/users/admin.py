@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, UnregisteredUser
+from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import gettext_lazy as _
@@ -10,7 +10,7 @@ admin.site.register(Cart)
 admin.site.register(CartItem)
 admin.site.register(FeaturedProducts)
 admin.site.register(FeaturedItem)
-admin.site.register(UnregisteredUser)
+
 
 
 @admin.register(User)
