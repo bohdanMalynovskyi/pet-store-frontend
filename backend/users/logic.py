@@ -14,7 +14,7 @@ def authorize_cart(view_func):
         if request.user.is_authenticated:
             try:
                 cart = Cart.objects.select_related('user').values('id').get(user=request.user)
-                # set_interact.delay(cart_id=cart['id'])  # set "last interact" field to now
+                set_interact.delay(cart_id=cart['id'])  # set "last interact" field to now
                 return view_func(request, cart['id'], *args, **kwargs)
             except Cart.DoesNotExist:
                 return Response({'error': 'cart does not exist'}, status=status.HTTP_404_NOT_FOUND)
@@ -22,7 +22,7 @@ def authorize_cart(view_func):
             try:
                 hash_code = request.headers.get('Cart').split(' ')[1]
                 cart = Cart.objects.select_related('hash_code').values('id').get(hash_code__key=hash_code)
-                # set_interact.delay(cart_id=cart['id'])  # set "last interact" field to now
+                set_interact.delay(cart_id=cart['id'])  # set "last interact" field to now
                 return view_func(request, cart['id'], *args, **kwargs)
             except AttributeError:
                 return Response({'error': 'Token is not provided'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -38,7 +38,7 @@ def authorize_featured(view_func):
         if request.user.is_authenticated:
             try:
                 featured = FeaturedProducts.objects.select_related('user').values('id').get(user=request.user)
-#                 set_interact.delay(featured_id=featured['id'])  # set "last interact" field to now
+                set_interact.delay(featured_id=featured['id'])  # set "last interact" field to now
                 return view_func(request, featured['id'], *args, **kwargs)
             except FeaturedProducts.DoesNotExist:
                 return Response({'error': 'featured products does not exist'}, status=status.HTTP_404_NOT_FOUND)
@@ -47,7 +47,7 @@ def authorize_featured(view_func):
                 hash_code = request.headers.get('Featured').split(' ')[1]
                 featured = FeaturedProducts.objects.select_related('hash_code').values('id').get(
                     hash_code__key=hash_code)
-#                 set_interact.delay(featured_id=featured['id'])  # set "last interact" field to now
+                set_interact.delay(featured_id=featured['id'])  # set "last interact" field to now
                 return view_func(request, featured['id'], *args, **kwargs)
             except AttributeError:
                 return Response({'error': 'Token is not provided'}, status=status.HTTP_401_UNAUTHORIZED)
