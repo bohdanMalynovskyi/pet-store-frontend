@@ -29,13 +29,12 @@ def create_initial_data(apps, schema_editor):
         Product(name='Product5', brand=Brand.objects.get(name='Brand3'), price=24, discount=5, weight=0.5),
         Product(name='Product6', price=35.00, weight=2, brand=Brand.objects.get(name='Brand1'),
                 subcategory=SubCategory.objects.all().last()),
-        Product(name='Product7', price=100.00, discount=15, weight=1, brand=Brand.objects.get(name='Brand2'),
-                subcategory=SubCategory.objects.all().first()),
+        Product(name='Product7', brand=Brand.objects.get(name='Brand3'), price=125, discount=25, weight=0.5),
         Product(name='Product8', brand=Brand.objects.get(name='Brand3'), price=125, discount=25, weight=0.5),
         Product(name='Product9', price=45, weight=2, brand=Brand.objects.get(name='Brand1'),
                 subcategory=SubCategory.objects.all().last()),
-        Product(name='Product10', price=77.00, weight=2, brand=Brand.objects.get(name='Brand1'),
-                subcategory=SubCategory.objects.all().last()),
+        Product(name='Product10', price=45, weight=2, brand=Brand.objects.get(name='Brand1'),
+                subcategory=SubCategory.objects.all().last())
     ])
 
     # Create three instances of ChangeablePrice
