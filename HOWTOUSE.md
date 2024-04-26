@@ -41,7 +41,7 @@ docker-compose up --build
 
 **Облікові дані для входу в адмін-панель:**
 
-    -login: admin
+    -login: admin@example.com
     -password: admin
 
 

@@ -32,7 +32,7 @@ class CustomUserCreateRetypeSerializer(UserCreatePasswordRetypeSerializer):
         cart_hash_code = validated_data.pop('cart_hash_code', None)
         featured_hash_code = validated_data.pop('featured_hash_code', None)
 
-        user = User.objects.create_user(**validated_data)
+        user = User.objects.create_user(**validated_data, is_active=False)
 
         if cart_hash_code:
             cart = Cart.objects.get(hash_code__key=cart_hash_code)

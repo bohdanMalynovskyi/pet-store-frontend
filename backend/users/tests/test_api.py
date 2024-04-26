@@ -367,6 +367,7 @@ class CustomDjoserEndpointTests(APITestCase):
         self.assertEqual(new_user.first_name, new_user_data['first_name'])
         self.assertEqual(new_user.last_name, new_user_data['last_name'])
         self.assertEqual(new_user.phone_number, new_user_data['phone_number'])
+        self.assertEqual(new_user.is_active, False)
 
     def test_user_registration_with_cart_and_featured(self):
         cart = Cart.objects.create()
@@ -394,3 +395,4 @@ class CustomDjoserEndpointTests(APITestCase):
         self.assertEqual(cart.user, new_user)
         self.assertEqual(featured.user, new_user)
         self.assertEqual(new_user.featured.hash_code, None)
+        self.assertEqual(new_user.is_active, False)
