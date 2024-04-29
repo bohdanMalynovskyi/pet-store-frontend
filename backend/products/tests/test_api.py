@@ -27,9 +27,8 @@ class ProductTestCase(SubCategoryTestCase):
 
         # Extract relative paths from response.data
         for product in response.data['results']:
-            for image in product.get('images', []):
-                # Remove the domain and protocol, keep only relative paths
-                image['image'] = image['image'].removeprefix('http://testserver')
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
 
         # Compare the serialized data and response data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -75,9 +74,8 @@ class ProductTestCase(SubCategoryTestCase):
         url = reverse('products-list')
         response = self.client.get(url, {'ordering': 'price'})
         for product in response.data['results']:
-            for image in product.get('images', []):
-                # Remove the domain and protocol, keep only relative paths
-                image['image'] = image['image'].removeprefix('http://testserver')
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
         sorted_products = Product.objects.all().annotate(
             discount_price=F('price') - (F('price') * F('discount') / 100)
         ).order_by('discount_price')[:10]
@@ -90,9 +88,9 @@ class ProductTestCase(SubCategoryTestCase):
         url = reverse('products-list')
         response = self.client.get(url, {'ordering': '-price'})
         for product in response.data['results']:
-            for image in product.get('images', []):
-                # Remove the domain and protocol, keep only relative paths
-                image['image'] = image['image'].removeprefix('http://testserver')
+            # Remove the domain and protocol, keep only relative paths
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
         sorted_products = Product.objects.all().annotate(
             discount_price=F('price') - (F('price') * F('discount') / 100)
         ).order_by('-discount_price')[:10]
@@ -105,9 +103,9 @@ class ProductTestCase(SubCategoryTestCase):
         min_price = 5  # Устанавливаем минимальную цену для фильтрации
         response = self.client.get(url, {'min_price': min_price})
         for product in response.data['results']:
-            for image in product.get('images', []):
-                # Remove the domain and protocol, keep only relative paths
-                image['image'] = image['image'].removeprefix('http://testserver')
+            # Remove the domain and protocol, keep only relative paths
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
         filtered_products = Product.objects.annotate(
             discount_price=F('price') - (F('price') * F('discount') / 100)
         ).filter(discount_price__gte=min_price)[:10]
@@ -121,9 +119,8 @@ class ProductTestCase(SubCategoryTestCase):
         max_price = 150  # Устанавливаем максимальную цену для фильтрации
         response = self.client.get(url, {'max_price': max_price})
         for product in response.data['results']:
-            for image in product.get('images', []):
-                # Remove the domain and protocol, keep only relative paths
-                image['image'] = image['image'].removeprefix('http://testserver')
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
         filtered_products = Product.objects.annotate(
             discount_price=F('price') - (F('price') * F('discount') / 100)
         ).filter(discount_price__lte=max_price)[:10]
@@ -136,9 +133,8 @@ class ProductTestCase(SubCategoryTestCase):
         url = reverse('products-list')
         response = self.client.get(url, {'subcategory': 1})
         for product in response.data['results']:
-            for image in product.get('images', []):
-                # Remove the domain and protocol, keep only relative paths
-                image['image'] = image['image'].removeprefix('http://testserver')
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
         filtered_products = Product.objects.filter(subcategory_id=1)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -149,9 +145,8 @@ class ProductTestCase(SubCategoryTestCase):
         url = reverse('products-list')
         response = self.client.get(url, {'animal_category': 1})
         for product in response.data['results']:
-            for image in product.get('images', []):
-                # Remove the domain and protocol, keep only relative paths
-                image['image'] = image['image'].removeprefix('http://testserver')
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
         filtered_products = Product.objects.filter(subcategory__product_category__animal_category_id=1)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -162,9 +157,8 @@ class ProductTestCase(SubCategoryTestCase):
         url = reverse('products-list')
         response = self.client.get(url, {'product_category': 1})
         for product in response.data['results']:
-            for image in product.get('images', []):
-                # Remove the domain and protocol, keep only relative paths
-                image['image'] = image['image'].removeprefix('http://testserver')
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
         filtered_products = Product.objects.filter(subcategory__product_category_id=1)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -174,9 +168,8 @@ class ProductTestCase(SubCategoryTestCase):
         url = reverse('products-list')
         response = self.client.get(url, {'has_discount': 'true'})
         for product in response.data['results']:
-            for image in product.get('images', []):
-                # Remove the domain and protocol, keep only relative paths
-                image['image'] = image['image'].removeprefix('http://testserver')
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
         filtered_products = Product.objects.filter(discount__gt=0)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)

@@ -25,7 +25,7 @@ class CartItemSerializerTest(ProductsTests):
                 'discount': 50,
                 'discount_price': '50.00',
                 'changeable_prices': [],
-                'images': [],
+                'images': None,
                 'description': 'cool'
             },
             'quantity': 1,
@@ -69,7 +69,7 @@ class FeaturedItemSerializerTest(ProductsTests):
                 'discount': 50,
                 'discount_price': '50.00',
                 'changeable_prices': [],
-                'images': [],
+                'images': None,
                 'description': 'cool'
             },
             'changeable_price': None

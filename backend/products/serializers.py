@@ -38,8 +38,15 @@ class AdditionalFieldsSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     changeable_prices = ChangeablePriceSerializer(many=True, read_only=True)
-    images = ProductImagesSerializer(many=True, read_only=True)
+    images = serializers.SerializerMethodField()
     discount_price = serializers.SerializerMethodField()
+
+    def get_images(self, obj):
+        try:
+            image = ProductImages.objects.get(product=obj, order=1)
+            return ProductImagesSerializer(image).data['image']
+        except ProductImages.DoesNotExist:
+            return None
 
     def get_discount_price(self, obj):
         if obj.price:
