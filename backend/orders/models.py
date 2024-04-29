@@ -23,6 +23,7 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='orders')
+    email = models.EmailField(blank=True, null=True)
     counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
     contact_person_ref = models.CharField(max_length=36, blank=True, null=True)
     document_ref = models.CharField(max_length=36, null=True, blank=True)
@@ -43,6 +44,12 @@ class Order(models.Model):
         if self.payment_type not in dict(self.PAYMENT_TYPE).keys():
             raise ValidationError(f"Payment type must be one of: {', '.join(dict(self.PAYMENT_TYPE).keys())}")
         super().save()
+
+    def _reverse_quantity(self):
+        """this method will set quantity for products back to their original quantity like before creating order"""
+        for order_item in self.order_items:
+            order_item.product.quantity += order_item.quantity
+            order_item.product.save()
 
 
 class OrderItem(models.Model):

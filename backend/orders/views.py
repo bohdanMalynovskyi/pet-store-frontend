@@ -1,3 +1,4 @@
+from django.db import transaction
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
@@ -7,9 +8,10 @@ from rest_framework.response import Response
 
 from backend.settings import NP
 from orders.docs import create_order_body, get_warehouse_body
-from orders.logic import create_order_from_cart
+from orders.logic import create_order_from_cart, process_delivery
 from orders.models import Order
 from orders.serializers import OrderSerializer
+from orders.tasks import email_paid_order, email_cancelled_order
 from users.docs import bad_request, not_found, cart_auth
 from users.logic import authorize_cart, get_cart
 
@@ -33,11 +35,44 @@ def create_order(request, cart_id):
         cart = get_cart(cart_id)
         if len(cart.cart_items.all()) == 0:
             return Response({'error': 'cart must be not empty'}, status=status.HTTP_400_BAD_REQUEST)
-        order = create_order_from_cart(cart, request)
+        order, checkout_url = create_order_from_cart(cart, request)
         serializer = OrderSerializer(order)
+        data = serializer.data
+        if checkout_url:
+            data['checkout_url'] = checkout_url
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+def approve_payment(request):
+    if request.data.get('response_status') == 'failure':
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    payment_status = request.data.get('order_status')
+    order_id = request.data.get('order_id')
+
+    if payment_status == 'approved':
+        with transaction.atomic():
+            order = Order.objects.get(id=order_id)
+            order.status = 'payed'
+            merchant_data = request.data.get('merchant_data')
+            process_delivery(order, merchant_data=merchant_data)
+            order.save()
+            email_paid_order.delay(order.id, email=order.email if order.email else order.user.email)
+        return Response(status=status.HTTP_200_OK)
+
+    elif payment_status == 'expired' or payment_status == 'declined' or payment_status == 'reversed':
+        with transaction.atomic():
+            order = Order.objects.get(id=order_id)
+            order.status = 'cancelled'
+            order.reverse_quantity()
+            order.save()
+            email_cancelled_order.delay(order.id, email=order.email if order.email else order.user.email)
+        return Response(status=status.HTTP_200_OK)
+
+    elif payment_status == 'created' or payment_status == 'processing':
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @swagger_auto_schema(method='POST', responses={200: 'Nova Post API response', 400: bad_request},

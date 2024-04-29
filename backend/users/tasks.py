@@ -68,7 +68,7 @@ app.conf.beat_schedule = {
         'schedule': crontab(minute='0', hour='2')
     },
     'delete_old_logs': {
-        'task': 'users.tasks.delete_old_featured',
+        'task': 'users.tasks.delete_old_logs',
         'schedule': crontab(minute='0', hour='3')
     }
 }
