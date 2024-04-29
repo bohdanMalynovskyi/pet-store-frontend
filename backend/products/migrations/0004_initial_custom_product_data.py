@@ -19,11 +19,22 @@ def create_initial_data(apps, schema_editor):
 
     # Create three instances of Product
     Product.objects.bulk_create([
-        Product(name='Product1', price=10.00, discount=20, brand=Brand.objects.get(name='Brand2'),
+        Product(name='Product1', price=10.00, discount=20, weight=1, brand=Brand.objects.get(name='Brand2'),
                 subcategory=SubCategory.objects.all().first()),
-        Product(name='Product2', brand=Brand.objects.get(name='Brand3'), price=5, discount=2),
-        Product(name='Product3', price=30.00, brand=Brand.objects.get(name='Brand1'),
+        Product(name='Product2', brand=Brand.objects.get(name='Brand3'), price=5, discount=2, weight=0.5),
+        Product(name='Product3', price=30.00, weight=2, brand=Brand.objects.get(name='Brand1'),
                 subcategory=SubCategory.objects.all().last()),
+        Product(name='Product4', price=12.00, discount=10, weight=1, brand=Brand.objects.get(name='Brand2'),
+                subcategory=SubCategory.objects.all().first()),
+        Product(name='Product5', brand=Brand.objects.get(name='Brand3'), price=24, discount=5, weight=0.5),
+        Product(name='Product6', price=35.00, weight=2, brand=Brand.objects.get(name='Brand1'),
+                subcategory=SubCategory.objects.all().last()),
+        Product(name='Product7', brand=Brand.objects.get(name='Brand3'), price=125, discount=25, weight=0.5),
+        Product(name='Product8', brand=Brand.objects.get(name='Brand3'), price=125, discount=25, weight=0.5),
+        Product(name='Product9', price=45, weight=2, brand=Brand.objects.get(name='Brand1'),
+                subcategory=SubCategory.objects.all().last()),
+        Product(name='Product10', price=45, weight=2, brand=Brand.objects.get(name='Brand1'),
+                subcategory=SubCategory.objects.all().last())
     ])
 
     # Create three instances of ChangeablePrice
@@ -45,6 +56,18 @@ def create_initial_data(apps, schema_editor):
                       order=1),
         ProductImages(product=Product.objects.get(name='Product3'), image='images-to-upload/0000137171.jpg',
                       order=1),
+        ProductImages(product=Product.objects.get(name='Product4'), image='images-to-upload/0000068831.jpg',
+                      order=1),
+        ProductImages(product=Product.objects.get(name='Product5'), image='images-to-upload/0000068831.jpg',
+                      order=1),
+        ProductImages(product=Product.objects.get(name='Product6'), image='images-to-upload/0000068831.jpg',
+                      order=1),
+        ProductImages(product=Product.objects.get(name='Product7'), image='images-to-upload/0000068831.jpg',
+                      order=1),
+        ProductImages(product=Product.objects.get(name='Product8'), image='images-to-upload/0000068831.jpg',
+                      order=1),
+        ProductImages(product=Product.objects.get(name='Product9'), image='images-to-upload/0000068831.jpg',
+                      order=1)
     ])
 
     # Create three instances of Additional Fields

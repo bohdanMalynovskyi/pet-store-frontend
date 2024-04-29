@@ -13,7 +13,7 @@ class ProductTestCase(SubCategoryTestCase):
         super().setUp()
         self.brand = Brand.objects.create(name='Purina', country='United States')
         self.product = Product.objects.create(name='ProPlan', subcategory=self.subcategory1, discount=50, price=100,
-                                              description='cool', brand=self.brand)
+                                              description='cool', brand=self.brand, weight=1)
 
     def test_get_list(self):
         """The problem arises from the fact that the serializer_data contains only relative paths(due to test environment) for images,
@@ -21,7 +21,7 @@ class ProductTestCase(SubCategoryTestCase):
         ignoring the domain and protocol. This ensures a consistent and accurate comparison between the serializer and response data."""
 
         url = reverse('products-list')
-        products = Product.objects.all()
+        products = Product.objects.all()[:10]
         response = self.client.get(url)
         serializer_data = ProductSerializer(products, many=True).data
 
@@ -80,7 +80,7 @@ class ProductTestCase(SubCategoryTestCase):
                 image['image'] = image['image'].removeprefix('http://testserver')
         sorted_products = Product.objects.all().annotate(
             discount_price=F('price') - (F('price') * F('discount') / 100)
-        ).order_by('discount_price')
+        ).order_by('discount_price')[:10]
         serializer_data = ProductSerializer(sorted_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -95,7 +95,7 @@ class ProductTestCase(SubCategoryTestCase):
                 image['image'] = image['image'].removeprefix('http://testserver')
         sorted_products = Product.objects.all().annotate(
             discount_price=F('price') - (F('price') * F('discount') / 100)
-        ).order_by('-discount_price')
+        ).order_by('-discount_price')[:10]
         serializer_data = ProductSerializer(sorted_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -110,7 +110,7 @@ class ProductTestCase(SubCategoryTestCase):
                 image['image'] = image['image'].removeprefix('http://testserver')
         filtered_products = Product.objects.annotate(
             discount_price=F('price') - (F('price') * F('discount') / 100)
-        ).filter(discount_price__gte=min_price)
+        ).filter(discount_price__gte=min_price)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -126,7 +126,7 @@ class ProductTestCase(SubCategoryTestCase):
                 image['image'] = image['image'].removeprefix('http://testserver')
         filtered_products = Product.objects.annotate(
             discount_price=F('price') - (F('price') * F('discount') / 100)
-        ).filter(discount_price__lte=max_price)
+        ).filter(discount_price__lte=max_price)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -139,7 +139,7 @@ class ProductTestCase(SubCategoryTestCase):
             for image in product.get('images', []):
                 # Remove the domain and protocol, keep only relative paths
                 image['image'] = image['image'].removeprefix('http://testserver')
-        filtered_products = Product.objects.filter(subcategory_id=1)
+        filtered_products = Product.objects.filter(subcategory_id=1)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -152,7 +152,7 @@ class ProductTestCase(SubCategoryTestCase):
             for image in product.get('images', []):
                 # Remove the domain and protocol, keep only relative paths
                 image['image'] = image['image'].removeprefix('http://testserver')
-        filtered_products = Product.objects.filter(subcategory__product_category__animal_category_id=1)
+        filtered_products = Product.objects.filter(subcategory__product_category__animal_category_id=1)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -165,7 +165,7 @@ class ProductTestCase(SubCategoryTestCase):
             for image in product.get('images', []):
                 # Remove the domain and protocol, keep only relative paths
                 image['image'] = image['image'].removeprefix('http://testserver')
-        filtered_products = Product.objects.filter(subcategory__product_category_id=1)
+        filtered_products = Product.objects.filter(subcategory__product_category_id=1)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -242,7 +242,6 @@ class AdditionalFieldsTestCase(ProductTestCase):
         response = self.client.post(url)
         self.assertEqual(status.HTTP_405_METHOD_NOT_ALLOWED, response.status_code)
         self.assertEqual({"detail": "Method \"POST\" not allowed."}, response.data)
-
 
     def test_search_product_by_name(self):
         pass

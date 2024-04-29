@@ -2,15 +2,6 @@ from drf_yasg import openapi
 
 from users.serializers import CartSerializer, FeaturedProductsSerializer
 
-no_token = openapi.Response(
-    description='no token provided',
-    schema=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'error': openapi.Schema(type=openapi.TYPE_STRING)
-        }
-    )
-)
 bad_request = openapi.Response(
     description='bad request',
     schema=openapi.Schema(

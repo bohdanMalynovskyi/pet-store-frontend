@@ -33,6 +33,7 @@ class Product(models.Model):
     description = models.TextField(null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, null=True, blank=True)
     search_vector = SearchVectorField(null=True, blank=True)
+    weight = models.DecimalField(max_digits=7, decimal_places=2, null=False, blank=False)
 
     class Meta:
         verbose_name_plural = "product"
@@ -82,9 +83,12 @@ class ChangeablePrice(models.Model):
         return f"{product_name} - {additional_info} - {price}" if additional_info else f"{product_name} - NO DATA - {price}"
 
     def save(self, *args, **kwargs):
-        if self.product and self.price is not None and self.order == 1:
+        if self.product and self.price and self.order == 1:
             self.product.discount = self.discount
             self.product.price = self.price
+            self.product.save()
+        if self.product and self.weight and self.order == 1:
+            self.product.weight = self.weight
             self.product.save()
 
         super().save(*args, **kwargs)

@@ -25,6 +25,25 @@ def set_interact(cart_id=None, featured_id=None):
     obj.last_updated = datetime.now(kiev_tz)
     obj.save()
 
+@app.task
+@shared_task(base=Singleton)
+def delete_old_carts():
+    one_week_ago = datetime.now(kiev_tz) - timedelta(weeks=1)
+
+    old_cart = Cart.objects.filter(hash_code__isnull=False, last_interact__lte=one_week_ago)
+    old_cart.delete()
+    logger.info("Old carts have been deleted")
+
+
+@app.task
+@shared_task(base=Singleton)
+def delete_old_featured():
+    one_week_ago = datetime.now(kiev_tz) - timedelta(weeks=1)
+
+    old_featured = FeaturedProducts.objects.filter(hash_code__isnull=False, last_interact__lte=one_week_ago)
+    old_featured.delete()
+    logger.info("Old featured have been deleted")
+
 
 @app.task
 @shared_task(base=Singleton)
@@ -40,8 +59,16 @@ def delete_old_logs():
 app.conf.timezone = 'Europe/Kiev'
 
 app.conf.beat_schedule = {
-    'delete_old_logs': {
+    'delete_old_carts': {
+        'task': 'users.tasks.delete_old_carts',
+        'schedule': crontab(minute='0', hour='1')
+    },
+    'delete_old_featured': {
         'task': 'users.tasks.delete_old_featured',
+        'schedule': crontab(minute='0', hour='2')
+    },
+    'delete_old_logs': {
+        'task': 'users.tasks.delete_old_logs',
         'schedule': crontab(minute='0', hour='3')
     }
 }

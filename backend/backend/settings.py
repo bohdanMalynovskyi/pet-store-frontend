@@ -12,8 +12,13 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from novaposhta.client import NovaPoshtaApi
+from cloudipsp import Api
 
 load_dotenv()
+
+NP = NovaPoshtaApi(api_key=os.getenv('NOVA_POST_API_KEY'))
+FONDY = Api(merchant_id=os.getenv('FONDY_MERCHANT_ID'), secret_key=os.getenv('FONDY_API_KEY'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,10 +31,12 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://54.154.216.60",
+    "https://54.154.216.60",
 ]
 
 # Application definition
@@ -54,6 +61,7 @@ INSTALLED_APPS = [
     'categories.apps.CategoriesConfig',
     'products.apps.ProductsConfig',
     'users.apps.UsersConfig',
+    'orders.apps.OrdersConfig',
 ]
 
 MIDDLEWARE = [
@@ -200,7 +208,7 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-ADMINS = [('Dmitro', 'dp236955@gmail.com')]
+ADMINS = [('Dmitro', 'dp236955@gmail.com'), ('Artur', 'fiorinomistyuk@gmail.com')]
 
 LOGGING = {
     'version': 1,
@@ -221,4 +229,11 @@ LOGGING = {
 }
 
 DRF_API_LOGGER_DATABASE = True
-DRF_API_LOGGER_EXCLUDE_KEYS = ['password', 're_password', 'CART', 'FEATURED', 'hash_code', 'token', 'access', 'refresh']
+DRF_API_LOGGER_EXCLUDE_KEYS = ['password', 're_password', 'CART', 'FEATURED', 'USER', 'hash_code', 'token', 'access',
+                               'refresh']
+
+SENDER_REF = os.getenv('SENDER_REF')
+CONTACT_SENDER = os.getenv('CONTACT_SENDER')
+SENDER_WAREHOUSE = os.getenv('SENDER_WAREHOUSE')
+CITY_SENDER = os.getenv('CITY_SENDER')
+SENDER_PHONE = os.getenv('SENDER_PHONE')
