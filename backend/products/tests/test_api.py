@@ -170,6 +170,18 @@ class ProductTestCase(SubCategoryTestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
 
+    def test_filter_by_has_discount(self):
+        url = reverse('products-list')
+        response = self.client.get(url, {'has_discount': 'true'})
+        for product in response.data['results']:
+            for image in product.get('images', []):
+                # Remove the domain and protocol, keep only relative paths
+                image['image'] = image['image'].removeprefix('http://testserver')
+        filtered_products = Product.objects.filter(discount__gt=0)[:10]
+        serializer_data = ProductSerializer(filtered_products, many=True).data
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serializer_data, response.data['results'])
+
 
 class ChangeablePriceTestCase(ProductTestCase):
     def setUp(self):

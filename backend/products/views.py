@@ -33,6 +33,7 @@ class ProductViewSet(ReadOnlyModelViewSet):
             subcategory = self.request.query_params.get('subcategory')
             animal_category = self.request.query_params.get('animal_category')
             product_category = self.request.query_params.get('product_category')
+            has_discount = self.request.query_params.get('has_discount')
 
             if min_price is not None:
                 queryset = queryset.filter(discount_price__gte=min_price)
@@ -48,6 +49,12 @@ class ProductViewSet(ReadOnlyModelViewSet):
 
             if product_category is not None:
                 queryset = queryset.filter(subcategory__product_category_id=product_category)
+
+            if has_discount is not None:
+                if has_discount.lower() == 'true':
+                    queryset = queryset.filter(discount__gt=0)
+                elif has_discount.lower() == 'false':
+                    queryset = queryset.filter(discount=0)
 
             return queryset
         else:
@@ -68,6 +75,7 @@ class ProductViewSet(ReadOnlyModelViewSet):
         openapi.Parameter('subcategory', openapi.IN_QUERY, description="Subcategory filter", type=openapi.TYPE_INTEGER),
         openapi.Parameter('animal_category', openapi.IN_QUERY, description="Animal category filter", type=openapi.TYPE_INTEGER),
         openapi.Parameter('product_category', openapi.IN_QUERY, description="Product category filter", type=openapi.TYPE_INTEGER),
+        openapi.Parameter('has_discount', openapi.IN_QUERY, description="Does have discount", type=openapi.TYPE_BOOLEAN),
     ])
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
