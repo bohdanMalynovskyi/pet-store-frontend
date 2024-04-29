@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['localhost']
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://54.154.216.60",
+    "https://54.154.216.60",
 ]
 
 # Application definition
@@ -207,7 +208,7 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-ADMINS = [('Dmitro', 'dp236955@gmail.com')]
+ADMINS = [('Dmitro', 'dp236955@gmail.com'), ('Artur', 'fiorinomistyuk@gmail.com')]
 
 LOGGING = {
     'version': 1,

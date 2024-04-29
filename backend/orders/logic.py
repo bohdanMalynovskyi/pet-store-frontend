@@ -86,10 +86,9 @@ def _create_order_items(order, cart):
 
 def process_payment(order, request, total_weight):
     amount = str(order.total_price).replace('.', '')
-    # TODO: ADD 'order_id': order.id
     ck = Checkout(api=FONDY).url(
-        {'currency': 'UAH', 'amount': int(amount), 'order_desc': 'Зоотовари',
-         'lang': 'uk', 'server_callback_url': reverse('approve_payment'), 'lifetime': 18000,
+        {'currency': 'UAH', 'amount': int(amount), 'order_id': order.id, 'order_desc': 'Зоотовари',
+         'lang': 'uk', 'server_callback_url': request.build_absolute_uri(reverse('approve_payment')), 'lifetime': 18000,
          'merchant_data': {'warehouse_index': request.data.get('warehouse_index'),
                            'city_ref': request.data.get('city_ref'), 'phone': request.data.get('phone'),
                            'total_weight': str(total_weight)}})
