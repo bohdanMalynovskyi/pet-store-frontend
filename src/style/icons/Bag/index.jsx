@@ -1,7 +1,7 @@
 import { BagDesktop } from './BagDesktop';
 import { BagMobile } from './BagMobile';
 
-export const Bag = ({ size, itemСount, onClick }) => {
+export const BagOld = ({ size, itemСount, onClick }) => {
   /*    Props:
     size(string): "desktop", "mobile"
     itemСount(number)

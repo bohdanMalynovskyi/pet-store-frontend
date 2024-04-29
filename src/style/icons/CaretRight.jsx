@@ -1,13 +1,13 @@
 export const CaretRight = ({ color, onClick }) => {
   /*    Props:
-  color(string): "primary", "txtSecondary"
-  onClick(function)
-*/
+    color(string): "primary", "txtSecondary"
+    onClick(function)
+  */
 
   return (
     <svg
       onClick={onClick}
-      className="cursor-pointer"
+      style={{ cursor: 'pointer' }}
       xmlns="http://www.w3.org/2000/svg"
       width="25"
       height="24"
