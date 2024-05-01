@@ -15,17 +15,22 @@
 У корневій директорії проєкту(pet-store-frontend) виконайте наступну команду:
 
 ```bash
-docker-compose up 
+docker-compose up -d
 ```
 Щоб запустити контейнерізовані сервіси.
 
 Або команду:
 ```bash
-docker-compose up --build
+docker-compose up --build -d
 ```
 Якщо були внесені зміни в файли
 
-**Після того, як ви побачили в терміналі лог-повідомлення "Superuser created successfully." від сервісу django-1, 
+**Також, якщо це перший запуск, то щоб отримати доступ до адмін-панелі треба створити поперденьо користувача такою командою:**
+```bash
+docker-compose run django sh -c "python manage.py createsuperuser --email=admin@example.com --first_name=Олег --second_name=Віталійович --last_name=Петренко --phone_number=0978918623"
+```
+
+**Після того, як усі контейнери прийняли статус <Started>, а контейнер постгрес статус <Healty>, 
 можете починати роботу**
 
 
