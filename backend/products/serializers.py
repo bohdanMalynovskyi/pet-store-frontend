@@ -47,6 +47,8 @@ class ProductSerializer(serializers.ModelSerializer):
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(image_url)
+            else:
+                return image_url
         except ProductImages.DoesNotExist:
             return None
 

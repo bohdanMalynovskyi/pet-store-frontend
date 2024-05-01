@@ -67,7 +67,7 @@ class ProductDetailTests(ProductsTests):
             'discount_price': '50.00',
             'changeable_prices': [],
             'is_new': True,
-            'images': None,
+            'images': [],
             'description': 'cool',
             'additional_fields': [],
             'brand': {
