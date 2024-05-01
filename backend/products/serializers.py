@@ -43,8 +43,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_images(self, obj):
         try:
-            image = ProductImages.objects.get(product=obj, order=1)
-            return ProductImagesSerializer(image).data['image']
+            image_url = obj.images.get(order=1).image.url
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(image_url)
         except ProductImages.DoesNotExist:
             return None
 
@@ -67,6 +69,7 @@ class ProductDetailSerializer(ProductSerializer):
     brand = BrandSerializer(many=False, read_only=True)
     additional_fields = AdditionalFieldsSerializer(many=True, read_only=True)
     recommended_products = serializers.SerializerMethodField()
+    images = ProductImagesSerializer(many=True, read_only=True)
 
     def get_recommended_products(self, obj):
         recommended_products = Product.objects.filter(subcategory=obj.subcategory).exclude(id=obj.id)[
