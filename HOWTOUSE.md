@@ -27,7 +27,7 @@ docker-compose up --build -d
 
 **Також, якщо це перший запуск, то щоб отримати доступ до адмін-панелі треба створити поперденьо користувача такою командою:**
 ```bash
-docker-compose run django sh -c "python manage.py createsuperuser --email=admin@example.com --first_name=Олег --second_name=Віталійович --last_name=Петренко --phone_number=0978918623"
+docker-compose run django sh -c "python manage.py createsuperuser --email=admin@example.com --first_name=Олег --second_name=Віталійович --last_name=Петренко --phone_number=0978918623 --noinput"
 ```
 
 **Після того, як усі контейнери прийняли статус <Started>, а контейнер постгрес статус <Healty>, 
@@ -68,10 +68,12 @@ docker-compose run django sh -c "python manage.py createsuperuser --email=admin@
 ## Крок 5: Зупинка та очистка
 
 Після завершення роботи в терміналі, де ви запускали Docker, натисніть Ctrl(⌘)+C, щоб зупинити контейнери. 
-Потім використовуйте наступну команду:
+
+Наступну команду:
 
 ```bash
 docker-compose down
 ```
 
-Це дозволить коректно завершити та очистити ресурси для наступного запуску.
+Слід використовувати лише дчя того, щоб завершити та очистити ресурси для наступного запуску(Усі імеджі будуть видалені, 
+тому зміни, що ви вносиои під час роботи не будуть збережені).
