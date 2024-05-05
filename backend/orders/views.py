@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.db.models import Q
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
@@ -39,6 +38,15 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
 
         return queryset
 
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('is_finished', openapi.IN_QUERY, description="Is order finished", type=openapi.TYPE_BOOLEAN),
+        openapi.Parameter('is_cancelled', openapi.IN_QUERY, description="Is order cancelled",
+                          type=openapi.TYPE_BOOLEAN),
+        openapi.Parameter('is_current', openapi.IN_QUERY, description="Is order current", type=openapi.TYPE_BOOLEAN),
+    ])
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 @swagger_auto_schema(method='post',
                      responses={201: openapi.Response(description='Order created', schema=OrderSerializer),
@@ -61,6 +69,8 @@ def create_order(request, cart_id):
     return Response(data, status=status.HTTP_201_CREATED)
 
 
+@swagger_auto_schema(method='post',
+                     operation_description="Endpoint not for frontend usage! It is needed to receive callbacks from Fondy")
 @api_view(['POST'])
 def approve_payment(request):
     if request.data.get('response_status') == 'failure':
