@@ -7,8 +7,8 @@ from datetime import datetime
 from django.contrib.auth.base_user import BaseUserManager
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
-from django.db import models, transaction
-from django.db.models.signals import post_save, pre_save, post_delete, pre_delete
+from django.db import models
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from pytz import timezone
 
@@ -79,7 +79,6 @@ class User(AbstractUser):
                 self.counterparty_ref = ref
                 self.contact_person_ref = contact_person_ref
             else:
-                print(response)
                 raise Exception(response['errors'])
         super().save()
 
