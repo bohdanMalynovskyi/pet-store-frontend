@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
@@ -21,7 +22,22 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
+        queryset = Order.objects.filter(user=self.request.user).order_by('created_at')
+
+        is_finished = self.request.query_params.get('is_finished')
+        is_cancelled = self.request.query_params.get('is_cancelled')
+        is_current = self.request.query_params.get('is_current')
+
+        if is_finished is not None and is_finished.lower() == 'true':
+            queryset = queryset.filter(status='received')
+
+        if is_cancelled is not None and is_cancelled.lower() == 'true':
+            queryset = queryset.filter(status='cancelled')
+
+        if is_current is not None and is_current.lower() == 'true':
+            queryset = queryset.exclude(status__in=('cancelled', 'received', 'returned'))
+
+        return queryset
 
 
 @swagger_auto_schema(method='post',

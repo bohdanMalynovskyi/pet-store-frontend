@@ -24,6 +24,30 @@ class OrderViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0]['status'], 'in_process')
 
+    def test_filter_orders_by_finished(self):
+        url = reverse('orders-list')
+        headers = {'Authorization': f'Token {self.token}'}
+        query_params = {'is_finished': 'true'}
+        response = self.client.get(url, query_params, headers=headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_filter_orders_by_cancelled(self):
+        url = reverse('orders-list')
+        headers = {'Authorization': f'Token {self.token}'}
+        query_params = {'is_cancelled': 'true'}
+        response = self.client.get(url, query_params, headers=headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_filter_orders_by_current(self):
+        url = reverse('orders-list')
+        headers = {'Authorization': f'Token {self.token}'}
+        query_params = {'is_current': 'true'}
+        response = self.client.get(url, query_params, headers=headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
 
 class CreateOrderTestCase(APITestCase):
     def setUp(self):
