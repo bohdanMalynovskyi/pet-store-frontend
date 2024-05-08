@@ -139,6 +139,7 @@ class ProductTestCase(SubCategoryTestCase):
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
+        self.assertNotEqual(None, response.data['categories'])
 
     # Дополненный тест для фильтрации по категории животного
     def test_filter_by_animal_category(self):
@@ -151,6 +152,7 @@ class ProductTestCase(SubCategoryTestCase):
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
+        self.assertNotEqual(None, response.data['categories'])
 
     # Дополненный тест для фильтрации по категории продукта
     def test_filter_by_product_category(self):
@@ -163,6 +165,7 @@ class ProductTestCase(SubCategoryTestCase):
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
+        self.assertNotEqual(None, response.data['categories'])
 
     def test_filter_by_has_discount(self):
         url = reverse('products-list')
