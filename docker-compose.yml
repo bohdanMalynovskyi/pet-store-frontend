@@ -2,12 +2,12 @@ version: '3'
 
 services:
   django:
-    build: /backend
+    build: ./backend
     restart: always
     ports:
       - "8000:8000"
     env_file:
-      - /backend/.env
+      - ./backend/.env
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,7 +39,7 @@ services:
       - django
 
   worker:
-    build: /backend
+    build: ./backend
     hostname: worker
     entrypoint: celery
     command: -A celery_app.app worker --loglevel=info
@@ -52,7 +52,7 @@ services:
       - postgres
 
   worker-beat:
-    build: /backend
+    build: ./backend
     hostname: worker-beat
     entrypoint: celery
     command: -A celery_app.app beat --loglevel=info
@@ -62,7 +62,7 @@ services:
       - postgres
 
   flower:
-    build: /backend
+    build: ./backend
     entrypoint: celery
     command: -A celery_app.app flower --loglevel=info
     links:
