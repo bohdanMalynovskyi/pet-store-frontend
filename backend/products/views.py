@@ -4,6 +4,8 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, filters
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from categories.serializers import ProductCategoryHierarchySerializer, SubCategoryHierarchySerializer, \
+    AnimalCategoryHierarchySerializer, ProductCategorySerializer, SubCategorySerializer, AnimalCategorySerializer
 from products.filters import CustomSearchFilter, CustomPagination
 from products.models import Product, ChangeablePrice, AdditionalFields
 from products.serializers import ProductSerializer, ChangeablePriceSerializer, \
@@ -24,6 +26,8 @@ class ProductViewSet(ReadOnlyModelViewSet):
         return ProductSerializer
 
     def get_queryset(self):
+        """ Handles filtering """
+        queryset = super().get_queryset()
         if self.action == 'list':
             queryset = Product.objects.all().prefetch_related('changeable_prices', 'images').annotate(
                 discount_price=F('price') - (F('price') * F('discount') / 100))
@@ -51,14 +55,10 @@ class ProductViewSet(ReadOnlyModelViewSet):
                 queryset = queryset.filter(subcategory__product_category_id=product_category)
 
             if has_discount is not None:
-                if has_discount.lower() == 'true':
-                    queryset = queryset.filter(discount__gt=0)
-                elif has_discount.lower() == 'false':
-                    queryset = queryset.filter(discount=0)
+                queryset = queryset.filter(discount__gt=0) if has_discount.lower() == 'true' else queryset.filter(
+                    discount=0)
 
-            return queryset
-        else:
-            return self.queryset
+        return queryset
 
     def get_ordering(self):
         ordering = self.request.query_params.get('ordering', None)
@@ -73,12 +73,48 @@ class ProductViewSet(ReadOnlyModelViewSet):
         openapi.Parameter('min_price', openapi.IN_QUERY, description="Minimum price filter", type=openapi.TYPE_NUMBER),
         openapi.Parameter('max_price', openapi.IN_QUERY, description="Maximum price filter", type=openapi.TYPE_NUMBER),
         openapi.Parameter('subcategory', openapi.IN_QUERY, description="Subcategory filter", type=openapi.TYPE_INTEGER),
-        openapi.Parameter('animal_category', openapi.IN_QUERY, description="Animal category filter", type=openapi.TYPE_INTEGER),
-        openapi.Parameter('product_category', openapi.IN_QUERY, description="Product category filter", type=openapi.TYPE_INTEGER),
-        openapi.Parameter('has_discount', openapi.IN_QUERY, description="Does have discount", type=openapi.TYPE_BOOLEAN),
+        openapi.Parameter('animal_category', openapi.IN_QUERY, description="Animal category filter",
+                          type=openapi.TYPE_INTEGER),
+        openapi.Parameter('product_category', openapi.IN_QUERY, description="Product category filter",
+                          type=openapi.TYPE_INTEGER),
+        openapi.Parameter('has_discount', openapi.IN_QUERY, description="Does have discount",
+                          type=openapi.TYPE_BOOLEAN),
+        openapi.Parameter('ordering', openapi.IN_QUERY,
+                          description="value 'price' order data ascending and value '-price' descending",
+                          type=openapi.TYPE_INTEGER),
     ])
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        """ Adds categories hierarchy on filtering"""
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+        data = serializer.data
+
+        if 'animal_category' in request.query_params or 'product_category' in request.query_params or 'subcategory' in request.query_params:
+            try:
+                item = page[0]
+                animal_category = item.subcategory.product_category.animal_category
+                serialized_category = AnimalCategoryHierarchySerializer(animal_category, many=False)
+                categories = serialized_category.data
+
+                if 'product_category' in request.query_params or 'subcategory' in request.query_params:
+                    product_category = item.subcategory.product_category
+                    serialized_category = ProductCategoryHierarchySerializer(product_category, many=False)
+                    categories['product_category'] = serialized_category.data
+
+                    if 'subcategory' in request.query_params:
+                        subcategory = item.subcategory
+                        serialized_category = SubCategoryHierarchySerializer(subcategory, many=False)
+                        categories['subcategory'] = serialized_category.data
+            except IndexError:
+                categories = None
+
+            response = self.get_paginated_response(data)
+            response.data['categories'] = categories
+        else:
+            response = self.get_paginated_response(data)
+
+        return response
 
 
 class ChangeablePriceViewSet(ReadOnlyModelViewSet):
