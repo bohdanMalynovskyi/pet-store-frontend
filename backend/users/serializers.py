@@ -1,4 +1,8 @@
+from django.conf import settings
+from djoser.compat import get_user_email_field_name, get_user_email
 from rest_framework import serializers
+from rest_framework.serializers import raise_errors_on_nested_writes
+from rest_framework.utils import model_meta
 
 from products.serializers import ProductSerializer, ChangeablePriceSerializer
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
@@ -32,10 +36,7 @@ class CustomUserCreateRetypeSerializer(UserCreatePasswordRetypeSerializer):
         cart_hash_code = validated_data.pop('cart_hash_code', None)
         featured_hash_code = validated_data.pop('featured_hash_code', None)
 
-        try:
-            user = User.objects.create_user(**validated_data, is_active=False)
-        except Exception as e:
-            raise serializers.ValidationError(f'invalid_input: {e}')
+        user = User.objects.create_user(**validated_data, is_active=False)
 
         if cart_hash_code:
             cart = Cart.objects.get(hash_code__key=cart_hash_code)

@@ -11,6 +11,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from pytz import timezone
+from rest_framework import serializers
 
 from backend.settings import NP
 from products.models import Product, ChangeablePrice
@@ -79,7 +80,7 @@ class User(AbstractUser):
                 self.counterparty_ref = ref
                 self.contact_person_ref = contact_person_ref
             else:
-                raise Exception(response['errors'])
+                raise serializers.ValidationError(f'invalid_input: {response['errors']}')
         super().save()
 
 
