@@ -20,7 +20,7 @@ def create_initial_data(apps, schema_editor):
     # Create three instances of Product
     Product.objects.bulk_create([
         Product(name='Product1', price=10.00, discount=20, weight=1, brand=Brand.objects.get(name='Brand2'),
-                subcategory=SubCategory.objects.all().first()),
+                subcategory=SubCategory.objects.all().first(), description='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi finibus, nunc in cursus pretium, nibh mi egestas nunc, eget volutpat leo libero eget lectus. Proin venenatis accumsan leo, nec facilisis est faucibus rhoncus. Donec vitae ipsum augue. Vestibulum eleifend, magna euismod condimentum molestie, dolor arcu fringilla est, sed tincidunt sapien neque et urna. Vestibulum at vehicula lorem, volutpat finibus ex. Donec malesuada id mauris vitae iaculis. Etiam eget mi metus.'),
         Product(name='Product2', brand=Brand.objects.get(name='Brand3'), price=5, discount=2, weight=0.5),
         Product(name='Product3', price=30.00, weight=2, brand=Brand.objects.get(name='Brand1'),
                 subcategory=SubCategory.objects.all().last()),
@@ -70,12 +70,13 @@ def create_initial_data(apps, schema_editor):
                       order=1)
     ])
 
+    text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi finibus, nunc in cursus pretium, nibh mi egestas nunc, eget volutpat leo libero eget lectus.'
     # Create three instances of Additional Fields
     AdditionalFields.objects.bulk_create([
-        AdditionalFields(product=Product.objects.get(name='Product3'), title='Tag1', text='Tag text 1'),
-        AdditionalFields(product=Product.objects.get(name='Product3'), title='Tag2', text='Tag text 2'),
-        AdditionalFields(product=Product.objects.get(name='Product1'), title='Tag3', text='Tag text 3'),
-        AdditionalFields(product=Product.objects.get(name='Product2'), title='Tag3', text='Tag text 3'),
+        AdditionalFields(product=Product.objects.get(name='Product1'), title='Tag1', text=text),
+        AdditionalFields(product=Product.objects.get(name='Product1'), title='Tag2', text=text),
+        AdditionalFields(product=Product.objects.get(name='Product1'), title='Tag3', text=text),
+        AdditionalFields(product=Product.objects.get(name='Product1'), title='Tag4', text=text),
     ])
 
 
