@@ -2,6 +2,7 @@ import binascii
 import hashlib
 import os
 import random
+import re
 from datetime import datetime
 
 from django.contrib.auth.base_user import BaseUserManager
@@ -61,8 +62,10 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField(_('email address'), unique=True, blank=False, null=False)
+    first_name = models.CharField(_("first name"), max_length=150, blank=False)
     second_name = models.CharField(max_length=150, blank=True)
-    phone_number = models.CharField(max_length=15, blank=True)
+    last_name = models.CharField(_("last name"), max_length=150, blank=False)
+    phone_number = models.CharField(max_length=15, blank=False)
     counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
     contact_person_ref = models.CharField(max_length=36, blank=True, null=True)
 
@@ -71,6 +74,13 @@ class User(AbstractUser):
     objects = UserManager()
 
     def save(self, *args, **kwargs):
+        special_chars_pattern = re.compile(r'[!@#$%^&*()_+{}\[\]:;<>,.?/\\~\'"]')
+        fields_to_check = [self.first_name, self.second_name, self.last_name]
+
+        for field in fields_to_check:
+            if special_chars_pattern.search(field):
+                raise serializers.ValidationError({'invalid_input': ['Special characters in the name are not allowed']})
+
         if self.first_name and self.last_name and self.phone_number:
             response = NP.counterparty.save(self.first_name, self.second_name, self.last_name, self.phone_number,
                                             self.email, 'PrivatePerson', '', 'Recipient', '')
@@ -80,8 +90,8 @@ class User(AbstractUser):
                 self.counterparty_ref = ref
                 self.contact_person_ref = contact_person_ref
             else:
-                raise serializers.ValidationError(f'invalid_input: {response['errors']}')
-        super().save()
+                raise serializers.ValidationError({'invalid_input': response['errors']})
+        super().save(*args, **kwargs)
 
 
 def generate_unique_hash():
