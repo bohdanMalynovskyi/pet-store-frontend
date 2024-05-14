@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+
+from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 from novaposhta.client import NovaPoshtaApi
 from cloudipsp import Api
@@ -38,6 +40,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://54.154.216.60",
     "https://54.154.216.60",
 ]
+
+CORS_ALLOW_HEADERS = (
+    *default_headers,
+    "cart",
+    "featured",
+)
 
 # Application definition
 
