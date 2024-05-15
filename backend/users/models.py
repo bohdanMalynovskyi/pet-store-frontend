@@ -62,10 +62,8 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField(_('email address'), unique=True, blank=False, null=False)
-    first_name = models.CharField(_("first name"), max_length=150, blank=False)
     second_name = models.CharField(max_length=150, blank=True)
-    last_name = models.CharField(_("last name"), max_length=150, blank=False)
-    phone_number = models.CharField(max_length=15, blank=False)
+    phone_number = models.CharField(max_length=15, blank=True)
     counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
     contact_person_ref = models.CharField(max_length=36, blank=True, null=True)
 
