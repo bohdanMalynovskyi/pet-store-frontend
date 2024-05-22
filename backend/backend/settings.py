@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'corsheaders',
     'drf_api_logger',
+    'social_django',
 
     'categories.apps.CategoriesConfig',
     'products.apps.ProductsConfig',
@@ -82,6 +83,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -98,6 +100,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -199,6 +203,9 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}/',
     'USERNAME_RESET_CONFIRM_URL': 'email/reset/confirm/{uid}/{token}/',
     'SEND_ACTIVATION_EMAIL': True,
+    'SOCIAL_AUTH_TOKEN_STRATEGY': 'users.bearer_strategy.TokenStrategy',
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:5173/', 'https://localhost:5173/', 'http://127.0.0.1:5173/',
+                                          'https://127.0.0.1:5173/'],
     'EMAIL': {
         'password_reset': 'users.email.PasswordReset',
         'username_reset': 'users.email.EmailReset',
@@ -245,3 +252,23 @@ CONTACT_SENDER = os.getenv('CONTACT_SENDER')
 SENDER_WAREHOUSE = os.getenv('SENDER_WAREHOUSE')
 CITY_SENDER = os.getenv('CITY_SENDER')
 SENDER_PHONE = os.getenv('SENDER_PHONE')
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_ID')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "openid",
+]
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
+
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.google.GoogleOAuth2",
+    "social_core.backends.facebook.FacebookOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
+SOCIAL_AUTH_FACEBOOK_KEY = os.getenv('FACEBOOK_ID')
+SOCIAL_AUTH_FACEBOOK_SECRET = os.getenv('FACEBOOK_SECRET')
+
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
