@@ -1,5 +1,5 @@
-from django.db.models import Sum
-from rest_framework import serializers, status
+from django.conf import settings
+from rest_framework import serializers
 
 from categories.serializers import SubCategorySerializer
 from products.models import Brand, ChangeablePrice, ProductImages, AdditionalFields, Product
@@ -42,15 +42,15 @@ class ProductSerializer(serializers.ModelSerializer):
     discount_price = serializers.SerializerMethodField()
 
     def get_images(self, obj):
-        try:
-            image_url = obj.images.get(order=1).image.url
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(image_url)
-            else:
-                return image_url
-        except ProductImages.DoesNotExist:
+        main_image = obj.images.filter(order=1).first()
+        image = ProductImagesSerializer(main_image).data
+        base_url = settings.BASE_IMAGE_URL
+        image = image['image']
+        if not base_url:
+            return image
+        if not image:
             return None
+        return f'{base_url}{image}'
 
     def get_discount_price(self, obj):
         if obj.price:
