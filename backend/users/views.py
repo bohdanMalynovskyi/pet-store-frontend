@@ -41,7 +41,10 @@ def create_cart(request):
 @api_view(['GET'])
 @authorize_cart
 def get_cart(request, cart_id):
-    cart = get_cart_q(cart_id)
+    try:
+        cart = get_cart_q(cart_id)
+    except Exception as e:
+        return Response('cart not found', status=status.HTTP_404_NOT_FOUND)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -161,7 +164,10 @@ def create_featured_products(request):
 @api_view(['GET'])
 @authorize_featured
 def get_featured(request, featured_id):
-    featured = get_featured_q(featured_id)
+    try:
+        featured = get_featured_q(featured_id)
+    except Exception as e:
+        return Response('featured not found', status=status.HTTP_404_NOT_FOUND)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
