@@ -26,7 +26,7 @@ def authorize_cart(view_func):
                 return view_func(request, cart['id'], *args, **kwargs)
             except AttributeError:
                 return Response({'error': 'Token is not provided'}, status=status.HTTP_401_UNAUTHORIZED)
-            except FeaturedProducts.DoesNotExist:
+            except Cart.DoesNotExist:
                 return Response({'error': 'Token is invalid'}, status=status.HTTP_400_BAD_REQUEST)
 
     return wrapper
