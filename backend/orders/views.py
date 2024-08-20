@@ -21,8 +21,17 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = Order.objects.filter(user=self.request.user).order_by('created_at')
+        # Short-circuit the view during schema generation
+        if getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()  # Return an empty queryset during schema generation
 
+        # Normal behavior
+        if self.request.user.is_authenticated:
+            queryset = Order.objects.filter(user=self.request.user).order_by('created_at')
+        else:
+            queryset = Order.objects.none()
+
+        # Apply additional filters
         is_finished = self.request.query_params.get('is_finished')
         is_cancelled = self.request.query_params.get('is_cancelled')
         is_current = self.request.query_params.get('is_current')
@@ -101,15 +110,23 @@ def approve_payment(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@swagger_auto_schema(method='POST', responses={200: 'Nova Post API response', 400: bad_request},
-                     request_body=get_warehouse_body)
-@api_view(['POST'])
+@swagger_auto_schema(method='GET', responses={200: 'Nova Post API response', 400: bad_request},
+                     manual_parameters=[
+                         openapi.Parameter('city_name', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='City name'),
+                         openapi.Parameter('find_by_string', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Find by string')
+                     ])
+@api_view(['GET'])
 def get_warehouse(request):
     try:
-        response = NP.address.get_warehouses(city_name=request.data['city_name'],
-                                             find_by_string=request.data['find_by_string'])
+        city_name = request.query_params.get('city_name')
+        find_by_string = request.query_params.get('find_by_string')
+        if not city_name or not find_by_string:
+            return Response({'error': '"city_name" and "find_by_string" are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        response = NP.address.get_warehouses(city_name=city_name, find_by_string=find_by_string)
     except KeyError:
         return Response({'error': '"city_name" and "find_by_string" are required'}, status=status.HTTP_400_BAD_REQUEST)
+
     if response['success']:
         return Response(response['data'], status=status.HTTP_200_OK)
     else:
