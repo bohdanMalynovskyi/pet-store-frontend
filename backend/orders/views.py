@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from backend.settings import NP
-from orders.docs import create_order_body, get_warehouse_body
+from orders.docs import create_order_body
 from orders.logic import create_order_from_cart, process_delivery
 from orders.models import Order
 from orders.serializers import OrderSerializer
@@ -110,22 +110,76 @@ def approve_payment(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(method='GET', responses={200: 'Nova Post API response', 400: bad_request})
+@api_view(['GET'])
+def get_settlement_areas(request):
+    try:
+        response = NP.address.get_settlement_areas('')
+    except Exception:
+        return Response({'error': 'some error with NOVA POSHTA API occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if response['success']:
+        return Response(response['data'], status=status.HTTP_200_OK)
+    else:
+        return Response(response['errors'], status=status.HTTP_400_BAD_REQUEST)
+
+
 @swagger_auto_schema(method='GET', responses={200: 'Nova Post API response', 400: bad_request},
                      manual_parameters=[
-                         openapi.Parameter('city_name', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='City name'),
-                         openapi.Parameter('find_by_string', openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Find by string')
+                         openapi.Parameter('area_ref', openapi.IN_QUERY, type=openapi.TYPE_STRING,
+                                           description='Area reference(NP id)')
                      ])
 @api_view(['GET'])
-def get_warehouse(request):
+def get_settlements(request):
     try:
-        city_name = request.query_params.get('city_name')
-        find_by_string = request.query_params.get('find_by_string')
-        if not city_name or not find_by_string:
-            return Response({'error': '"city_name" and "find_by_string" are required'}, status=status.HTTP_400_BAD_REQUEST)
-
-        response = NP.address.get_warehouses(city_name=city_name, find_by_string=find_by_string)
+        area_ref = request.query_params.get('area_ref')
+        if not area_ref:
+            return Response({'error': '"area_ref" is required'}, status=status.HTTP_400_BAD_REQUEST)
+        response = NP.address.get_settlements(area_ref=area_ref, warehouse=True, limit=5000, page=1)
     except KeyError:
-        return Response({'error': '"city_name" and "find_by_string" are required'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': '"area_ref" is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if response['success']:
+        return Response(response['data'], status=status.HTTP_200_OK)
+    else:
+        return Response(response['errors'], status=status.HTTP_400_BAD_REQUEST)
+
+
+@swagger_auto_schema(method='GET', responses={200: 'Nova Post API response', 400: bad_request},
+                     manual_parameters=[
+                         openapi.Parameter('settlement_ref', openapi.IN_QUERY, type=openapi.TYPE_STRING,
+                                           description='Settlement reference(NP id)'),
+                         openapi.Parameter('warehouse_type_ref', openapi.IN_QUERY, type=openapi.TYPE_STRING,
+                                           description='Type of warehouse ref(NP id). Optional')
+                     ])
+@api_view(['GET'])
+def get_warehouses(request):
+    try:
+        settlement_ref = request.query_params.get('settlement_ref')
+        warehouse_type_ref = request.query_params.get('warehouse_type_ref', None)
+        if not settlement_ref:
+            return Response({'error': '"settlement_ref" is required'}, status=status.HTTP_400_BAD_REQUEST)
+        response = NP.address.get_warehouses(settlement_ref=settlement_ref, type_of_warehouse_ref=warehouse_type_ref,
+                                             limit=5000, page=1)
+    except KeyError:
+        return Response({'error': '"settlement_ref" is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if response['success']:
+        return Response(response['data'], status=status.HTTP_200_OK)
+    else:
+        return Response(response['errors'], status=status.HTTP_400_BAD_REQUEST)
+
+
+@swagger_auto_schema(method='GET', responses={200: 'Nova Post API response', 400: bad_request})
+@api_view(['GET'])
+def get_warehouse_types(request):
+    try:
+        response = NP.address.get_warehouse_types()
+    except Exception:
+        return Response({'error': 'some error with NOVA POSHTA API occured'}, status=status.HTTP_400_BAD_REQUEST)
+
+    except KeyError:
+        return Response({'error': '"settlement_ref" is required'}, status=status.HTTP_400_BAD_REQUEST)
 
     if response['success']:
         return Response(response['data'], status=status.HTTP_200_OK)
