@@ -1,4 +1,5 @@
 import time
+from time import sleep
 
 from django.urls import reverse
 from rest_framework.test import APITestCase
@@ -127,3 +128,52 @@ class CreateOrderTestCase(APITestCase):
         headers = {'Authorization': f'Token {self.token}'}
         response = self.client.post(url, headers=headers, data=data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class NPTestCase(APITestCase):
+
+    def test_get_warehouse_types(self):
+        url = reverse('get-warehouse-types')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        warehouse_types = NP.address.get_warehouse_types()
+        self.assertEqual(warehouse_types['data'], response.data)
+
+    def test_get_areas(self):
+        url = reverse('get-settlement-areas')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        areas = NP.address.get_settlement_areas('')
+        self.assertEqual(areas['data'], response.data)
+
+    def test_get_settlements(self):
+        areas = NP.address.get_settlement_areas('')
+        area_ref = areas['data'][0]['Ref']
+        url = reverse('get-settlements') + f'?area_ref={area_ref}'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        settlements = NP.address.get_settlements(area_ref=area_ref, warehouse=True, limit=5000, page=1)
+        self.assertEqual(settlements['data'], response.data)
+
+    def test_get_settlements_no_area_ref(self):
+        url = reverse('get-settlements')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], '"area_ref" is required')
+
+    def test_get_warehouses(self):
+        areas = NP.address.get_settlement_areas('')
+        settlements = NP.address.get_settlements(area_ref=areas['data'][2]['Ref'], warehouse=True, limit=5000, page=1)
+        settlement_ref = settlements['data'][0]['Ref']
+        url = reverse('get-warehouses') + f'?settlement_ref={settlement_ref}'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sleep(5)
+        warehouses = NP.address.get_warehouses(settlement_ref=settlement_ref, limit=5000, page=1)
+        self.assertEqual(warehouses['data'], response.data)
+
+    def test_get_warehouses_no_settlement_ref(self):
+        url = reverse('get-warehouses')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], '"settlement_ref" is required')

@@ -113,10 +113,7 @@ def approve_payment(request):
 @swagger_auto_schema(method='GET', responses={200: 'Nova Post API response', 400: bad_request})
 @api_view(['GET'])
 def get_settlement_areas(request):
-    try:
-        response = NP.address.get_settlement_areas('')
-    except Exception:
-        return Response({'error': 'some error with NOVA POSHTA API occured'}, status=status.HTTP_400_BAD_REQUEST)
+    response = NP.address.get_settlement_areas('')
 
     if response['success']:
         return Response(response['data'], status=status.HTTP_200_OK)
@@ -173,13 +170,7 @@ def get_warehouses(request):
 @swagger_auto_schema(method='GET', responses={200: 'Nova Post API response', 400: bad_request})
 @api_view(['GET'])
 def get_warehouse_types(request):
-    try:
-        response = NP.address.get_warehouse_types()
-    except Exception:
-        return Response({'error': 'some error with NOVA POSHTA API occured'}, status=status.HTTP_400_BAD_REQUEST)
-
-    except KeyError:
-        return Response({'error': '"settlement_ref" is required'}, status=status.HTTP_400_BAD_REQUEST)
+    response = NP.address.get_warehouse_types()
 
     if response['success']:
         return Response(response['data'], status=status.HTTP_200_OK)
