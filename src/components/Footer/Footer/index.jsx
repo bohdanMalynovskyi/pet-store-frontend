@@ -10,7 +10,6 @@ import { LogoVertical, Mastercard, Visa } from '../../../style/icons';
 const Footer = () => {
   const size = useWindowSize();
   const isMobile = size.width < 720;
-
   const createClass = (className) => selectResponsiveStyle(className, style, isMobile);
 
   const classColumn = `${style.column.default} ${createClass('column')}`;
