@@ -1,13 +1,8 @@
-from django.conf import settings
-from djoser.compat import get_user_email_field_name, get_user_email
+from djoser.serializers import UserCreateSerializer, UserSerializer, UserCreatePasswordRetypeSerializer
 from rest_framework import serializers
-from rest_framework.serializers import raise_errors_on_nested_writes
-from rest_framework.utils import model_meta
 
 from products.serializers import ProductSerializer, ChangeablePriceSerializer
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
-
-from djoser.serializers import UserCreateSerializer, UserSerializer, UserCreatePasswordRetypeSerializer
 
 
 class CustomUserCreateRetypeSerializer(UserCreatePasswordRetypeSerializer):
