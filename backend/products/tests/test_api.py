@@ -178,6 +178,17 @@ class ProductTestCase(SubCategoryTestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
 
+    def test_filter_by_is_new(self):
+        url = reverse('products-list')
+        response = self.client.get(url, {'is_new': 'false'})
+        for product in response.data['results']:
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
+        filtered_products = Product.objects.filter(is_new=False)[:10]
+        serializer_data = ProductSerializer(filtered_products, many=True).data
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serializer_data, response.data['results'])
+
 
 class ChangeablePriceTestCase(ProductTestCase):
     def setUp(self):
