@@ -7,7 +7,7 @@ from datetime import datetime
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MinLengthValidator
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -62,7 +62,9 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField(_('email address'), unique=True, blank=False, null=False)
-    second_name = models.CharField(max_length=150, blank=True)
+    second_name = models.CharField(max_length=150, blank=True, validators=[MinLengthValidator(2)])
+    first_name = models.CharField(_("first name"), max_length=150, blank=True, validators=[MinLengthValidator(2)])
+    last_name = models.CharField(_("last name"), max_length=150, blank=True, validators=[MinLengthValidator(2)])
     phone_number = models.CharField(max_length=15, blank=True)
     counterparty_ref = models.CharField(max_length=36, blank=True, null=True)
     contact_person_ref = models.CharField(max_length=36, blank=True, null=True)
