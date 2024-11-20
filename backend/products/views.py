@@ -38,6 +38,7 @@ class ProductViewSet(ReadOnlyModelViewSet):
             animal_category = self.request.query_params.get('animal_category')
             product_category = self.request.query_params.get('product_category')
             has_discount = self.request.query_params.get('has_discount')
+            is_new = self.request.query_params.get('is_new')
 
             if min_price is not None:
                 queryset = queryset.filter(discount_price__gte=min_price)
@@ -57,6 +58,10 @@ class ProductViewSet(ReadOnlyModelViewSet):
             if has_discount is not None:
                 queryset = queryset.filter(discount__gt=0) if has_discount.lower() == 'true' else queryset.filter(
                     discount=0)
+
+            if is_new is not None:
+                queryset = queryset.filter(is_new=True) if is_new.lower() == 'true' else queryset.filter(
+                    is_new=False)
 
         return queryset
 
@@ -78,6 +83,8 @@ class ProductViewSet(ReadOnlyModelViewSet):
         openapi.Parameter('product_category', openapi.IN_QUERY, description="Product category filter",
                           type=openapi.TYPE_INTEGER),
         openapi.Parameter('has_discount', openapi.IN_QUERY, description="Does have discount",
+                          type=openapi.TYPE_BOOLEAN),
+        openapi.Parameter('is_new', openapi.IN_QUERY, description="Is product new",
                           type=openapi.TYPE_BOOLEAN),
         openapi.Parameter('ordering', openapi.IN_QUERY,
                           description="value 'price' order data ascending and value '-price' descending",
