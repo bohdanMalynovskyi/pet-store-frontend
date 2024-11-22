@@ -1,7 +1,8 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from categories.serializers import SubCategorySerializer
+from categories.serializers import SubCategorySerializer, SubCategoryHierarchySerializer, \
+    AnimalCategoryHierarchySerializer, ProductCategoryHierarchySerializer
 from products.models import Brand, ChangeablePrice, ProductImages, AdditionalFields, Product
 
 
@@ -40,6 +41,23 @@ class ProductSerializer(serializers.ModelSerializer):
     changeable_prices = ChangeablePriceSerializer(many=True, read_only=True)
     images = serializers.SerializerMethodField()
     discount_price = serializers.SerializerMethodField()
+    categories = serializers.SerializerMethodField()
+
+    def get_categories(self, obj):
+        try:
+            return {
+                "animal_category": AnimalCategoryHierarchySerializer(
+                    obj.subcategory.product_category.animal_category, many=False
+                ).data,
+                "product_category": ProductCategoryHierarchySerializer(
+                    obj.subcategory.product_category, many=False
+                ).data,
+                "subcategory": SubCategoryHierarchySerializer(
+                    obj.subcategory, many=False
+                ).data,
+            }
+        except AttributeError:
+            return None
 
     def get_images(self, obj):
         main_image = obj.images.filter(order=1).first()
@@ -63,11 +81,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'discount', 'discount_price', 'changeable_prices', 'images', 'description']
+        fields = ['id', 'name', 'categories', 'price','discount', 'discount_price', 'changeable_prices', 'images', 'description']
 
 
 class ProductDetailSerializer(ProductSerializer):
-    subcategory = SubCategorySerializer(many=False, read_only=True)
     brand = BrandSerializer(many=False, read_only=True)
     additional_fields = AdditionalFieldsSerializer(many=True, read_only=True)
     recommended_products = serializers.SerializerMethodField()
@@ -81,7 +98,7 @@ class ProductDetailSerializer(ProductSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'subcategory', 'price', 'discount', 'discount_price', 'changeable_prices', 'is_new',
+        fields = ['id', 'name', 'categories', 'price', 'discount', 'discount_price', 'changeable_prices', 'is_new',
                   'images',
                   'description',
                   'additional_fields', 'brand', 'recommended_products']
