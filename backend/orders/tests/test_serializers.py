@@ -1,5 +1,6 @@
 from orders.models import Order, OrderItem
 from orders.serializers import OrderItemSerializer, OrderSerializer
+from products.serializers import ProductSerializer
 from products.tests.test_serializers import ProductsTests
 from users.models import HashCode
 
@@ -12,11 +13,14 @@ class OrderItemSerializerTest(ProductsTests):
         self.order_item1 = OrderItem.objects.create(product=self.product, order=self.order, quantity=1, fixed_price=50)
 
     def test_ok(self):
+        product_serializer = ProductSerializer()
+        categories = product_serializer.get_categories(self.product)
         expected_data = {
             'id': self.order_item1.id,
             'product': {
                 'id': self.product.id,
                 'name': 'ProPlan',
+                'categories': categories,
                 'price': '100.00',
                 'discount': 50,
                 'discount_price': '50.00',

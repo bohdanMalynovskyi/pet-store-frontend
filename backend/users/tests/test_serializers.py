@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from django.contrib.auth.hashers import check_password
 
+from products.serializers import ProductSerializer
 from products.tests.test_serializers import ProductsTests
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
 from users.serializers import CartItemSerializer, CartSerializer, FeaturedItemSerializer, FeaturedProductsSerializer, \
@@ -16,11 +17,14 @@ class CartItemSerializerTest(ProductsTests):
         self.cart_item1 = CartItem.objects.create(product=self.product, cart=self.cart, quantity=1)
 
     def test_ok(self):
+        product_serializer = ProductSerializer()
+        categories = product_serializer.get_categories(self.product)
         expected_data = {
             'id': self.cart_item1.id,
             'product': {
                 'id': self.product.id,
                 'name': 'ProPlan',
+                'categories': categories,
                 'price': '100.00',
                 'discount': 50,
                 'discount_price': '50.00',
@@ -60,11 +64,14 @@ class FeaturedItemSerializerTest(ProductsTests):
         self.featured_item1 = FeaturedItem.objects.create(product=self.product, featured_products=self.featured)
 
     def test_ok(self):
+        product_serializer = ProductSerializer()
+        categories = product_serializer.get_categories(self.product)
         expected_data = {
             'id': self.featured_item1.id,
             'product': {
                 'id': self.product.id,
                 'name': 'ProPlan',
+                'categories': categories,
                 'price': '100.00',
                 'discount': 50,
                 'discount_price': '50.00',
