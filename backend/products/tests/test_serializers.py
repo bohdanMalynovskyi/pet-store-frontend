@@ -31,9 +31,12 @@ class ProductsTests(BrandTests):
                                               description='cool', brand=self.brand, weight=1)
 
     def test_ok(self):
+        product_serializer = ProductSerializer()
+        categories = product_serializer.get_categories(self.product)
         expected_data = {
             'id': self.product.id,
             'name': 'ProPlan',
+            'categories': categories,
             'price': '100.00',
             'discount': 50,
             'discount_price': '50.00',
@@ -51,17 +54,15 @@ class ProductDetailTests(ProductsTests):
         super().setUp()
 
     def test_ok(self):
+        product_serializer = ProductSerializer()
+        categories = product_serializer.get_categories(self.product)
         recommended_products = Product.objects.filter(subcategory=self.product.subcategory).exclude(id=self.product.id)[
                                :10]
         serializer_object = ProductSerializer(recommended_products, many=True)
         expected_data = {
             'id': self.product.id,
             'name': 'ProPlan',
-            'subcategory': {
-                'id': self.sub_category.id,
-                'key': '',
-                'name': 'Wet food'
-            },
+            'categories': categories,
             'price': '100.00',
             'discount': 50,
             'discount_price': '50.00',
