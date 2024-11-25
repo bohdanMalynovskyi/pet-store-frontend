@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('categories', '0004_initial_custom_data'),
+        ('categories', '0003_animalcategory_key_productcategory_key_and_more'),
     ]
 
     operations = [

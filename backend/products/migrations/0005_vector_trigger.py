@@ -9,7 +9,7 @@ def compute_search_vector(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('products', '0005_product_search_vector_and_more'),
+        ('products', '0004_product_search_vector_and_more'),
     ]
 
     operations = [

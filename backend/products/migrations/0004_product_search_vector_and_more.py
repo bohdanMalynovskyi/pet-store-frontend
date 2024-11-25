@@ -8,8 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('categories', '0004_initial_custom_data'),
-        ('products', '0004_initial_custom_product_data'),
+        ('products', '0003_search_conf'),
     ]
 
     operations = [

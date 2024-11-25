@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('products', '0007_alter_product_weight'),
+        ('products', '0006_alter_product_weight'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

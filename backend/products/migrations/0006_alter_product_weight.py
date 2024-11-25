@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('products', '0006_vector_trigger'),
+        ('products', '0005_vector_trigger'),
     ]
 
     operations = [
