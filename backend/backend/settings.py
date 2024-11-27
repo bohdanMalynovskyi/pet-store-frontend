@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_api_logger',
     'social_django',
+    'debug_toolbar',
 
     'categories.apps.CategoriesConfig',
     'products.apps.ProductsConfig',
@@ -84,6 +85,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar_force.middleware.ForceDebugToolbarMiddleware'
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -225,23 +228,23 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 ADMINS = [('Dmitro', 'dp236955@gmail.com')]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'mail_admins': {
-            'level': 'WARNING',
-            'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['mail_admins'],
-            'level': 'WARNING',
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'mail_admins': {
+#             'level': 'WARNING',
+#             'class': 'django.utils.log.AdminEmailHandler',
+#             'include_html': True,
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['mail_admins'],
+#             'level': 'WARNING',
+#         },
+#     },
+# }
 
 DRF_API_LOGGER_DATABASE = True
 DRF_API_LOGGER_EXCLUDE_KEYS = ['password', 're_password', 'CART', 'FEATURED', 'USER', 'hash_code', 'token', 'access',
@@ -274,3 +277,9 @@ SOCIAL_AUTH_FACEBOOK_SECRET = os.getenv('FACEBOOK_SECRET')
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 
 BASE_IMAGE_URL = 'http://localhost:8000'
+
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+]
