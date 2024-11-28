@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.db.models import Prefetch, F
 from rest_framework import serializers
 
 from categories.serializers import SubCategorySerializer, SubCategoryHierarchySerializer, \
@@ -60,15 +61,12 @@ class ProductSerializer(serializers.ModelSerializer):
             return None
 
     def get_images(self, obj):
-        main_image = obj.images.filter(order=1).first()
-        image = ProductImagesSerializer(main_image).data
-        base_url = settings.BASE_IMAGE_URL
-        image = image['image']
-        if not base_url:
-            return image
-        if not image:
+        if not hasattr(obj, 'filtered_images') or not obj.filtered_images:
             return None
-        return f'{base_url}{image}'
+        main_image = obj.filtered_images[0]
+        image = ProductImagesSerializer(main_image).data['image']
+        base_url = settings.BASE_IMAGE_URL
+        return f'{base_url}{image}' if base_url else image
 
     def get_discount_price(self, obj):
         if obj.price:
@@ -81,7 +79,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'categories', 'price','discount', 'discount_price', 'changeable_prices', 'images', 'description']
+        fields = ['id', 'name', 'categories', 'price', 'discount', 'discount_price', 'changeable_prices', 'images',
+                  'description']
 
 
 class ProductDetailSerializer(ProductSerializer):
@@ -92,7 +91,13 @@ class ProductDetailSerializer(ProductSerializer):
 
     def get_recommended_products(self, obj):
         recommended_products = Product.objects.filter(subcategory=obj.subcategory).exclude(id=obj.id)[
-                               :10].prefetch_related('changeable_prices', 'images')
+                               :10].prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100))
         serializer_object = ProductSerializer(recommended_products, many=True)
         return serializer_object.data
 

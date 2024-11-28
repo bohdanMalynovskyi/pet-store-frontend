@@ -1,4 +1,4 @@
-from django.db.models import F
+from django.db.models import F, Prefetch
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, filters
@@ -7,14 +7,16 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from categories.serializers import ProductCategoryHierarchySerializer, SubCategoryHierarchySerializer, \
     AnimalCategoryHierarchySerializer, ProductCategorySerializer, SubCategorySerializer, AnimalCategorySerializer
 from products.filters import CustomSearchFilter, CustomPagination
-from products.models import Product, ChangeablePrice, AdditionalFields
+from products.models import Product, ChangeablePrice, AdditionalFields, ProductImages
 from products.serializers import ProductSerializer, ChangeablePriceSerializer, \
     AdditionalFieldsSerializer, ProductDetailSerializer
 
 
 class ProductViewSet(ReadOnlyModelViewSet):
-    queryset = Product.objects.all().prefetch_related('changeable_prices', 'additional_fields',
-                                                      'images').select_related('brand', 'subcategory')
+    queryset = Product.objects.all().select_related('subcategory', 'subcategory__product_category',
+                                                    'subcategory__product_category__animal_category',
+                                                    'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100))
     permission_classes = [permissions.AllowAny]
     filter_backends = [CustomSearchFilter, filters.OrderingFilter]
     ordering_fields = ('price',)
@@ -29,7 +31,12 @@ class ProductViewSet(ReadOnlyModelViewSet):
         """ Handles filtering """
         queryset = super().get_queryset()
         if self.action == 'list':
-            queryset = Product.objects.all().prefetch_related('changeable_prices', 'images').annotate(
+            queryset = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
                 discount_price=F('price') - (F('price') * F('discount') / 100))
 
             min_price = self.request.query_params.get('min_price')

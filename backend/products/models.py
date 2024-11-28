@@ -38,7 +38,12 @@ class Product(models.Model):
     class Meta:
         verbose_name_plural = "product"
         verbose_name = "products"
-        indexes = [GinIndex(fields=['search_vector'])]
+        indexes = [GinIndex(fields=['search_vector']),
+                   models.Index(fields=['price']),
+                   models.Index(fields=['discount']),
+                   models.Index(fields=['subcategory']),
+                   models.Index(fields=['is_new']),
+                   ]
 
     def __str__(self):
         return f'{self.name} - {self.brand}'
