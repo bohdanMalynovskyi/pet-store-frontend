@@ -102,6 +102,8 @@ class FeaturedProductSerializerTest(FeaturedItemSerializerTest):
 
 
 class CustomUserSerializerTest(TestCase):
+    fixtures = ['base_data.json']
+
     def setUp(self):
         self.user_data = {
             'email': 'test1@example.com',
@@ -127,6 +129,8 @@ class CustomUserSerializerTest(TestCase):
 
 
 class CustomUserCreateSerializerTest(TestCase):
+    fixtures = ['base_data.json']
+
     def setUp(self):
         self.user_data = {
             'email': 'test2@example.com',

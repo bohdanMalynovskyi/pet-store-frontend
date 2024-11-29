@@ -6,6 +6,7 @@ from categories.serializers import AnimalCategorySerializer, ProductCategorySeri
 
 
 class AnimalCategoryTests(TestCase):
+    fixtures = ['base_data.json']
 
     def setUp(self):
         self.animal_category = AnimalCategory.objects.create(name='Dog', key='dog')
@@ -54,6 +55,7 @@ class SubCategoryTests(ProductCategoryTests):
 
 
 class AnimalCategoryHierarchyTests(TestCase):
+    fixtures = ['base_data.json']
 
     def setUp(self):
         self.animal_category = AnimalCategory.objects.create(name='Dog', key='dog')

@@ -10,6 +10,8 @@ from rest_framework.test import APITestCase
 
 
 class CartTestCase(APITestCase):
+    fixtures = ['base_data.json']
+
     def test_create_cart(self):
         url = reverse('create-cart')
         response = self.client.post(url)
@@ -185,6 +187,8 @@ class CartTestCase(APITestCase):
 
 
 class FeaturedTestCase(APITestCase):
+    fixtures = ['base_data.json']
+
     def test_create_featured(self):
         url = reverse('create-featured')
         response = self.client.post(url)
@@ -317,6 +321,7 @@ class FeaturedTestCase(APITestCase):
 
 
 class CustomDjoserEndpointTests(APITestCase):
+    fixtures = ['base_data.json']
 
     def setUp(self):
         self.user_data = {

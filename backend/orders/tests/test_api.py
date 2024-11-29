@@ -13,6 +13,8 @@ from users.models import HashCode, User, Cart, CartItem
 
 
 class OrderViewSetTestCase(APITestCase):
+    fixtures = ['base_data.json']
+
     def setUp(self):
         self.user = User.objects.create(email='testuser@example.com')
         self.token = Token.objects.create(user=self.user).key
@@ -51,6 +53,8 @@ class OrderViewSetTestCase(APITestCase):
 
 
 class CreateOrderTestCase(APITestCase):
+    fixtures = ['base_data.json']
+
     def setUp(self):
         self.user = User.objects.create(email='testuser@example.com', first_name='Іван', last_name='Іванов',
                                         phone_number='0676542345')
@@ -131,6 +135,7 @@ class CreateOrderTestCase(APITestCase):
 
 
 class NPTestCase(APITestCase):
+    fixtures = ['base_data.json']
 
     def test_get_warehouse_types(self):
         url = reverse('get-warehouse-types')

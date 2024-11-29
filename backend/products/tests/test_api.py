@@ -1,9 +1,9 @@
-from django.db.models import F
+from django.db.models import F, Prefetch
 from django.urls import reverse
 from rest_framework import status
 
 from categories.tests.test_api import SubCategoryTestCase
-from products.models import Brand, Product, ChangeablePrice, AdditionalFields
+from products.models import Brand, Product, ChangeablePrice, AdditionalFields, ProductImages
 from products.serializers import ProductSerializer, ChangeablePriceSerializer, AdditionalFieldsSerializer, \
     ProductDetailSerializer
 
@@ -21,7 +21,13 @@ class ProductTestCase(SubCategoryTestCase):
         ignoring the domain and protocol. This ensures a consistent and accurate comparison between the serializer and response data."""
 
         url = reverse('products-list')
-        products = Product.objects.all()[:10]
+        products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100))[:10]
         response = self.client.get(url)
         serializer_data = ProductSerializer(products, many=True).data
 
@@ -76,9 +82,13 @@ class ProductTestCase(SubCategoryTestCase):
         for product in response.data['results']:
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
-        sorted_products = Product.objects.all().annotate(
-            discount_price=F('price') - (F('price') * F('discount') / 100)
-        ).order_by('discount_price')[:10]
+        sorted_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100)).order_by('discount_price')[:10]
         serializer_data = ProductSerializer(sorted_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -91,9 +101,13 @@ class ProductTestCase(SubCategoryTestCase):
             # Remove the domain and protocol, keep only relative paths
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
-        sorted_products = Product.objects.all().annotate(
-            discount_price=F('price') - (F('price') * F('discount') / 100)
-        ).order_by('-discount_price')[:10]
+        sorted_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100)).order_by('-discount_price')[:10]
         serializer_data = ProductSerializer(sorted_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -106,9 +120,13 @@ class ProductTestCase(SubCategoryTestCase):
             # Remove the domain and protocol, keep only relative paths
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
-        filtered_products = Product.objects.annotate(
-            discount_price=F('price') - (F('price') * F('discount') / 100)
-        ).filter(discount_price__gte=min_price)[:10]
+        filtered_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100)).filter(discount_price__gte=min_price)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -121,9 +139,13 @@ class ProductTestCase(SubCategoryTestCase):
         for product in response.data['results']:
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
-        filtered_products = Product.objects.annotate(
-            discount_price=F('price') - (F('price') * F('discount') / 100)
-        ).filter(discount_price__lte=max_price)[:10]
+        filtered_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100)).filter(discount_price__lte=max_price)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -135,7 +157,13 @@ class ProductTestCase(SubCategoryTestCase):
         for product in response.data['results']:
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
-        filtered_products = Product.objects.filter(subcategory_id=1)[:10]
+        filtered_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100)).filter(subcategory_id=1)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -148,7 +176,13 @@ class ProductTestCase(SubCategoryTestCase):
         for product in response.data['results']:
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
-        filtered_products = Product.objects.filter(subcategory__product_category__animal_category_id=1)[:10]
+        filtered_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100)).filter(subcategory__product_category__animal_category_id=1)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -161,7 +195,13 @@ class ProductTestCase(SubCategoryTestCase):
         for product in response.data['results']:
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
-        filtered_products = Product.objects.filter(subcategory__product_category_id=1)[:10]
+        filtered_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100)).filter(subcategory__product_category_id=1)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
@@ -173,7 +213,13 @@ class ProductTestCase(SubCategoryTestCase):
         for product in response.data['results']:
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
-        filtered_products = Product.objects.filter(discount__gt=0)[:10]
+        filtered_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                            queryset=ProductImages.objects.filter(
+                                                                                                order=1),
+                                                                                            to_attr='filtered_images')).select_related(
+                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+                'brand').annotate(
+                discount_price=F('price') - (F('price') * F('discount') / 100)).filter(discount__gt=0)[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
