@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Prefetch
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
@@ -12,6 +13,7 @@ from orders.logic import create_order_from_cart, process_delivery
 from orders.models import Order
 from orders.serializers import OrderSerializer
 from orders.tasks import email_paid_order, email_cancelled_order
+from products.models import ProductImages
 from users.docs import bad_request, not_found, cart_auth
 from users.logic import authorize_cart, get_cart
 
@@ -27,7 +29,10 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
 
         # Normal behavior
         if self.request.user.is_authenticated:
-            queryset = Order.objects.filter(user=self.request.user).order_by('created_at')
+            queryset = Order.objects.filter(user=self.request.user).prefetch_related(
+                'order_items__product__subcategory__product_category__animal_category',
+                'order_items__product__changeable_prices', Prefetch('order_items__product__images', queryset=ProductImages.objects.filter(
+                    order=1),to_attr='filtered_images')).order_by('created_at')
         else:
             queryset = Order.objects.none()
 
