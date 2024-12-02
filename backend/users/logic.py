@@ -4,6 +4,7 @@ from django.db.models import Prefetch
 from rest_framework import status
 from rest_framework.response import Response
 
+from products.models import ProductImages
 from users.models import Cart, FeaturedProducts, CartItem, FeaturedItem
 from users.tasks import set_interact
 
@@ -59,19 +60,19 @@ def authorize_featured(view_func):
 
 def get_cart(cart_id):
     """This func was made to get rid of repeating cart getting query"""
-    cart = Cart.objects.select_related('hash_code').prefetch_related(
-        Prefetch('cart_items', queryset=CartItem.objects.select_related('product').prefetch_related(
-            'product__changeable_prices', 'product__images')
-                 )
-    ).get(id=cart_id)
+    cart = Cart.objects.select_related('hash_code', 'user').prefetch_related(
+        'cart_items__product__subcategory__product_category__animal_category',
+        'cart_items__product__changeable_prices',
+        Prefetch('cart_items__product__images', queryset=ProductImages.objects.filter(
+            order=1), to_attr='filtered_images')).get(id=cart_id)
     return cart
 
 
 def get_featured(featured_id):
     """This func was made to get rid of repeating featured getting query"""
-    featured = FeaturedProducts.objects.select_related('hash_code').prefetch_related(
-        Prefetch('featured_items', queryset=FeaturedItem.objects.select_related('product').prefetch_related(
-            'product__changeable_prices', 'product__images')
-                 )
-    ).get(id=featured_id)
+    featured = FeaturedProducts.objects.select_related('hash_code', 'user').prefetch_related(
+        'featured_items__product__subcategory__product_category__animal_category',
+        'featured_items__product__changeable_prices',
+        Prefetch('featured_items__product__images', queryset=ProductImages.objects.filter(
+            order=1), to_attr='filtered_images')).get(id=featured_id)
     return featured
