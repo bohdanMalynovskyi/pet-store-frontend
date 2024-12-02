@@ -228,22 +228,46 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 ADMINS = [('Dmitro', 'dp236955@gmail.com')]
 
+# PROD (email warning-level) LOGGING
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'mail_admins': {
+            'level': 'WARNING',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['mail_admins'],
+            'level': 'WARNING',
+        },
+    },
+}
+
+# DB LOGGING
 # LOGGING = {
 #     'version': 1,
-#     'disable_existing_loggers': False,
+#     'filters': {
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         }
+#     },
 #     'handlers': {
-#         'mail_admins': {
-#             'level': 'WARNING',
-#             'class': 'django.utils.log.AdminEmailHandler',
-#             'include_html': True,
-#         },
+#         'console': {
+#             'level': 'DEBUG',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#         }
 #     },
 #     'loggers': {
-#         'django': {
-#             'handlers': ['mail_admins'],
-#             'level': 'WARNING',
-#         },
-#     },
+#         'django.db.backends': {
+#             'level': 'DEBUG',
+#             'handlers': ['console'],
+#         }
+#     }
 # }
 
 DRF_API_LOGGER_DATABASE = True
