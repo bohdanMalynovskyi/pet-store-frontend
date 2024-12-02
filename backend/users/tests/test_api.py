@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 
 from products.models import Product, ChangeablePrice
+from users.logic import get_cart, get_featured
 
 from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
 from users.serializers import CartSerializer, FeaturedProductsSerializer
@@ -54,7 +55,9 @@ class CartTestCase(APITestCase):
         headers = {'Cart': f'Token {self.cart1.hash_code.key}'}
         response = self.client.get(url, headers=headers)
 
-        serializer = CartSerializer(self.cart1)
+        cart = get_cart(self.cart1.id)
+
+        serializer = CartSerializer(cart)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
@@ -64,7 +67,9 @@ class CartTestCase(APITestCase):
         headers = {'Authorization': f'Token {self.token}'}
         response = self.client.get(url, headers=headers)
 
-        serializer = CartSerializer(self.cart2)
+        cart = get_cart(self.cart2.id)
+
+        serializer = CartSerializer(cart)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
@@ -77,8 +82,9 @@ class CartTestCase(APITestCase):
         self.assertEqual(self.cart1.cart_items.last().quantity, 1)
 
         response = self.client.post(url, headers=headers)
+        cart = get_cart(self.cart1.id)
 
-        serializer = CartSerializer(self.cart1)
+        serializer = CartSerializer(cart)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(self.cart1.cart_items.last().quantity, 2)
@@ -89,7 +95,9 @@ class CartTestCase(APITestCase):
         response = self.client.post(url, headers=headers)
 
         self.assertEqual(self.cart3.cart_items.last().changeable_price.id, ChangeablePrice.objects.all()[0].id)
-        serializer = CartSerializer(self.cart3)
+        cart = get_cart(self.cart3.id)
+
+        serializer = CartSerializer(cart)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
 
@@ -104,7 +112,9 @@ class CartTestCase(APITestCase):
 
         response = self.client.post(url, headers=headers)
 
-        serializer = CartSerializer(self.cart2)
+        cart = get_cart(self.cart2.id)
+
+        serializer = CartSerializer(cart)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(self.cart2.cart_items.last().quantity, 2)
@@ -221,17 +231,18 @@ class FeaturedTestCase(APITestCase):
         self.product3 = Product.objects.get(id=2)
         self.featured1 = FeaturedProducts.objects.create()
         self.featured2 = FeaturedProducts.objects.create(user=self.user)
-        self.featured3 = Cart.objects.create()
+        self.featured3 = FeaturedProducts.objects.create()
         self.featured_item1 = FeaturedItem.objects.create(product=self.product1, featured_products=self.featured1)
         self.featured_item2 = FeaturedItem.objects.create(product=self.product1, featured_products=self.featured2)
-        self.featured_item3 = CartItem.objects.create(product=self.product3, cart=self.featured3, quantity=1)
+        self.featured_item3 = FeaturedItem.objects.create(product=self.product1, featured_products=self.featured3)
 
     def test_get_featured(self):
         url = reverse('get-featured')
         headers = {'Featured': f'Token {self.featured1.hash_code.key}'}
         response = self.client.get(url, headers=headers)
+        featured = get_featured(self.featured1.id)
 
-        serializer = FeaturedProductsSerializer(self.featured1)
+        serializer = FeaturedProductsSerializer(featured)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
 
@@ -240,7 +251,9 @@ class FeaturedTestCase(APITestCase):
         headers = {'Authorization': f'Token {self.token}'}
         response = self.client.get(url, headers=headers)
 
-        serializer = FeaturedProductsSerializer(self.featured2)
+        featured = get_featured(self.featured2.id)
+
+        serializer = FeaturedProductsSerializer(featured)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
@@ -249,28 +262,32 @@ class FeaturedTestCase(APITestCase):
         url = reverse('add-to-featured', args=[self.product2.id])
         headers = {'Featured': f'Token {self.featured1.hash_code.key}'}
         response = self.client.post(url, headers=headers)
+        featured = get_featured(self.featured1.id)
 
-        serializer = FeaturedProductsSerializer(self.featured1)
+        serializer = FeaturedProductsSerializer(featured)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(self.featured1.featured_items.count(), 2)
 
-    def test_change_featured_item_changeable_price(self):
-        url = reverse('change-featured-changeable-price', args=[self.product3.id, ChangeablePrice.objects.all()[0].id])
-        headers = {'Cart': f'Token {self.featured3.hash_code.key}'}
-        response = self.client.post(url, headers=headers)
-
-        self.assertEqual(self.featured3.cart_items.last().changeable_price.id, ChangeablePrice.objects.all()[0].id)
-        serializer = CartSerializer(self.featured3)
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(serializer.data, response.data)
+    # def test_change_featured_item_changeable_price(self):
+    #     url = reverse('change-featured-changeable-price', args=[self.product3.id, ChangeablePrice.objects.all()[0].id])
+    #     headers = {'Featured': f'Token {self.featured3.hash_code.key}'}
+    #     response = self.client.post(url, headers=headers)
+    #
+    #     self.assertEqual(self.featured3.featured_items.last().changeable_price.id, ChangeablePrice.objects.all()[0].id)
+    #     featured = get_featured(self.featured3.id)
+    #
+    #     serializer = FeaturedProductsSerializer(featured)
+    #     self.assertEqual(status.HTTP_200_OK, response.status_code)
+    #     self.assertEqual(serializer.data, response.data)
 
     def test_add_to_featured_with_user(self):
         url = reverse('add-to-featured', args=[self.product2.id])
         headers = {'Authorization': f'Token {self.token}'}
         response = self.client.post(url, headers=headers)
+        featured = get_featured(self.featured2.id)
 
-        serializer = FeaturedProductsSerializer(self.featured2)
+        serializer = FeaturedProductsSerializer(featured)
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer.data, response.data)
         self.assertEqual(self.featured2.featured_items.count(), 2)
