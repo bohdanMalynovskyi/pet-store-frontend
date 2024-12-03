@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'drf_api_logger',
     'social_django',
     'debug_toolbar',
+    'cacheops',
 
     'categories.apps.CategoriesConfig',
     'products.apps.ProductsConfig',
@@ -302,8 +303,16 @@ SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 
 BASE_IMAGE_URL = 'http://localhost:8000'
 
-
 INTERNAL_IPS = [
     '127.0.0.1',
     'localhost',
 ]
+
+CACHEOPS_REDIS = "redis://redis:6379/1"
+
+CACHEOPS = {
+    'сategories.*': {'ops': 'all', 'timeout': 60 * 60 * 24},
+    'orders.*': {'ops': 'all', 'timeout': 60 * 60 * 24},
+    'products.*': {'ops': 'all', 'timeout': 60 * 60 * 24},
+    'users.*': {'ops': 'all', 'timeout': 60 * 60 * 24},
+}
