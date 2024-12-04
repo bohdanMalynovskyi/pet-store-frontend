@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.db.models import Prefetch
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 
 from backend.settings import NP
 from orders.docs import create_order_body
+from orders.filters import OrderFilter
 from orders.logic import create_order_from_cart, process_delivery
 from orders.models import Order
 from orders.serializers import OrderSerializer
@@ -21,6 +23,8 @@ from users.logic import authorize_cart, get_cart
 class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = OrderFilter
 
     def get_queryset(self):
         # Short-circuit the view during schema generation
@@ -52,15 +56,6 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.exclude(status__in=('cancelled', 'received', 'returned'))
 
         return queryset
-
-    @swagger_auto_schema(manual_parameters=[
-        openapi.Parameter('is_finished', openapi.IN_QUERY, description="Is order finished", type=openapi.TYPE_BOOLEAN),
-        openapi.Parameter('is_cancelled', openapi.IN_QUERY, description="Is order cancelled",
-                          type=openapi.TYPE_BOOLEAN),
-        openapi.Parameter('is_current', openapi.IN_QUERY, description="Is order current", type=openapi.TYPE_BOOLEAN),
-    ])
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
 
 
 @swagger_auto_schema(method='post',

@@ -1,4 +1,5 @@
 from django.db.models import F, Prefetch
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, filters
@@ -6,7 +7,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from categories.serializers import ProductCategoryHierarchySerializer, SubCategoryHierarchySerializer, \
     AnimalCategoryHierarchySerializer
-from products.filters import CustomSearchFilter, CustomPagination
+from products.filters import CustomSearchFilter, CustomPagination, ProductFilter
 from products.models import Product, ChangeablePrice, AdditionalFields, ProductImages
 from products.serializers import ProductSerializer, ChangeablePriceSerializer, \
     AdditionalFieldsSerializer, ProductDetailSerializer
@@ -16,11 +17,12 @@ class ProductViewSet(ReadOnlyModelViewSet):
     queryset = Product.objects.all().select_related('subcategory', 'subcategory__product_category',
                                                     'subcategory__product_category__animal_category',
                                                     'brand').annotate(
-                discount_price=F('price') - (F('price') * F('discount') / 100))
+        discount_price=F('price') - (F('price') * F('discount') / 100))
     permission_classes = [permissions.AllowAny]
-    filter_backends = [CustomSearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, CustomSearchFilter, filters.OrderingFilter]
     ordering_fields = ('price',)
     pagination_class = CustomPagination
+    filterset_class = ProductFilter
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -38,38 +40,6 @@ class ProductViewSet(ReadOnlyModelViewSet):
                 'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
                 'brand').annotate(
                 discount_price=F('price') - (F('price') * F('discount') / 100))
-
-            min_price = self.request.query_params.get('min_price')
-            max_price = self.request.query_params.get('max_price')
-            subcategory = self.request.query_params.get('subcategory')
-            animal_category = self.request.query_params.get('animal_category')
-            product_category = self.request.query_params.get('product_category')
-            has_discount = self.request.query_params.get('has_discount')
-            is_new = self.request.query_params.get('is_new')
-
-            if min_price is not None:
-                queryset = queryset.filter(discount_price__gte=min_price)
-
-            if max_price is not None:
-                queryset = queryset.filter(discount_price__lte=max_price)
-
-            if subcategory is not None:
-                queryset = queryset.filter(subcategory_id=subcategory)
-
-            if animal_category is not None:
-                queryset = queryset.filter(subcategory__product_category__animal_category_id=animal_category)
-
-            if product_category is not None:
-                queryset = queryset.filter(subcategory__product_category_id=product_category)
-
-            if has_discount is not None:
-                queryset = queryset.filter(discount__gt=0) if has_discount.lower() == 'true' else queryset.filter(
-                    discount=0)
-
-            if is_new is not None:
-                queryset = queryset.filter(is_new=True) if is_new.lower() == 'true' else queryset.filter(
-                    is_new=False)
-
         return queryset
 
     def get_ordering(self):
@@ -81,22 +51,6 @@ class ProductViewSet(ReadOnlyModelViewSet):
                 return ['-price']
         return super().get_ordering()
 
-    @swagger_auto_schema(manual_parameters=[
-        openapi.Parameter('min_price', openapi.IN_QUERY, description="Minimum price filter", type=openapi.TYPE_NUMBER),
-        openapi.Parameter('max_price', openapi.IN_QUERY, description="Maximum price filter", type=openapi.TYPE_NUMBER),
-        openapi.Parameter('subcategory', openapi.IN_QUERY, description="Subcategory filter", type=openapi.TYPE_INTEGER),
-        openapi.Parameter('animal_category', openapi.IN_QUERY, description="Animal category filter",
-                          type=openapi.TYPE_INTEGER),
-        openapi.Parameter('product_category', openapi.IN_QUERY, description="Product category filter",
-                          type=openapi.TYPE_INTEGER),
-        openapi.Parameter('has_discount', openapi.IN_QUERY, description="Does have discount",
-                          type=openapi.TYPE_BOOLEAN),
-        openapi.Parameter('is_new', openapi.IN_QUERY, description="Is product new",
-                          type=openapi.TYPE_BOOLEAN),
-        openapi.Parameter('ordering', openapi.IN_QUERY,
-                          description="value 'price' order data ascending and value '-price' descending",
-                          type=openapi.TYPE_INTEGER),
-    ])
     def list(self, request, *args, **kwargs):
         """ Adds categories hierarchy on filtering"""
         queryset = self.filter_queryset(self.get_queryset())
