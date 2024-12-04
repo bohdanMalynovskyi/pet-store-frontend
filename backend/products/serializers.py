@@ -64,9 +64,12 @@ class ProductSerializer(serializers.ModelSerializer):
         if not hasattr(obj, 'filtered_images') or not obj.filtered_images:
             return None
         main_image = obj.filtered_images[0]
-        image = ProductImagesSerializer(main_image).data['image']
-        base_url = settings.BASE_IMAGE_URL
-        return f'{base_url}{image}' if base_url else image
+        request = self.context.get('request')
+        if request:
+            image_url = request.build_absolute_uri(main_image.image.url)
+        else:
+            image_url = main_image.image.url
+        return image_url
 
     def get_discount_price(self, obj):
         if obj.price:
