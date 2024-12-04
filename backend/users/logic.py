@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from products.models import ProductImages
-from users.models import Cart, FeaturedProducts, CartItem, FeaturedItem
+from users.models import Cart, FeaturedProducts
 from users.tasks import set_interact
 
 

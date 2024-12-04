@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from products.models import Product, ChangeablePrice
 from users.logic import get_cart, get_featured
 
-from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
+from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User
 from users.serializers import CartSerializer, FeaturedProductsSerializer
 from rest_framework.test import APITestCase
 

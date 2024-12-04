@@ -31,8 +31,9 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
         if self.request.user.is_authenticated:
             queryset = Order.objects.filter(user=self.request.user).prefetch_related(
                 'order_items__product__subcategory__product_category__animal_category',
-                'order_items__product__changeable_prices', Prefetch('order_items__product__images', queryset=ProductImages.objects.filter(
-                    order=1),to_attr='filtered_images')).order_by('created_at')
+                'order_items__product__changeable_prices',
+                Prefetch('order_items__product__images', queryset=ProductImages.objects.filter(
+                    order=1), to_attr='filtered_images')).order_by('created_at')
         else:
             queryset = Order.objects.none()
 

@@ -5,7 +5,7 @@ from rest_framework import permissions, filters
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from categories.serializers import ProductCategoryHierarchySerializer, SubCategoryHierarchySerializer, \
-    AnimalCategoryHierarchySerializer, ProductCategorySerializer, SubCategorySerializer, AnimalCategorySerializer
+    AnimalCategoryHierarchySerializer
 from products.filters import CustomSearchFilter, CustomPagination
 from products.models import Product, ChangeablePrice, AdditionalFields, ProductImages
 from products.serializers import ProductSerializer, ChangeablePriceSerializer, \

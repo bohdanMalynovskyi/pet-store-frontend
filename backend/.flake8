@@ -1,0 +1,18 @@
+[flake8]
+max-line-length = 180
+exclude =
+    .git,
+    __pycache__,
+    venv,
+    .idea,
+    .coverage,
+    htmlcov/,
+    coverage.xml,
+    alembic/,
+    .venv/,
+    base_data.json,
+    requirements,
+    Dockerfile,
+    migrations/*,
+    */migrations/*,
+    __init__.py

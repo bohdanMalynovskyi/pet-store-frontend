@@ -104,22 +104,23 @@ class CreateOrderTestCase(APITestCase):
         res = NP.internet_document.delete(Order.objects.order_by('id').last().document_ref)
         self.assertEqual(res['success'], True)
 
-    def test_create_order_with_online_payment(self):
-        url = reverse('create_order')
-        data = {
-            "payment_type": "online",
-            "warehouse_index": "55/145",
-            "city_ref": "db5c88d0-391c-11dd-90d9-001a92567626",
-            "first_name": "Іван",
-            "last_name": "Іванов",
-            "phone": "0676542345",
-            "email": "test@example.com"
-
-        }
-        headers = {'Cart': f'Token {HashCode.objects.get(cart=self.cart2).key}'}
-        response = self.client.post(url, headers=headers, data=data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNotEqual(response.data['checkout_url'], None)
+# RUN ONLY IF HAS EXTERNAL IP
+    # def test_create_order_with_online_payment(self):
+    #     url = reverse('create_order')
+    #     data = {
+    #         "payment_type": "online",
+    #         "warehouse_index": "55/145",
+    #         "city_ref": "db5c88d0-391c-11dd-90d9-001a92567626",
+    #         "first_name": "Іван",
+    #         "last_name": "Іванов",
+    #         "phone": "0676542345",
+    #         "email": "test@example.com"
+    #
+    #     }
+    #     headers = {'Cart': f'Token {HashCode.objects.get(cart=self.cart2).key}'}
+    #     response = self.client.post(url, headers=headers, data=data, format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    #     self.assertNotEqual(response.data['checkout_url'], None)
 
     def test_create_order_empty_cart(self):
         self.cart_item1.delete()

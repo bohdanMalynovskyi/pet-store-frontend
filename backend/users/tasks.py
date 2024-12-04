@@ -12,7 +12,6 @@ from users.models import Cart, FeaturedProducts
 
 logger = get_task_logger(__name__)
 
-
 kiev_tz = timezone('Europe/Kiev')
 
 
@@ -24,6 +23,7 @@ def set_interact(cart_id=None, featured_id=None):
         obj = FeaturedProducts.objects.get(pk=featured_id)
     obj.last_updated = datetime.now(kiev_tz)
     obj.save()
+
 
 @app.task
 @shared_task(base=Singleton)

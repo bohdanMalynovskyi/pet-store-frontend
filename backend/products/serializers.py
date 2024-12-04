@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db.models import Prefetch, F
 from rest_framework import serializers
 
-from categories.serializers import SubCategorySerializer, SubCategoryHierarchySerializer, \
+from categories.serializers import SubCategoryHierarchySerializer, \
     AnimalCategoryHierarchySerializer, ProductCategoryHierarchySerializer
 from products.models import Brand, ChangeablePrice, ProductImages, AdditionalFields, Product
 
@@ -92,12 +92,12 @@ class ProductDetailSerializer(ProductSerializer):
     def get_recommended_products(self, obj):
         recommended_products = Product.objects.filter(subcategory=obj.subcategory).exclude(id=obj.id)[
                                :10].prefetch_related('changeable_prices', Prefetch('images',
-                                                                                            queryset=ProductImages.objects.filter(
-                                                                                                order=1),
-                                                                                            to_attr='filtered_images')).select_related(
-                'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
-                'brand').annotate(
-                discount_price=F('price') - (F('price') * F('discount') / 100))
+                                                                                   queryset=ProductImages.objects.filter(
+                                                                                       order=1),
+                                                                                   to_attr='filtered_images')).select_related(
+            'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+            'brand').annotate(
+            discount_price=F('price') - (F('price') * F('discount') / 100))
         serializer_object = ProductSerializer(recommended_products, many=True)
         return serializer_object.data
 

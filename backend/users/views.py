@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -43,7 +43,7 @@ def create_cart(request):
 def get_cart(request, cart_id):
     try:
         cart = get_cart_q(cart_id)
-    except Exception as e:
+    except Exception:
         return Response('cart not found', status=status.HTTP_404_NOT_FOUND)
     serializer = CartSerializer(cart)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -166,7 +166,7 @@ def create_featured_products(request):
 def get_featured(request, featured_id):
     try:
         featured = get_featured_q(featured_id)
-    except Exception as e:
+    except Exception:
         return Response('featured not found', status=status.HTTP_404_NOT_FOUND)
     serializer = FeaturedProductsSerializer(featured)
     return Response(serializer.data, status=status.HTTP_200_OK)

@@ -18,7 +18,6 @@ from backend.settings import NP
 from products.models import Product, ChangeablePrice
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
-from rest_framework.authtoken.models import Token
 
 kiev_tz = timezone('Europe/Kiev')
 

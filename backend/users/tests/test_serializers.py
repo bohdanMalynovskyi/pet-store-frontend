@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import check_password
 
 from products.serializers import ProductSerializer
 from products.tests.test_serializers import ProductsTests
-from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User, HashCode
+from users.models import Cart, CartItem, FeaturedProducts, FeaturedItem, User
 from users.serializers import CartItemSerializer, CartSerializer, FeaturedItemSerializer, FeaturedProductsSerializer, \
     CustomUserSerializer, CustomUserCreateRetypeSerializer
 

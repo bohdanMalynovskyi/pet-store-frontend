@@ -2,7 +2,6 @@ from orders.models import Order, OrderItem
 from orders.serializers import OrderItemSerializer, OrderSerializer
 from products.serializers import ProductSerializer
 from products.tests.test_serializers import ProductsTests
-from users.models import HashCode
 
 
 class OrderItemSerializerTest(ProductsTests):
