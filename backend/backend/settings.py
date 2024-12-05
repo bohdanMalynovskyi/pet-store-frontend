@@ -40,6 +40,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://54.154.216.60",
     "https://54.154.216.60",
 ]
+# HERE MUST BE DOMAIN-NAME OR IP
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://54.154.216.60",
+    "https://54.154.216.60",
+]
 
 CORS_ALLOW_HEADERS = (
     *default_headers,
@@ -289,6 +295,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 ]
 SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
+# /o/google-oauth2/
+# /o/facebook/
 AUTHENTICATION_BACKENDS = (
     "social_core.backends.google.GoogleOAuth2",
     "social_core.backends.facebook.FacebookOAuth2",
@@ -299,7 +307,6 @@ SOCIAL_AUTH_FACEBOOK_KEY = os.getenv('FACEBOOK_ID')
 SOCIAL_AUTH_FACEBOOK_SECRET = os.getenv('FACEBOOK_SECRET')
 
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-
 
 INTERNAL_IPS = [
     '127.0.0.1',
