@@ -22,7 +22,7 @@ class AnimalCategoryTestCase(APITestCase):
         self.assertEqual(serializer_data, response.data)
 
     def test_get_detail(self):
-        url = reverse('animalcategory-detail', args=(self.animal_category1.id,))
+        url = reverse('animalcategory-detail', args=(self.animal_category1.key,))
         response = self.client.get(url)
         serializer_data = AnimalCategorySerializer(self.animal_category1, ).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -44,8 +44,8 @@ class AnimalCategoryTestCase(APITestCase):
 class ProductCategoryTestCase(AnimalCategoryTestCase):
     def setUp(self):
         super().setUp()
-        self.product_category1 = ProductCategory.objects.create(name='Food', animal_category=self.animal_category1)
-        self.product_category2 = ProductCategory.objects.create(name='Toy', animal_category=self.animal_category2)
+        self.product_category1 = ProductCategory.objects.create(key='fooood', name='Food', animal_category=self.animal_category1)
+        self.product_category2 = ProductCategory.objects.create(key='tooooy', name='Toy', animal_category=self.animal_category2)
 
     def test_get_list(self):
         url = reverse('productcategory-list')
@@ -56,7 +56,7 @@ class ProductCategoryTestCase(AnimalCategoryTestCase):
         self.assertEqual(serializer_data, response.data)
 
     def test_get_detail(self):
-        url = reverse('productcategory-detail', args=(self.product_category1.id,))
+        url = reverse('productcategory-detail', args=(self.product_category1.key,))
         response = self.client.get(url)
         serializer_data = ProductCategorySerializer(self.product_category1, ).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
@@ -78,8 +78,8 @@ class ProductCategoryTestCase(AnimalCategoryTestCase):
 class SubCategoryTestCase(ProductCategoryTestCase):
     def setUp(self):
         super().setUp()
-        self.subcategory1 = SubCategory.objects.create(name='Wet food', product_category=self.product_category1)
-        self.subcategory2 = SubCategory.objects.create(name='Toy bone', product_category=self.product_category2)
+        self.subcategory1 = SubCategory.objects.create(key='weet_fooood', name='Wet food', product_category=self.product_category1)
+        self.subcategory2 = SubCategory.objects.create(key='toooy_booone', name='Toy bone', product_category=self.product_category2)
 
     def test_get_list(self):
         url = reverse('subcategory-list')
@@ -90,7 +90,7 @@ class SubCategoryTestCase(ProductCategoryTestCase):
         self.assertEqual(serializer_data, response.data)
 
     def test_get_detail(self):
-        url = reverse('subcategory-detail', args=(self.subcategory1.id,))
+        url = reverse('subcategory-detail', args=(self.subcategory1.key,))
         response = self.client.get(url)
         serializer_data = SubCategorySerializer(self.subcategory1, ).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
