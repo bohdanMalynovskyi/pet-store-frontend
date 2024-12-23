@@ -35,9 +35,9 @@ class CustomPagination(PageNumberPagination):
 class ProductFilter(rest_filter.FilterSet):
     min_price = rest_filter.NumberFilter(field_name="discount_price", lookup_expr='gte')
     max_price = rest_filter.NumberFilter(field_name="discount_price", lookup_expr='lte')
-    subcategory = rest_filter.NumberFilter(field_name="subcategory_id")
-    animal_category = rest_filter.NumberFilter(field_name="subcategory__product_category__animal_category_id")
-    product_category = rest_filter.NumberFilter(field_name="subcategory__product_category_id")
+    subcategory = rest_filter.CharFilter(field_name="subcategory__key")
+    animal_category = rest_filter.CharFilter(field_name="subcategory__product_category__animal_category__key")
+    product_category = rest_filter.CharFilter(field_name="subcategory__product_category__key")
     has_discount = rest_filter.BooleanFilter(method='filter_has_discount')
     is_new = rest_filter.BooleanFilter(field_name="is_new")
 

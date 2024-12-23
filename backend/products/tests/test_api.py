@@ -153,26 +153,7 @@ class ProductTestCase(SubCategoryTestCase):
     # Дополненный тест для фильтрации по подкатегории
     def test_filter_by_subcategory(self):
         url = reverse('products-list')
-        response = self.client.get(url, {'subcategory': 1})
-        for product in response.data['results']:
-            if product['images']:
-                product['images'] = product['images'].removeprefix('http://testserver')
-        filtered_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
-                                                                                                 queryset=ProductImages.objects.filter(
-                                                                                                     order=1),
-                                                                                                 to_attr='filtered_images')).select_related(
-            'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
-            'brand').annotate(
-            discount_price=F('price') - (F('price') * F('discount') / 100)).filter(subcategory_id=1)[:10]
-        serializer_data = ProductSerializer(filtered_products, many=True).data
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(serializer_data, response.data['results'])
-        self.assertNotEqual(None, response.data['categories'])
-
-    # Дополненный тест для фильтрации по категории животного
-    def test_filter_by_animal_category(self):
-        url = reverse('products-list')
-        response = self.client.get(url, {'animal_category': 1})
+        response = self.client.get(url, {'subcategory': 'dogs-feed-dry-feed'})
         for product in response.data['results']:
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
@@ -183,16 +164,16 @@ class ProductTestCase(SubCategoryTestCase):
             'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
             'brand').annotate(
             discount_price=F('price') - (F('price') * F('discount') / 100)).filter(
-            subcategory__product_category__animal_category_id=1)[:10]
+            subcategory__key='dogs-feed-dry-feed')[:10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data['results'])
         self.assertNotEqual(None, response.data['categories'])
 
-    # Дополненный тест для фильтрации по категории продукта
-    def test_filter_by_product_category(self):
+    # Дополненный тест для фильтрации по категории животного
+    def test_filter_by_animal_category(self):
         url = reverse('products-list')
-        response = self.client.get(url, {'product_category': 1})
+        response = self.client.get(url, {'animal_category': 'dogs'})
         for product in response.data['results']:
             if product['images']:
                 product['images'] = product['images'].removeprefix('http://testserver')
@@ -202,7 +183,28 @@ class ProductTestCase(SubCategoryTestCase):
                                                                                                  to_attr='filtered_images')).select_related(
             'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
             'brand').annotate(
-            discount_price=F('price') - (F('price') * F('discount') / 100)).filter(subcategory__product_category_id=1)[
+            discount_price=F('price') - (F('price') * F('discount') / 100)).filter(
+            subcategory__product_category__animal_category__key='dogs')[:10]
+        serializer_data = ProductSerializer(filtered_products, many=True).data
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(serializer_data, response.data['results'])
+        self.assertNotEqual(None, response.data['categories'])
+
+    # Дополненный тест для фильтрации по категории продукта
+    def test_filter_by_product_category(self):
+        url = reverse('products-list')
+        response = self.client.get(url, {'product_category': 'dogs-feed'})
+        for product in response.data['results']:
+            if product['images']:
+                product['images'] = product['images'].removeprefix('http://testserver')
+        filtered_products = Product.objects.all().prefetch_related('changeable_prices', Prefetch('images',
+                                                                                                 queryset=ProductImages.objects.filter(
+                                                                                                     order=1),
+                                                                                                 to_attr='filtered_images')).select_related(
+            'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
+            'brand').annotate(
+            discount_price=F('price') - (F('price') * F('discount') / 100)).filter(
+            subcategory__product_category__key='dogs-feed')[
                             :10]
         serializer_data = ProductSerializer(filtered_products, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
