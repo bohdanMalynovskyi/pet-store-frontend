@@ -5,9 +5,11 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, filters
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from categories.models import SubCategory, ProductCategory, AnimalCategory
 from categories.serializers import ProductCategoryHierarchySerializer, SubCategoryHierarchySerializer, \
     AnimalCategoryHierarchySerializer
 from products.filters import CustomSearchFilter, CustomPagination, ProductFilter
+from products.logic import get_serialized_category
 from products.models import Product, ChangeablePrice, AdditionalFields, ProductImages
 from products.serializers import ProductSerializer, ChangeablePriceSerializer, \
     AdditionalFieldsSerializer, ProductDetailSerializer
@@ -60,21 +62,35 @@ class ProductViewSet(ReadOnlyModelViewSet):
 
         if 'animal_category' in request.query_params or 'product_category' in request.query_params or 'subcategory' in request.query_params:
             try:
-                item = page[0]
-                animal_category = item.subcategory.product_category.animal_category
-                serialized_category = AnimalCategoryHierarchySerializer(animal_category, many=False)
-                categories = serialized_category.data
+                categories = {}
 
-                if 'product_category' in request.query_params or 'subcategory' in request.query_params:
-                    product_category = item.subcategory.product_category
-                    serialized_category = ProductCategoryHierarchySerializer(product_category, many=False)
-                    categories['product_category'] = serialized_category.data
+                if subcategory_key := request.query_params.get("subcategory"):
+                    subcategory = ProductCategory.objects.filter(key=subcategory_key).first()
+                    if subcategory:
+                        categories['subcategory'] = get_serialized_category(ProductCategory, subcategory_key,
+                                                                            SubCategoryHierarchySerializer)
+                        categories['product_category'] = get_serialized_category(ProductCategory,
+                                                                                 subcategory.product_category.key,
+                                                                                 ProductCategoryHierarchySerializer)
+                        categories.update(get_serialized_category(AnimalCategory,
+                                                                  subcategory.product_category.animal_category.key,
+                                                                  AnimalCategoryHierarchySerializer) or {})
 
-                    if 'subcategory' in request.query_params:
-                        subcategory = item.subcategory
-                        serialized_category = SubCategoryHierarchySerializer(subcategory, many=False)
-                        categories['subcategory'] = serialized_category.data
-            except IndexError:
+                elif product_category_key := request.query_params.get("product_category"):
+                    product_category = ProductCategory.objects.filter(key=product_category_key).first()
+                    if product_category:
+                        categories['product_category'] = get_serialized_category(ProductCategory,
+                                                                                 product_category_key,
+                                                                                 ProductCategoryHierarchySerializer)
+                        categories.update(
+                            get_serialized_category(AnimalCategory, product_category.animal_category.key,
+                                                    AnimalCategoryHierarchySerializer) or {})
+
+                elif animal_category_key := request.query_params.get("animal_category"):
+                    categories.update(get_serialized_category(AnimalCategory, animal_category_key,
+                                                              AnimalCategoryHierarchySerializer) or {})
+
+            except AttributeError:
                 categories = None
 
             response = self.get_paginated_response(data)
