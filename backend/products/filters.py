@@ -17,8 +17,10 @@ class CustomSearchFilter(filters.SearchFilter):
         language = 'ukrainian'
 
         search_vector = SearchVector('name', 'description', 'brand__name', 'subcategory__name',
+                                     'subcategory__product_category__animal_category__name',
+                                     'subcategory__product_category__name',
                                      'additional_fields__text', config=language)
-        search_query = SearchQuery(str(search_term), config=language)
+        search_query = SearchQuery(str(search_term), config=language, search_type='websearch')
         rank = SearchRank(search_vector, search_query)
 
         queryset = Product.objects.annotate(
