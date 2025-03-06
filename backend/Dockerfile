@@ -17,4 +17,4 @@ COPY . /app/backend
 WORKDIR /app/backend
 
 # Применяем миграции и создаем суперпользователя
-CMD ["sh", "-c", "python manage.py migrate && python manage.py loaddata example-data.json && python manage.py runserver 0.0.0.0:8000 --noreload"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py loaddata example_data.json && python manage.py runserver 0.0.0.0:8000 --noreload"]
