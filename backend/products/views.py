@@ -5,7 +5,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, filters
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from categories.models import SubCategory, ProductCategory, AnimalCategory
+from categories.models import ProductCategory, AnimalCategory, SubCategory
 from categories.serializers import ProductCategoryHierarchySerializer, SubCategoryHierarchySerializer, \
     AnimalCategoryHierarchySerializer
 from products.filters import CustomSearchFilter, CustomPagination, ProductFilter
@@ -19,7 +19,7 @@ class ProductViewSet(ReadOnlyModelViewSet):
     queryset = Product.objects.all().select_related('subcategory', 'subcategory__product_category',
                                                     'subcategory__product_category__animal_category',
                                                     'brand').annotate(
-        discount_price=F('price') - (F('price') * F('discount') / 100))
+        discount_price=F('price') - (F('price') * F('discount') / 100)).order_by('id')
     permission_classes = [permissions.AllowAny]
     filter_backends = [DjangoFilterBackend, CustomSearchFilter, filters.OrderingFilter]
     ordering_fields = ('price',)
@@ -41,7 +41,7 @@ class ProductViewSet(ReadOnlyModelViewSet):
                                                                                             to_attr='filtered_images')).select_related(
                 'subcategory', 'subcategory__product_category', 'subcategory__product_category__animal_category',
                 'brand').annotate(
-                discount_price=F('price') - (F('price') * F('discount') / 100))
+                discount_price=F('price') - (F('price') * F('discount') / 100)).order_by('id')
         return queryset
 
     def get_ordering(self):
@@ -49,8 +49,8 @@ class ProductViewSet(ReadOnlyModelViewSet):
         if ordering:
             if ordering == 'price':
                 return ['discount_price']
-            elif ordering == '-discount_price':
-                return ['-price']
+            elif ordering == '-price':
+                return ['-discount_price']
         return super().get_ordering()
 
     def list(self, request, *args, **kwargs):
@@ -65,9 +65,9 @@ class ProductViewSet(ReadOnlyModelViewSet):
                 categories = {}
 
                 if subcategory_key := request.query_params.get("subcategory"):
-                    subcategory = ProductCategory.objects.filter(key=subcategory_key).first()
+                    subcategory = SubCategory.objects.filter(key=subcategory_key).first()
                     if subcategory:
-                        categories['subcategory'] = get_serialized_category(ProductCategory, subcategory_key,
+                        categories['subcategory'] = get_serialized_category(SubCategory, subcategory_key,
                                                                             SubCategoryHierarchySerializer)
                         categories['product_category'] = get_serialized_category(ProductCategory,
                                                                                  subcategory.product_category.key,
