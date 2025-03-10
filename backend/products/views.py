@@ -1,6 +1,5 @@
 from django.db.models import F, Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, filters
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -8,6 +7,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from categories.models import ProductCategory, AnimalCategory, SubCategory
 from categories.serializers import ProductCategoryHierarchySerializer, SubCategoryHierarchySerializer, \
     AnimalCategoryHierarchySerializer
+from products.docs import ordering_param, has_discount_param, is_new_param
 from products.filters import CustomSearchFilter, CustomPagination, ProductFilter
 from products.logic import get_serialized_category
 from products.models import Product, ChangeablePrice, AdditionalFields, ProductImages
@@ -53,6 +53,7 @@ class ProductViewSet(ReadOnlyModelViewSet):
                 return ['-discount_price']
         return super().get_ordering()
 
+    @swagger_auto_schema(manual_parameters=[ordering_param, is_new_param, has_discount_param])
     def list(self, request, *args, **kwargs):
         """ Adds categories hierarchy on filtering"""
         queryset = self.filter_queryset(self.get_queryset())
